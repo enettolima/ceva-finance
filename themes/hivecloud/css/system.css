@@ -1,0 +1,962 @@
+/**
+ * This css file refers to item not related to the theme but related to the system
+ */
+
+em {
+  font-style: italic;
+}
+
+strong {
+  font-weight: bold;
+}
+
+a {
+  cursor: pointer;
+}
+
+.error {
+	font-style: italic;
+	color: #F00;
+}
+ 
+.pointer {
+	cursor: pointer;
+}
+
+/**
+ * Disabling aspects for icons
+ */
+.disabled-icon {
+	/* for IE */
+  filter: alpha(opacity=30);
+  /* CSS3 standard */
+  opacity: 0.3;
+}
+
+/**
+ * Panel
+ */
+#panel-response {
+	border: 1px solid #eeeeee;
+}
+ 
+#panel-new td {
+	padding: 0;	
+}
+ 
+#panel-wrapper {
+	margin: 8px 0 0 8px;
+}
+
+.route-profile-list #panel-wrapper {
+  min-height: 375px;
+}
+
+#panel-wrapper table tr td {
+	padding: 6px;
+}
+
+#panel-wrapper .hive-table {
+	border: none;
+}
+
+#panel-msg div {
+	padding: 10px;
+}
+
+#panel-left {
+	background: #eeeeee;
+	padding: 5px 0 5px 5px;
+	width: 20%;	
+	min-height: 500px;
+	float: left;
+	overflow: auto;
+}
+
+#panel-left h3 {
+	margin: 0;	
+}
+
+#panel-left ul {
+	margin: 0;
+	padding: 10px 0 10px 10px;
+	list-style: none;
+	list-style-position: inside;
+}
+
+#panel-left ul li {
+	border-bottom: 1px solid #cccccc;
+	padding: 5px;
+}
+
+#panel-left ul li.active,
+#panel-left ul li:hover {
+	background: #f7f7f7;
+	border-left: 1px solid #cccccc;
+}
+
+#panel-left ul li:first-child {
+	border-top: 1px solid #cccccc;
+}
+
+#panel-right {
+	padding: 10px 20px;
+	width: 75%;
+	/* height: 500px; */
+	float: right;
+}
+
+#panel-right-slider {
+  width: 6px;
+  height: 490px;
+  margin: 5px;
+  background: #FFFFFF;
+  position: relative;
+	float: right;
+}
+
+#panel-right-slider .ui-state-default, 
+#panel-right .ui-widget-content .ui-state-default {
+	background: #cccccc;
+	left: -0.4em;
+	cursor: pointer;
+}
+
+#dialog-form input {
+  margin-bottom:12px; 
+  width:95%; 
+  padding: .4em; 
+}
+
+#dialog-form select {
+  margin-bottom:12px; 
+  width:98%; 
+  padding: .4em; 
+  height: 30px;
+}
+#dialog-form select option{
+  margin-bottom:12px; 
+  width:98%; 
+  padding: .4em; 
+  height: 30px;
+}
+
+#panel-right-scroll {
+  height: 500px;
+  overflow: hidden;
+}
+
+#panel-right.full {
+	width: 97%;
+}
+
+#panel-close {
+	color: red;
+	font-size: 9px;
+	margin: 0px 10px 0 0;
+	float: right;
+	clear: both;
+	cursor: pointer;
+}
+
+/**
+ * Forms
+ */
+.field-required {
+	color: #F00;
+}
+ 
+input.number {
+	width: 70px;
+}
+
+textarea.wide {
+	width: 400px;
+}
+
+.form-item-bottom-table {
+  margin: 5px 0 0 0;
+  width: 100%;
+  float: left;
+  display: block;
+}
+
+/**
+ * Fieldsets
+ */
+.default_open {
+	background: #ffffff;
+ 	display: hidden;
+}
+
+.default_open legend{
+	font-weight: bold;
+	background: url('../images/arrow-opened.png') no-repeat 0 3px;
+	margin: 0 0 3px 0;
+	padding: 0 0 0 13px;
+	cursor: pointer;
+}
+
+.default_open div{
+	padding: 0 0 0 0;
+}
+
+.default_closed {
+	background: #ffffff;
+	height: 40px;
+ 	display: block;
+}
+
+.default_closed div.form-item{
+	display: none;
+}
+
+.default_closed legend{
+	background: url('../images/arrow-closed.png') no-repeat 0 3px;
+	font-weight: bold;
+	margin: 0 0 3px 0;
+	padding: 0 0 0 13px;
+	cursor: pointer;
+} 
+
+#files {
+  display: none;
+}
+
+.file-delete {
+  cursor: pointer;
+}
+
+/**
+ * Device OVerview
+ */
+#device-pie {
+	height: 700px;
+	width: 800px;
+	position: relative;
+}
+
+#device-pie svg {
+	height: 700px;
+	width: 800px;
+	overflow: hidden;
+}
+
+
+/**
+ * Checkout
+ */
+.checkout-confirmation {
+  font-size: 14px;
+  line-height: 25px;
+  margin: 20px 0 15px 5px;
+}
+
+/**
+ * CSS for Multiple Select Widget
+ */
+.multiple-select-container {
+  margin: 3px 0 0 30%;
+}
+
+.multiple-select-container .multiple-select-remove-item {
+  margin: 2px 0 -2px 2px;
+}
+
+/**
+ * Forcing the date picker appear overall things
+ */
+#ui-datepicker-div,
+#ui-timepicker-div {
+   z-index: 9999;
+ }
+ /*
+  *Class to generate alerts on the system
+  */
+.container-success { 
+  border: 1px solid rgb(2, 155, 0); 
+  padding: 5px 5px 5px 28px; 
+  -moz-border-radius-bottomleft: 3px; 
+  -moz-border-radius-bottomright: 3px; 
+  -moz-border-radius     
+  -topleft: 3px; 
+  -moz-border-radius-topright: 3px; 
+  background-color: rgb(205, 246, 205); 
+  background-image: url('../images/success-16x16.gif'); 
+  background-position: 5px 50%; 
+  background-repeat: no-repeat; 
+  color: rgb(0, 102, 0); 
+  font-weight: bold; 
+  margin-bottom: 20px; 
+  margin-top: 10px; 
+}
+.container-error{ 
+  border: 1px solid rgb(187, 136, 136); 
+  padding: 5px 5px 5px 28px; 
+  -moz-border-radius-bottomleft: 3px; 
+  -moz-border-radius-bottomright: 3px; 
+  -moz-border-radius-topleft: 3px; 
+  -moz-border-radius-topright: 3px; 
+  background-color: rgb(237, 185, 177); 
+  background-image: url('../images/error-16x16.gif'); 
+  background-position: 5px 50%; 
+  background-repeat: no-repeat; 
+  color: rgb(153, 0, 0); 
+  font-weight: bold; 
+  margin-bottom: 20px; 
+  margin-top: 10px; 
+}
+.container-warning{ 
+  border: 1px solid rgb(217, 176, 76); 
+  padding: 5px 5px 5px 28px; 
+  -moz-border-radius-bottomleft: 3px; 
+  -moz-border-radius-bottomright: 3px; 
+  -moz-border-radius-topleft: 3px; 
+  -moz-border-radius-topright: 3px; 
+  background-color: rgb(255, 233, 178); 
+  background-image: url('../images/icon_warning-small.gif'); 
+  background-position: 5px 50%; 
+  background-repeat: no-repeat; 
+  color: rgb(145, 90, 21); 
+  font-weight: bold; 
+  margin-bottom: 20px; 
+  margin-top: 10px;
+  position: relative;
+  z-index: 999;
+}
+
+.container-tip{ 
+  border: 1px solid #497db8; 
+  padding: 5px 5px 5px 28px; 
+  -moz-border-radius-bottomleft: 3px; 
+  -moz-border-radius-bottomright: 3px; 
+  -moz-border-radius-topleft: 3px; 
+  -moz-border-radius-topright: 3px; 
+  background-color: #d1dbe7; 
+  background-image: url('../images/tip-16x16.png'); 
+  background-position: 5px 50%; 
+  background-repeat: no-repeat; 
+  color: rgb(145, 90, 21); 
+  font-weight: bold; 
+  margin-bottom: 20px; 
+  margin-top: 10px;
+  position: relative;
+  z-index: 999;
+}
+
+/**
+ * Report Campaign/multiple forms
+ */
+#multiple-forms-menu {
+  width: 20%;
+  float: left;
+  position: relative;
+  background: #ebebeb;
+  border: 1px solid #cccccc;
+  padding: 15px;
+}
+
+#multiple-forms-menu ul {
+/*  width: 150px;
+  right: 0;
+  position: absolute;*/
+}
+
+#multiple-forms-menu ul.menu-reports {
+  padding: 45px 14px 60px 0;
+  /*background: url(../images/bg-menu-reports.png) no-repeat right;*/
+}
+
+#multiple-forms-menu ul.menu-route-profile {
+  /*padding: 37px 14px 60px 0;
+  background: url(../images/bg-menu-reports.png) no-repeat right;*/
+}
+
+#multiple-forms-menu ul li {
+  /*border-bottom:  1px solid #ccc;*/
+  margin: 1px 0 0 55px;
+  padding: 7px 0 0 39px;
+  height: 23px;
+}
+
+#time-condition{
+  background: url(../images/time-condition.png) no-repeat;
+}
+
+#date-condition{
+  background: url(../images/date-condition.png) no-repeat;
+}
+
+#transfer{
+  background: url(../images/transfer.png) no-repeat;
+}
+
+#acd-group{
+  background: url(../images/acd-group.png) no-repeat;
+}
+
+#play-message{
+  background: url(../images/play-message.png) no-repeat;
+}
+
+#get-dtmf{
+  background: url(../images/get-dtmf.png) no-repeat;
+}
+
+#hangup{
+  background: url(../images/hangup.png) no-repeat;
+}
+
+#do-not-call{
+  background: url(../images/dnc.png) no-repeat;
+}
+
+#plugin{
+  background: url(../images/plugin.png) no-repeat;
+}
+
+#fax2email{
+  background: url(../images/fax2email.png) no-repeat;
+}
+
+#ring-group{
+  background: url(../images/ring-group.png) no-repeat;
+}
+
+#conference-bridge{
+  background: url(../images/conference-bridge.png) no-repeat;
+}
+
+#voicemail{
+  background: url(../images/voicemail.png) no-repeat;
+}
+
+#dial-exten{
+  background: url(../images/dial-exten.png) no-repeat;
+}
+
+#play-number,
+#say-number{
+  background: url(../images/say-number.png) no-repeat;
+}
+
+#play-tts,
+#say-tts{
+  background: url(../images/say-tts.png) no-repeat;
+}
+
+#pause-campaign{
+  background: url(../images/pause-campaign.png) no-repeat;
+}
+
+#multiple-forms-menu ul li:hover {
+  font-weight: bold;
+}
+
+#multiple-forms {
+  /*border-left: 2px solid #eaeaea;*/
+  width: 70%;
+  padding: 0 0 0 5%;
+  float: left;
+}
+
+#multiple-forms #multiple-forms-info #form-item-id {
+  display: none;
+}
+
+#multiple-forms-submit {
+  width: 100%;
+  float: left;
+
+}
+
+#multiple-forms .single-form {
+  border: 1px solid #ccc;
+}
+
+#multiple-forms .single-form h2 {
+  color: #333;
+  background: #eeeeee url(../images/arrow-drag-drop.png) no-repeat 4px 4px;
+  font-weight: bold; 
+  padding: 7px 0 0 15px;
+  font-size: 13px;
+  cursor: move;
+  height: 26px;
+  /*position: relative;*/
+}
+
+#multiple-forms .single-form h2:hover {
+  font-weight: bold;
+}
+
+#multiple-forms .single-form h2 a.delete-icon {
+  background: url(../images/icon-delete-small.png) no-repeat 0 0;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form h2 a.minimize-icon {
+  background: url(../images/icon-max-min-small.png) no-repeat 0 0;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form h2 a.maximize-icon {
+  background: url(../images/icon-max-min-small.png) no-repeat 0 -10px;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form form {
+  margin: 12px;
+}
+
+#multiple-forms .single-form.feature-form-hidden form {
+  display: none;
+}
+
+#multiple-forms .single-form form .form-item {
+  border: none;
+  padding: 3px 0;
+}
+
+#multiple-forms .single-form form #form-item-Feature {
+  display: none;
+}
+
+#multiple-forms-response {
+  background: #eaeaea;
+  margin: 0 0 12px 0;
+  padding: 1px 4px;
+}
+
+.listview #route-profile-builder,
+.listview #report-builder {
+  margin: 15px;
+  width: 100%;
+  float: left;
+}
+
+/*#multiple-forms-menu {
+  width: 20%;
+  height: 1000px;
+  float: left;
+  position: relative;
+}
+
+#multiple-forms-menu ul {
+  width: 150px;
+  right: 0;
+  position: absolute;
+}
+
+#multiple-forms-menu ul.menu-reports {
+  padding: 45px 14px 60px 0;
+}
+
+#multiple-forms-menu ul.menu-route-profile {
+  padding: 37px 14px 60px 0;
+  background: url(../images/bg-menu-reports.png) no-repeat right;
+}
+
+#multiple-forms-menu ul li {
+  margin: 1px 0 0 55px;
+  padding: 7px 0 0 39px;
+  height: 23px;
+}
+
+#time-condition{
+  background: url(../images/time-condition.png) no-repeat;
+}
+  
+#date-condition{
+  background: url(../images/date-condition.png) no-repeat;
+}
+  
+#transfer{
+  background: url(../images/transfer.png) no-repeat;
+}
+  
+#acd-group{
+  background: url(../images/acd-group.png) no-repeat;
+}
+
+#play-message{
+  background: url(../images/play-message.png) no-repeat;
+}
+
+#get-dtmf{
+  background: url(../images/get-dtmf.png) no-repeat;
+}
+
+#hangup{
+  background: url(../images/hangup.png) no-repeat;
+}
+
+#do-not-call{
+  background: url(../images/dnc.png) no-repeat;
+}
+
+#plugin{
+  background: url(../images/plugin.png) no-repeat;
+}
+#fax2email{
+  background: url(../images/fax2email.png) no-repeat;
+}
+
+#ring-group{
+  background: url(../images/ring-group.png) no-repeat;
+} 
+  
+#conference-bridge{
+  background: url(../images/conference-bridge.png) no-repeat;
+}
+
+#voicemail{
+  background: url(../images/voicemail.png) no-repeat;
+}
+
+#dial-exten{
+  background: url(../images/dial-exten.png) no-repeat;
+}
+
+#play-number,
+#say-number{
+  background: url(../images/say-number.png) no-repeat;
+}
+
+#play-tts,
+#say-tts{
+  background: url(../images/say-tts.png) no-repeat;
+}
+
+#pause-campaign{
+  background: url(../images/pause-campaign.png) no-repeat;
+}
+
+#multiple-forms-menu ul li:hover {
+   font-weight: bold;
+}
+
+#multiple-forms {
+  width: 70%;
+  padding: 0 0 0 5%;
+  float: left;
+}
+
+#multiple-forms #multiple-forms-info #form-item-id {
+  display: none;
+}
+
+#multiple-forms .single-form {
+  border: 1px solid #ccc;
+  margin: 0 0 12px 0;
+}
+
+#multiple-forms .single-form h2 {
+  color: #333;
+  background: #eaeaea url(../images/arrow-drag-drop.png) no-repeat 4px 4px;
+  padding: 0 0 0 15px;
+  cursor: move;
+}
+
+#multiple-forms .single-form h2:hover {
+  font-weight: bold;
+}
+
+#multiple-forms .single-form h2 a.delete-icon {
+  background: url(../images/icon-delete-small.png) no-repeat 0 0;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form h2 a.minimize-icon {
+  background: url(../images/icon-max-min-small.png) no-repeat 0 0;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form h2 a.maximize-icon {
+  background: url(../images/icon-max-min-small.png) no-repeat 0 -10px;
+  margin: 3px 3px 0px 0px;
+  width: 10px;
+  height: 10px;
+  float: right;
+  cursor: pointer;
+  overflow: hidden;
+  text-indent:-999em;
+}
+
+#multiple-forms .single-form form {
+  margin: 12px;
+}
+
+#multiple-forms .single-form.feature-form-hidden form {
+  display: none;
+}
+
+#multiple-forms .single-form form .form-item {
+  border: none;
+  padding: 3px 0;
+}
+
+#multiple-forms .single-form form #form-item-Feature {
+  display: none;
+}
+
+#multiple-forms-response {
+  background: #eaeaea;
+  margin: 0 0 12px 0;
+  padding: 1px 4px;
+}
+
+.listview #route-profile-builder,
+.listview #report-builder {
+  margin: 15px;
+  width: 100%;
+  float: left;
+}*/
+
+/*
+ *Dialer Dashboard fullscreen
+ */
+#dashboard-campaign-name, 
+#hive-dashdialer-title { 
+  width: 100%;
+  font-family: verdana,arial,helvetica,sans-serif;
+  font-weight: bold; 
+  color: #a4a4a4;
+	font-size: 20px;
+  text-align: center;
+  text-decoration: underline;
+  margin: 15px 10px 10px; 
+  float: left;
+}
+
+#dashboard-campaign-name{
+  text-decoration: none;
+  color: #777777;
+}
+
+#dashboard-campaign-name #Running{
+  color: green;
+}
+
+#dashboard-campaign-name #Paused{
+  color: red;
+}
+
+#dashboard-campaign-name #Completed{
+  color: #bfa22f;
+}
+
+#dashboard-agent-name{
+  text-decoration: none;
+  color: #777;
+	font-size: 20px;
+  text-align: center;
+  margin: 15px 0 0 0; 
+}
+
+#chart-agent-wrapp{
+  width: 100%;
+}
+
+#chart-agent-wrapp #dash-chart{
+/*  width: 45%;
+  float: left;*/
+  top: 0;
+  border: 0;
+  display: inline;
+}
+
+#chart-agent-wrapp #dash-agents{
+  width: 45%;
+  float: right;
+  margin: 30px 0 0 0;
+}
+
+.dash-agent-list-table{
+  width: 100%;
+  border: 0px;
+}
+
+.dash-agent-list-table th{
+  font-size: 12px;
+  font-weight: bold;
+  padding: 5px 5px;
+}
+
+.dash-agent-list-table thead{
+  background: #F5F5F5;
+}
+
+.dash-agent-list-table .loggedout{
+  color: red;
+  text-decoration: bold;
+}
+
+.dash-agent-list-table .pause{
+  color: purple;
+  text-decoration: bold;
+
+}
+
+.dash-agent-list-table .login,
+.dash-agent-list-table .resume,
+.dash-agent-list-table .available{
+  color: green;
+  text-decoration: bold;
+}
+
+.dash-agent-list-table .connected{
+  color: #bfa22f;
+  text-decoration: bold;
+}
+
+#hive-dashdialer-title { 
+  width: 100%;
+  font-family: verdana,arial,helvetica,sans-serif;
+  font-weight: bold; 
+  color: #a4a4a4;
+	font-size: 20px;
+  text-align: center;
+  text-decoration: underline;
+  margin: 15px 10px 10px; 
+}
+
+#hive-dashdialer-content { 
+  border: 1px solid rgb(220, 220, 220); 
+  margin: 15px 10px 10px; 
+  padding: 18px 20px 20px; 
+  min-height: 400px;
+  font-weight: bold; 
+  color: #555555;
+	font-size: 11px;
+  background: rgb(245, 245, 245) url('../images/hive-body-contentbox-bg.gif') repeat-x scroll center top; 
+  -moz-border-radius-bottomleft: 4px; 
+  -moz-border-radius-bottomright: 4px; 
+  -moz-border-radius-topleft: 4px; 
+  -moz-border-radius-topright: 4px; 
+  width: 75%; 
+  float: left; 
+}
+
+#hive-dashdialer-loading { 
+  /*background: #ffffff url('../images/ajax-loader.gif') no-repeat center center; */
+  background: #ffffff; 
+  height: 20px;
+  display: none;
+  text-align: center;
+}
+
+#hive-dashmenu-list{ 
+  list-style: none;
+}
+
+#hive-dashdialer-menu { 
+  width: 15%; 
+  float: left;
+  margin: 40px 0px 10px 10px; 
+  display: inline-block;
+  color: #555555;
+	font-size: 11px;
+}
+
+#hive-dashdialer-menu li {
+   border-bottom: 1px solid #CCCCCC;
+   padding: 4px 0 4px 10px;
+   width: 100%;
+   float: left;
+   list-style: none;
+}
+
+#hive-dashdialer-menu a:link,
+#hive-dashdialer-menu a:visited,
+#hive-dashdialer-menu a:hover
+{
+  text-decoration: none;
+  color: #666666;
+}
+
+#hive-dashdialer-menu ul li.active,
+#hive-dashdialer-menu ul li.active-first,
+#hive-dashdialer-menu ul li:hover {
+  padding: 4px 8px 4px 10px;
+/*	background: #f7f7f7;*/
+/*	border-left: 1px solid #cccccc;*/
+  color: #FF5C00;
+  font-weight: bold; 
+}
+
+#hive-dashdialer-menu li.active-first {
+   background: #f7f7f7 url(../themes/original/images/green-right-arrow.gif) no-repeat 0 9px;
+   border-top: 1px solid #CCCCCC;
+}
+
+#hive-dashdialer-menu li.deactive-first {
+  border-top: 1px solid #CCCCCC;
+}
+
+#hive-dashdialer-menu li.deactive{
+  color: #FF5C00;
+}
+
+#hive-dashdialer-menu li.active {
+   background: #f7f7f7 url(../themes/original/images/green-right-arrow.gif) no-repeat 0 9px;
+}
+
+.doc-title{
+	font-size: 18px;
+	font-weight: bold;
+  padding: 10px 0 0 10px; 
+	color: green;
+}
+
+.doc-description{
+  padding: 18px 20px 20px; 
+}
+
+.doc-download-link{
+	text-align: right;
+	font-size: 10px;
+  padding: 0 8px 8px 0; 
+  font-style: italic;
+	border-bottom: thin solid gray;
+}	
+
+
+.doc-download-link a:hover {
+  font-style: italic;
+	font-weight: bold;
+}
+
+div.growlUI { background: url(check48.png) no-repeat 10px 10px }
+div.growlUI h1, div.growlUI h2 {
+		color: white; padding: 5px 5px 5px 75px; text-align: left
+	}
