@@ -17,7 +17,6 @@ function customer_list($row_id = null, $search_query = NULL, $sort = NULL, $page
         }
     }
 
-
     if ($search_query) {
         $search_fields = array('c.id', 'c.name', 'c.status', 'p.name', 'ct.email', 'ct.mobile_phone');
         $exceptions = array('c.status' => $status);
@@ -44,11 +43,11 @@ function customer_list($row_id = null, $search_query = NULL, $sort = NULL, $page
     // Customer Object
     $customer = new DataManager();
     $customer->dm_load_custom_list("SELECT c.id, c.name AS customer_name, c.status, ct.email, ct.mobile_phone, so.description AS customer_status
-                              FROM " . NATURAL_DBNAME . ".customer c
-                              LEFT JOIN " . NATURAL_DBNAME . ".contact ct ON c.contact_id = ct.id
-                              LEFT JOIN select_option so ON c.status = so.value AND so.upstream_name = 'customer_status'
-                              WHERE $clause  $search_query
-                              ORDER BY  $sort
+    FROM " . NATURAL_DBNAME . ".customer c
+    LEFT JOIN " . NATURAL_DBNAME . ".contact ct ON c.contact_id = ct.id
+    LEFT JOIN select_option so ON c.status = so.value AND so.upstream_name = 'customer_status'
+    WHERE $clause  $search_query
+    ORDER BY  $sort
 															LIMIT  $start, $limit", 'ASSOC', TRUE);
 
     if ($customer->affected > 0) {

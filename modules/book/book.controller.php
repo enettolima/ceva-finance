@@ -92,13 +92,12 @@ function book_delete($data) {
  */
 
 function validate($data) {
-    foreach ($data as $key => $value) {
-        switch ($key) {
-            case "name":
-                if (!$data['name']) {
-                    return 'Field name is required';
-                }
-        }
+    $book = new Book();
+    $edit = false;
+    if (stripos("edit", $words)) {
+        $edit = true;
     }
+    return $book->_validate($data, $edit, false);
 }
+
 ?>

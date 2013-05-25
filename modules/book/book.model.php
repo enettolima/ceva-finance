@@ -92,7 +92,7 @@ class Book Extends DataManager {
 
     private function add($data) {
         //Validating data from the API call
-        $this->_validate($data, false);
+        $this->_validate($data, "insert");
 
         $book = new Book();
         foreach ($data as $key => $value) {
@@ -134,8 +134,9 @@ class Book Extends DataManager {
         unset($this->data);
         unset($this->affected);
 
-        $result = (array) $this;
+        $resultdata = (array) $this;
         $result['code'] = 200;
+        $result['data'] = $resultdata;
         //Return response
         return $result;
     }
@@ -162,7 +163,7 @@ class Book Extends DataManager {
      */
 
     protected function updateInfo($data) {
-        $this->_validate($data, true);
+        $this->_validate($data, "update");
         //Loading the object from the database
         $book = new Book();
         $book->load_single("id='" . $data['id'] . "'");
@@ -198,6 +199,7 @@ class Book Extends DataManager {
      */
 
     private function delete($data) {
+        $this->_validate($data, "delete");
         $book = new Book();
         $book->load_single("id='" . $data['id'] . "'");
         if ($book->affected < 1)
@@ -214,17 +216,32 @@ class Book Extends DataManager {
      * Validating book data
      */
 
-    private function _validate($data, $update = false) {
-        foreach ($data as $k => $v) {
-            $value = urldecode($v);
-            if (!$value)
-                throw new RestException(404, 'Missing parameter!');
-        }
+    function _validate($data, $type, $from_api = true) {
         //If the method called is an update, check if the id exists, otherwise return error
-        if ($update) {
+        if ($type == "update" || $type == "delete") {
             if (!$data['id']) {
                 throw new RestException(404, 'Parameter ID is required!');
             }
+        }
+        /*
+         * check if field is empty
+         * Add more fields as needed
+         */
+
+        if ($type != "delete") {
+            if (!$data['name']) {
+                $error = 'Field name is required';
+                $error_code = 404;
+            }
+        }
+
+        //If error exists return or throw exception if the call has been made from the API
+        if ($error) {
+            if ($from_api) {
+                throw new RestException($error_code, $error);
+            }
+            return $error;
+            exit(0);
         }
     }
 
