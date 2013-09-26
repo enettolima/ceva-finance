@@ -25,7 +25,7 @@ echo "
       <div id='hive-loginBox'>
         <div id='hive-loginTable' align='center'><br><br><br>
 
-          <span id='hive-login-header' align='left'><a href='http://www.hivevoicecloud.com' target='_blank'><img border='0' src='".TEMPLATE."images/hvc_logo.png' /></a></span><br><br>
+          <span id='hive-login-header' align='left'><a href='http://www.hivevoicecloud.com' target='_blank'><img src='".TEMPLATE."img/logo.png' class=\"img-rounded\"></a></span><br><br>
           <span id='hive-login-error-msg'>{$error_message}</span><br><br>
         
           <div style='text-align: center; width: 380px;'>

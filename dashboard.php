@@ -28,7 +28,8 @@ if ($_SESSION['log_username']) {
         $module->load_single("module='dashboard' LIMIT 1");
         $_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
         $content = dashboard_home();
-        $menu = menu_constructor($_SESSION['log_access_level'], $show_dashboard);
+        $menu = bootstrap_menu_constructor($_SESSION['log_access_level'], $show_dashboard);
+        //$menu = menu_constructor($_SESSION['log_access_level'], $show_dashboard);
         $loginname = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
         $version = NATURAL_VERSION . ' - r.' . $module->version;
         $loginname = 'User: ' . $loginname;

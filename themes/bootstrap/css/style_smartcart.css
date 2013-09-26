@@ -1,0 +1,214 @@
+/* 
+ * SmartCart - jQuery cart plugin 
+ * CSS Document
+ *   
+ * Home Pages:
+ * http://fivelist.summerhost.info
+ * http://tech-laboratory.blogspot.com
+ * http://techlaboratory.wordpress.com
+ *  
+ * Date: 05-SEP-2009
+ * Version: 0.95 beta
+ */
+
+.scContainer {
+	padding: 5px;
+	border: 1px solid #E0E0E0; 
+	width: 90%;
+	margin: 5px; 
+	float:left;   
+  -moz-border-radius:5px;
+  -webkit-border-radius: 5px;
+  font-family : Verdana,Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 12px;  
+  position:relative;
+	left: 5%;
+  right:5%;
+  background: #E4E4E4;
+}
+.scTitle {
+	padding: 2px; 
+	float:left;
+	font-weight: bold; 
+	margin-bottom: 3px; 
+	float:left;
+}
+.scBtn {
+  background            : #5A5655;
+  color                 : #FFFFFF;
+  margin                : 0;
+  padding               : 1px 5px 2px 6px;
+  text-align            : center;
+  border                : 1px solid #5A5655;    
+  text-decoration       : none; 
+  -moz-border-radius    : 5px;
+  -webkit-border-radius : 5px;    
+  font-weight: bold;
+  height: 22px;
+}
+.scBtn:hover {
+  background      : #EA8511;
+  color           : #FFFFFF;
+  border          : 1px solid #EA8511; 
+  text-decoration : none; 
+}
+.scText{ 
+  border: 1px solid #E0E0E0; 
+  width:25px;
+  padding : 1px 5px 1px 5px;
+}  
+.scText:focus { 
+  border: 1px solid #EA8511; 
+} 
+.scCart { 
+  height: 432px;
+	padding: 10px 5px 5px 5px;
+	border: 1px solid #E0E0E0; 
+	width: 45%;
+	margin: 3px 10px 0 0;
+	float: right;
+  -moz-border-radius:5px;
+  -webkit-border-radius: 5px;	
+}
+
+.productTitle{
+	font-weight: bold; 
+  color: #FF5C00;
+}
+
+.scProductList {
+	padding: 10px 5px 5px 5px;
+	border: 1px solid #E0E0E0;
+	width: 45%;
+	height: 432px;
+	overflow:auto;
+	margin: 5px;
+	float:left;
+  -moz-border-radius:5px;
+  -webkit-border-radius: 5px;
+}
+.scCartList {
+	position: relative;
+	margin: 0;
+	padding: 1px;
+	background: #F8F8F8;
+	border: 1px solid #E0E0E0;
+	height: 304px;
+	overflow:auto;
+}
+.scCartListHead {
+	padding: 0;
+	background: #F8F8F8;
+	border: 1px solid #E0E0E0; 
+	margin: 6px 0 1px 0;
+	height: 29px;
+	font-weight: bold; 
+}
+.scCartListItem {
+	position: relative;
+	margin-left: 0;
+	padding-left: 0;
+	list-style: none;
+	background: #F8F8F8;
+	/*border: 1px solid #E0E0E0; */
+	margin: 1px 0 0 0;
+	line-height: 1em;
+}
+
+.scCartListItem:hover {
+	background-color: #e5e5e5;
+}
+.scProductListItem {
+  width:auto;
+  margin: 5px;
+  background:#F8F8F8;
+  overflow:show;
+  padding:12px 0px 13px 87px; 
+  height: 100px;
+  text-align:left;
+  border:#E0E0E0 solid 1px;      
+  -moz-border-radius:5px;
+  -webkit-border-radius: 5px;
+}
+
+.scProductListItem table {
+  float: none;
+}
+.scProductListItem table tr {
+  clear: both;
+  vertical-align: top;
+}
+.scProductSelect {
+	display: none;
+	visibility:hidden;
+}
+.scULList {
+	margin: 0.25em 0 1em 0; 
+	position: relative;
+	display: block;
+	padding-left: 0; 
+	list-style: none; 
+}
+.scListItemLabel {
+	padding: 5px; 
+	display: block;
+}
+
+.scListItemLabel table{
+  float: none;
+  margin: 0;
+}
+
+.scListItemRemove{
+	position: absolute;
+	right: 3px; 
+	top: 6px; 
+  background: #5A5655;
+  margin: 0;
+  padding: 3px 8px 6px 8px;
+  text-align: center;
+  border: 1px solid #5A5655;    
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;  	
+  color: #FFFFFF;
+  cursor: pointer;
+	font-weight: bold; 
+}
+.scListItemRemove:hover {
+  background      : #EA8511;
+  color           : #FFFFFF;
+  border          : 1px solid #EA8511; 
+  text-decoration : none; 
+}
+
+.scProduct{
+  float: none;
+  vertical-align: inherit;
+  margin: 0;
+}
+.scProduct td{
+  clear: both;
+  vertical-align: inherit;
+}
+.scCartTableHead{
+  clear: both;
+  float: left;
+  margin: 0 0 6px 0;
+  width: 100%;
+}
+.scCartTableHead td{
+  color: #FF5C00;
+	font-weight: bold; 
+}
+
+.scCartConfirm td{
+	font-weight: bold; 
+}
+
+.scCartConfirmBody td{
+	font-weight: bold; 
+}
+
+.priceTotal{
+  color: #FF5C00;
+}

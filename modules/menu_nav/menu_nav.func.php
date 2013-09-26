@@ -71,6 +71,141 @@ function menu_constructor($level, $dash_show = 0) {
 }
 
 /**
+ * New Function Build Menu
+ */
+function bootstrap_menu_constructor($level, $dash_show = 0) {
+
+//    <ul class="dropdown-menu">
+//                  <li><a href="#">Action</a></li>
+//                  <li><a href="#">Another action</a></li>
+//                  <li><a href="#">Something else here</a></li>
+//                  <li class="divider"></li>
+//                  <li class="nav-header">Nav header</li>
+//                  <li><a href="#">Separated link</a></li>
+//                  <li><a href="#">One more separated link</a></li>
+//                </ul>
+
+
+     /*$menu = '<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+      <div class="container">
+      <a class="brand" href="#">Project name</a>
+      <div class="nav-collapse collapse">
+      <ul class="nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+
+      <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+
+      <ul class="dropdown-menu">
+      <li><a href="#">Action</a></li>
+      <li><a href="#">Another action</a></li>
+      <li><a href="#">Something else here</a></li>
+      <li class="divider"></li>
+      <li class="nav-header">Nav header</li>
+      <li><a href="#">Separated link</a></li>
+      <li><a href="#">One more separated link</a></li>
+      </ul>
+
+      </li>
+      </ul>
+      </div><!--/.nav-collapse -->
+      </div>
+      </div>
+      </div>';*/
+    //return $menu;
+    //exit(0);
+    $main_menu = new DataManager();
+    $main_menu->dm_load_list(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'ASSOC', ' status = 1 AND dash_admin="' . $dash_show . '" ORDER BY position ');
+    $menu = '';
+    if ($main_menu->affected) {
+        $menu = '<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">'.NATURAL_PLATFORM.'</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              
+            ';
+        // Main Menu
+        foreach ($main_menu->data as $main_key => $main_item) {
+            // Test permission
+            if (menu_permission($main_item, $level)) {
+                // Sub Menu 
+                $menusub = '';
+                $expanded = '';
+                $main_class = "";
+                $toggle = "";
+                $arrow_down = "";
+                $sub_menu = new DataManager();
+                $sub_menu->dm_load_list(NATURAL_DBNAME . '.' . SUB_MENU_TABLE, 'ASSOC', 'main_menu_id = ' . $main_item['id'] . ' AND status = 1 ORDER BY position');
+                if ($sub_menu->affected) {
+                    //$menu .= '<li class="dropdown">';
+                    foreach ($sub_menu->data as $sub_item) {
+                        if (menu_permission($sub_item, $level)) {
+                            // Side Menu
+                            $menuside = '';
+                            $expanded = '';
+                            $side_menu = new DataManager();
+                            $side_menu->dm_load_list(NATURAL_DBNAME . '.' . SIDE_MENU_TABLE, 'ASSOC', 'sub_menu_id = ' . $sub_item['id'] . ' AND status = 1 ORDER BY position');
+                            if ($side_menu->affected) {
+                                foreach ($side_menu->data as $side_item) {
+                                    if (menu_permission($side_item, $level)) {
+                                        $menuside .= '<li id="' . $side_item['element_name'] . '"><a href="javascript:menu_navigation(\'' . $side_item['element_name'] . '\', \'' . $side_item['func'] . '\', \'' . $side_item['module'] . '\');" >' . translate($side_item['label'], $_SESSION['log_preferred_language']) . '</a></li>';
+                                    }
+                                }
+                                if ($menuside) {
+                                    $expanded = "dropdown";
+                                    $menuside = '<ul class="dropdown-menu">' . $menuside . '</ul>';
+                                }
+                            }
+                            //$menusub .= '<li class="' . $expanded . '" id="' . $sub_item['element_name'] . '"><a href="javascript:menu_navigation(\'' . $sub_item['element_name'] . '\', \'' . $sub_item['func'] . '\', \'' . $sub_item['module'] . '\');" >' . translate($sub_item['label'], $_SESSION['log_preferred_language']) . '</a>' . $menuside . '</li>';
+                            $menusub .= '<li class="' . $expanded . '" id="' . $sub_item['element_name'] . '">
+                <a href="javascript:menu_navigation(\'' . $sub_item['element_name'] . '\', \'' . $sub_item['func'] . '\', \'' . $sub_item['module'] . '\');" class="dropdown-toggle" data-toggle="dropdown">' . translate($sub_item['label'], $_SESSION['log_preferred_language']) . ' </a>' . $menuside . '</li>';
+                        }
+                    }
+                    if ($menusub) {
+                        $expanded = 'dropdown';
+                        $menusub = '<ul class="dropdown-menu">' . $menusub . '</ul>';
+                        $main_class = "dropdown-toggle";
+                        $toggle = "dropdown";
+                        $arrow_down = '<b class="caret"></b>';
+                        $function = '#';
+                        //$function = 'javascript:menu_navigation(\'' . $main_item['element_name'] . '\', \'' . $main_item['func'] . '\', \'' . $main_item['module'] . '\');';
+                    }else{
+                        $function = 'javascript:menu_navigation(\'' . $main_item['element_name'] . '\', \'' . $main_item['func'] . '\', \'' . $main_item['module'] . '\');';
+                    }
+                    //$menu .= '</li>'
+                }
+                if ($main_item['initial']) {
+                    $active = 'active';
+                } else {
+                    $active = '';
+                }
+                // Main menu item
+                /* $menu .= '<li id="' . $main_item['element_name'] . '" class="' . $active . ' ' . $expanded . ' ">
+                  <a href="javascript:menu_navigation(\'' . $main_item['element_name'] . '\', \'' . $main_item['func'] . '\', \'' . $main_item['module'] . '\');" >' . translate($main_item['label'], $_SESSION['log_preferred_language']) . '<b class="caret"></b></a>
+                  ' . $menusub . '
+                  </li>'; */
+                $menu .= '<li id="' . $main_item['element_name'] . '" class="'.$active.' '.$expanded.' " >
+                    <a class="'.$main_class.'" data-toggle="'.$toggle.'" href="'.$function.'" >' . translate($main_item['label'], $_SESSION['log_preferred_language']) .  $arrow_down.'  </a>
+                    ' . $menusub . '
+                </li>';
+            }
+        }
+        $menu .= '</ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>';
+    } else {
+        $menu = 'Menu is not setup, please contact the administrator.';
+    }
+    return $menu;
+}
+
+/**
  * Menu Permissions function test if the user is able to visualize the menu item
  */
 function menu_permission($menu_item, $level) {
