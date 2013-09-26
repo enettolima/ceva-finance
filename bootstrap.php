@@ -11,7 +11,7 @@ if (file_exists(NATURAL_ROOT_PATH . '/bootstrap.dev.php')) {
     //IN PRODUCTION ENVIRONMENT
     define("NATURAL_DEV_MODE", false);
     define("ENABLE_COLOR_CHANGE", false);
-
+    
     //SET APPLICATION PATHS
     define("NATURAL_WEB_ROOT", './');
     define("TITLE", 'Clean Project');
