@@ -1,0 +1,8 @@
+# Igreno Mac OS files
+.DS_Store
+
+# Ignore Netbeans paths 
+nbprojects/
+
+# Ignore default Natural files
+bootstrap.dev.php
