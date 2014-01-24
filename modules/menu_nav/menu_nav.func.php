@@ -86,7 +86,7 @@ function bootstrap_menu_constructor($level, $dash_show = 0) {
 //                </ul>
 
 
-     /*$menu = '<div class="navbar navbar-fixed-top">
+     $menu = '<div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
       <div class="container">
       <a class="brand" href="#">Project name</a>
@@ -113,9 +113,11 @@ function bootstrap_menu_constructor($level, $dash_show = 0) {
       </div><!--/.nav-collapse -->
       </div>
       </div>
-      </div>';*/
+      </div>';
     //return $menu;
     //exit(0);
+    
+    /*
     $main_menu = new DataManager();
     $main_menu->dm_load_list(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'ASSOC', ' status = 1 AND dash_admin="' . $dash_show . '" ORDER BY position ');
     $menu = '';
@@ -184,10 +186,6 @@ function bootstrap_menu_constructor($level, $dash_show = 0) {
                     $active = '';
                 }
                 // Main menu item
-                /* $menu .= '<li id="' . $main_item['element_name'] . '" class="' . $active . ' ' . $expanded . ' ">
-                  <a href="javascript:menu_navigation(\'' . $main_item['element_name'] . '\', \'' . $main_item['func'] . '\', \'' . $main_item['module'] . '\');" >' . translate($main_item['label'], $_SESSION['log_preferred_language']) . '<b class="caret"></b></a>
-                  ' . $menusub . '
-                  </li>'; */
                 $menu .= '<li id="' . $main_item['element_name'] . '" class="'.$active.' '.$expanded.' " >
                     <a class="'.$main_class.'" data-toggle="'.$toggle.'" href="'.$function.'" >' . translate($main_item['label'], $_SESSION['log_preferred_language']) .  $arrow_down.'  </a>
                     ' . $menusub . '
@@ -201,7 +199,7 @@ function bootstrap_menu_constructor($level, $dash_show = 0) {
     </div>';
     } else {
         $menu = 'Menu is not setup, please contact the administrator.';
-    }
+    }*/
     return $menu;
 }
 
