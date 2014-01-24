@@ -2,7 +2,7 @@
 .DS_Store
 
 # Ignore Netbeans paths 
-# nbprojects/
+nbprojects/
 
 # Ignore default Natural files
 bootstrap.dev.php
