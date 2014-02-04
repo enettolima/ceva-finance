@@ -15,32 +15,30 @@ if (!$password) {
 ?>
 
 <!DOCTYPE html>
-<html  lang="en">
+<html lang="en">
   <head>
     <title><?php print TITLE ?></title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="shortcut icon" href="<?php print TEMPLATE ?>img/favicon.ico">
     <!-- Bootstrap -->
     <link href="<?php print TEMPLATE ?>bootstrap/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css">
+    <link href="<?php print TEMPLATE ?>css/style.css" media="all" rel="stylesheet" type="text/css">
   </head>
-  <body>
+  <body class="page-login">
     <div class="row">
       <div class="col-md-4 col-md-offset-4">
-        <div class="panel panel-default">
+        <div id='login-error-msg' class="alert alert-danger">
+          <?php print $error_message ?>
+        </div>
+      </div>
+      <div class="col-md-4 col-md-offset-4">
+        <div class="panel panel-primary">
           <div class="panel-heading">
             <h3 class="panel-title"><?php print NATURAL_PLATFORM ?></h3>
           </div>
           <div class="panel-body">
             <form class="form-signin" role="form" name="loginForm" id="loginForm" method="POST" action="proc_login.php">
-
-              <!-- to be DONE -->
-              <p class="text-left">
-                <span id='login-error-msg'>
-                  <small><?php print $error_message ?></small>
-                </span>
-              </p>
-
               <div class="form-group">
                 <input type="text" class="form-control" name="username" placeholder="Email address">
               </div>
@@ -53,9 +51,7 @@ if (!$password) {
                 </label>
               </div>
               <button class="btn btn-primary btn-sm" type="submit">Sign in</button>
-              <p class="text-right">
-                <small>Powered by <?php print NATURAL_COMPANY ?></small>
-              </p>
+              <small class="pull-right">Powered by <?php print NATURAL_COMPANY ?></small>
             </form>
           </div>
         </div>
