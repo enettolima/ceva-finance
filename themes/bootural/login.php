@@ -23,15 +23,18 @@ if (!$password) {
     <link rel="shortcut icon" href="<?php print TEMPLATE ?>img/favicon.ico">
     <!-- Bootstrap -->
     <link href="<?php print TEMPLATE ?>bootstrap/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Theme CSS -->
     <link href="<?php print TEMPLATE ?>css/style.css" media="all" rel="stylesheet" type="text/css">
   </head>
   <body class="page-login">
     <div class="row">
+      <?php if (!empty($error_message)) : ?>
       <div class="col-md-4 col-md-offset-4">
         <div id='login-error-msg' class="alert alert-danger">
           <?php print $error_message ?>
         </div>
       </div>
+      <?php endif; ?>
       <div class="col-md-4 col-md-offset-4">
         <div class="panel panel-primary">
           <div class="panel-heading">
