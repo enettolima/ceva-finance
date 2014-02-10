@@ -59,45 +59,28 @@
 
   <body  class="page-main <?php ($_SESSION['log_interface']) ? print $_SESSION['log_interface']  : print 'green'; ?>">
 
-    <div id="top-header">
-      <span><?php print $version . ' - ' . $actual_date; ?> - <a href="logout.php" title="Logout" class="logout">Logout</a></span>
-    </div>
-
-    <!-- header-wrapper -->
-    <div id="header-wrapper" style="display: <?php print $closed ?>;">
-
-    <!-- header-inner -->
-    <!--  <div id="header-inner" class="clear-block">
-      <div id="logo"></div>
-        <ul id="header-info">
-          <li><?php print $version ?></li>
-          <li><?php print $loginname ?></li>
-          <?php if (ENABLE_COLOR_CHANGE): ?>
-          <li id="style"><span id="color-actual"></span> <span id="style-info">Style: <?php print $_SESSION['log_interface']; ?></span></li>
-          <li id="colors"><a id="blue" class="color-option blue-option" alt="Blue" title="Blue"></a> <a id="gray" class="color-option gray-option" alt="Gray" title="Gray"></a> <a id="green" class="color-option green-option" alt="Green" title="Green"></a> <a id="orange" class="color-option orange-option" alt="Orange" title="Orange"></a> <a id="pink" class="color-option pink-option" alt="Pink" title="Pink"></a></li>
-          <?php endif; ?>
-        </ul>
-      </div> -->
-      <!-- end header-inner
-      <li id="logout"><a href="logout.php" title="Logout">Logout</a></li>
-      -->
-    </div>
-    <!-- end header -->
-
-    <!-- menu-wrapper -->
-    <div id="menu-wrapper">
-
-      <!-- menu-inner -->
-      <div id="menu-inner" class="clear-block">
-        <? print $menu ?>
+    <header id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><?php print $version . ' - ' . $actual_date; ?></a>
+        </div>
+        <div class="navbar-collapse collapse navbar-right">
+          <ul class="nav navbar-nav">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="logout.php" title="Logout" class="logout">Logout</a></li>
+          </ul>
+        </div>
       </div>
-      <!-- end menu-inner -->
+    </header>
 
-      <!-- <div id="menu-logo" class="clear-block"></div>-->
-      <!-- end menu-logo -->
-
-    </div>
-    <!-- end menu-wrapper -->
 
     <div id="account-header">
       <span id="account-topic"><?php print $account_topic; ?></span>
