@@ -48,18 +48,17 @@ body > .header {
   .left-side {
     top: 50px;
   }
-  .right-side.strech {   /* Right Side Strech Mode */
+  .right-side.strech {   /* Right side strech mode */
     margin-left: 0;
   }
   .right-side.strech > .content-header {
     margin-top: 0px;
   }
-  .left-side.collapse-left { /* Left Side Collapse */
+  .left-side.collapse-left { /* Left side collapse */
     left: -220px;
   }
 }
-/*Give content full width on xs screens*/
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 992px) { /* Allow full width on xs screens */
   .right-side {
     margin-left: 0;
   }
@@ -273,10 +272,9 @@ body > .header .logo .icon {
     margin-top: 100px!important;
   }
 }
-/*
-    Component: Sidebar
---------------------------
-*/
+/**
+ * Sidebar
+ */
 .sidebar {
   margin-bottom: 5px;
 }
@@ -323,6 +321,40 @@ body > .header .logo .icon {
 .sidebar .sidebar-menu .treeview-menu > li > a > .glyphicon,
 .sidebar .sidebar-menu .treeview-menu > li > a > .ion {
   width: 20px;
+}
+/**
+ * Offcanvas - Body going out of the screen
+ */
+@media screen and (max-width: 992px) {
+  .relative {
+    position: relative;
+  }
+  .row-offcanvas-right .sidebar-offcanvas {
+    right: -220px;
+  }
+  .row-offcanvas-left .sidebar-offcanvas {
+    left: -220px;
+  }
+  .row-offcanvas-right.active {
+    right: 220px;
+  }
+  .row-offcanvas-left.active {
+    left: 220px;
+  }
+  .sidebar-offcanvas {
+    left: 0;
+  }
+  body.fixed .sidebar-offcanvas {
+    margin-top: 50px;
+    left: -220px;
+  }
+  body.fixed .row-offcanvas-left.active .navbar {
+    left: 220px !important;
+    right: 0;
+  }
+  body.fixed .row-offcanvas-left.active .sidebar-offcanvas {
+    left: 0px;
+  }
 }
 
 /**

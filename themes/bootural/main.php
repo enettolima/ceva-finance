@@ -47,7 +47,50 @@
       <aside class="left-side sidebar-offcanvas">
         <!-- Sidebar -->
         <section class="sidebar">
-          Sidebar
+          <!-- Sidbear menu -->
+          <ul class="sidebar-menu">
+            <li class="active">
+              <a href="index.html">
+                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="pages/widgets.html">
+                <i class="fa fa-th"></i> <span>Widgets</span> <small class="badge pull-right bg-green">new</small>
+              </a>
+            </li>
+            <li class="treeview">
+              <a href="#">
+                <i class="fa fa-bar-chart-o"></i>
+                <span>Charts</span>
+                <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="pages/charts/morris.html"><i class="fa fa-angle-double-right"></i> Morris</a></li>
+                <li><a href="pages/charts/flot.html"><i class="fa fa-angle-double-right"></i> Flot</a></li>
+                <li><a href="pages/charts/inline.html"><i class="fa fa-angle-double-right"></i> Inline charts</a></li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+      </aside>
+      <!-- Right side -->
+      <aside class="right-side">
+        <!-- Content header  -->
+        <section class="content-header">
+          <h1>
+            Dashboard
+            <small>Control panel</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Dashboard</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+          Main Content
         </section>
       </aside>
     </div>
@@ -93,6 +136,9 @@
     <script src="<?php print TEMPLATE ?>js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
     <!-- Bootstrap v3.0.3 (http://getbootstrap.com) -->
     <script src="<?php print TEMPLATE ?>js/bootstrap.min.js" type="text/javascript"></script>
+
+    <!-- Bootural Main -->
+    <script src="<?php print TEMPLATE ?>js/bootural-main.js" type="text/javascript"></script>
 
   </body>
 </html>
