@@ -1,17 +1,10 @@
 <?php
-require_once('bootstrap.php');
-
-/**
-  <script src='".NATURAL_WEB_ROOT."js/jquery-1.3.2.min.js' type='text/javascript'></script>
-  <script src='".NATURAL_WEB_ROOT."js/jquery-ui-1.7.1.custom.min.js' type='text/javascript'></script>
- */
-
-if (!$username) {
-  $username = '';
-}
-if (!$password) {
-  $password = '';
-}
+  if (!$username) {
+    $username = '';
+  }
+  if (!$password) {
+    $password = '';
+  }
 ?>
 
 <!DOCTYPE html>
@@ -19,12 +12,18 @@ if (!$password) {
   <head>
     <title><?php print TITLE ?></title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="shortcut icon" href="<?php print TEMPLATE ?>img/favicon.ico">
-    <!-- Bootstrap -->
-    <link href="<?php print TEMPLATE ?>bootstrap/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css">
-    <!-- Theme CSS -->
-    <link href="<?php print TEMPLATE ?>css/style.css" media="all" rel="stylesheet" type="text/css">
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <link REL="SHORTCUT ICON" href="<?php print TEMPLATE ?>img/favicon.ico">
+
+    <!-- Bootstrap v3.0.3 (http://getbootstrap.com) -->
+    <link href="<?php print TEMPLATE ?>css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Font Awesome -->
+    <link href="<?php print TEMPLATE ?>css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- Ionicons -->
+    <link href="<?php print TEMPLATE ?>css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <!-- Login CSS -->
+    <link href="<?php print TEMPLATE ?>css/bootural-login.css" media="all" rel="stylesheet" type="text/css">
+
   </head>
   <body class="page-login">
     <div class="row">
