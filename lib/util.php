@@ -136,7 +136,7 @@ function isValidMailboxPassword($pass) {
 }
 
 /*
- * 
+ *
  * This function gets the group_id
  */
 

@@ -50,12 +50,12 @@
           <!-- Sidbear menu -->
           <ul class="sidebar-menu">
             <li class="active">
-              <a href="index.html">
+              <a href="#">
                 <i class="fa fa-dashboard"></i> <span>Dashboard</span>
               </a>
             </li>
             <li>
-              <a href="pages/widgets.html">
+              <a href="#">
                 <i class="fa fa-th"></i> <span>Widgets</span> <small class="badge pull-right bg-green">new</small>
               </a>
             </li>
@@ -66,12 +66,27 @@
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="pages/charts/morris.html"><i class="fa fa-angle-double-right"></i> Morris</a></li>
-                <li><a href="pages/charts/flot.html"><i class="fa fa-angle-double-right"></i> Flot</a></li>
-                <li><a href="pages/charts/inline.html"><i class="fa fa-angle-double-right"></i> Inline charts</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Morris</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Flot</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Inline charts</a></li>
+              </ul>
+            </li>
+            <li class="treeview">
+              <a href="#">
+                <i class="fa fa-laptop"></i>
+                <span>UI Elements</span>
+                <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> General</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Icons</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Buttons</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Sliders</a></li>
+                <li><a href="#"><i class="fa fa-angle-double-right"></i> Timeline</a></li>
               </ul>
             </li>
           </ul>
+          <?php print $menu ?>
         </section>
       </aside>
       <!-- Right side -->
