@@ -18,7 +18,7 @@
 
   </head>
 
-  <body class="skin-gray">
+  <body class="skin-gray fixed">
 
     <header class="header">
       <span class="logo">
@@ -47,45 +47,7 @@
       <aside class="left-side sidebar-offcanvas">
         <!-- Sidebar -->
         <section class="sidebar">
-          <!-- Sidbear menu -->
-          <ul class="sidebar-menu">
-            <li class="active">
-              <a href="#">
-                <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i class="fa fa-th"></i> <span>Widgets</span> <small class="badge pull-right bg-green">new</small>
-              </a>
-            </li>
-            <li class="treeview">
-              <a href="#">
-                <i class="fa fa-bar-chart-o"></i>
-                <span>Charts</span>
-                <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Morris</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Flot</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Inline charts</a></li>
-              </ul>
-            </li>
-            <li class="treeview">
-              <a href="#">
-                <i class="fa fa-laptop"></i>
-                <span>UI Elements</span>
-                <i class="fa fa-angle-left pull-right"></i>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> General</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Icons</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Buttons</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Sliders</a></li>
-                <li><a href="#"><i class="fa fa-angle-double-right"></i> Timeline</a></li>
-              </ul>
-            </li>
-          </ul>
+          <!-- Treeview menu -->
           <?php print $menu ?>
         </section>
       </aside>
@@ -104,8 +66,9 @@
         </section>
 
         <!-- Main content -->
-        <section class="content">
+        <section class="content" id="content">
           Main Content
+          <?php //print $content; ?>
         </section>
       </aside>
     </div>
@@ -115,22 +78,6 @@
       <span id="account-topic"><?php print $account_topic; ?></span>
       <span id="back-link"><?php print $back_link; ?> </span>
     </div>
-
-    <!-- content-wrapper -->
-    <div id="content-wrapper">
-      <!-- content-inner -->
-      <div id="content-inner" class="clear-block">
-        <div id="menu-hide-button" class="<?php print $button ?>"></div>
-        <div id="status-message"></div>
-        <!-- content -->
-        <div id='content'>
-          <?php // print $content; ?>
-        </div>
-        <!-- end content -->
-      </div>
-      <!-- end content-inner -->
-    </div>
-    <!-- end content -->
 
 
 
@@ -146,14 +93,20 @@
 
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery 2.0.2 -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <!-- jQuery UI 1.10.3 -->
-    <script src="<?php print TEMPLATE ?>js/jquery-ui-1.10.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="<?php print TEMPLATE ?>js/jquery-ui-1.10.3.min.js"></script>
     <!-- Bootstrap v3.0.3 (http://getbootstrap.com) -->
-    <script src="<?php print TEMPLATE ?>js/bootstrap.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="<?php print TEMPLATE ?>js/bootstrap.min.js"></script>
+
+
+    <!-- Natural Controler -->
+    <script type="text/javascript" src="<?php print NATURAL_WEB_ROOT ?>lib/js/controller.js"></script>
 
     <!-- Bootural Main -->
-    <script src="<?php print TEMPLATE ?>js/bootural-main.js" type="text/javascript"></script>
+    <script type="text/javascript" src="<?php print TEMPLATE ?>js/bootural-main.js"></script>
+
+
 
   </body>
 </html>

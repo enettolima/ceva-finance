@@ -1,21 +1,27 @@
 <?php
 
 /**
- * New Function Build Menu
+ * @file
+ * Menu functionalities.
  */
+
+ /**
+  * Menu Constructor.
+  */
 function menu_constructor($level, $dash_show = 0) {
   $main_menu = new DataManager();
-  $main_menu->dm_load_list(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'ASSOC', ' status = 1 AND dash_admin="' . $dash_show . '" ORDER BY position ');
+  $main_menu->dm_load_list(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'ASSOC', 'status = 1 AND dash_admin="' . $dash_show . '" ORDER BY position');
   $menu = '';
   if ($main_menu->affected) {
     $menu = '<ul class="sidebar-menu">';
-    // Main Menu
+    // Main Menu.
     foreach ($main_menu->data as $main_key => $main_item) {
-      // Test permission
+      // Test Permissions.
       if (menu_permission($main_item, $level)) {
-        // Sub Menu
+        // Sub Menu.
         $menusub = '';
         $treeview = '';
+        $treeview_arrow = '';
         $sub_menu = new DataManager();
         $sub_menu->dm_load_list(NATURAL_DBNAME . '.' . SUB_MENU_TABLE, 'ASSOC', 'main_menu_id = ' . $main_item['id'] . ' AND status = 1 ORDER BY position');
         if ($sub_menu->affected) {
@@ -23,25 +29,37 @@ function menu_constructor($level, $dash_show = 0) {
             if (menu_permission($sub_item, $level)) {
               $menuside = '';
               $treeview = '';
+              $treeview_arrow = '';
               $side_menu = new DataManager();
               $side_menu->dm_load_list(NATURAL_DBNAME . '.' . SIDE_MENU_TABLE, 'ASSOC', 'sub_menu_id = ' . $sub_item['id'] . ' AND status = 1 ORDER BY position');
               if ($side_menu->affected) {
+                // Default href for Natural.
+                $href = "javascript:menu_navigation('" . $main_item['element_name'] . "', '" . $main_item['func'] . "', '" . $main_item['module'] . "')";
                 foreach ($side_menu->data as $side_item) {
                   if (menu_permission($side_item, $level)) {
-                    $menuside .= '<li id="' . $side_item['element_name'] . '"><a href="javascript:menu_navigation(\'' . $side_item['element_name'] . '\', \'' . $side_item['func'] . '\', \'' . $side_item['module'] . '\');" >' . translate($side_item['label'], $_SESSION['log_preferred_language']) . '</a></li>';
+                    $menuside .= '<li id="' . $side_item['element_name'] . '"> <a href="' . $href . '" > <i class="fa fa-angle-double-right"></i> ' . translate($side_item['label'], $_SESSION['log_preferred_language']) . '</a> </li>';
                   }
                 }
                 if ($menuside) {
                   $treeview = 'treeview';
                   $menuside = '<ul class="treeview-menu">' . $menuside . '</ul>';
+                  $href = '#';
+                }
+                else {
+                  $href = "javascript:menu_navigation('" . $main_item['element_name'] . "', '" . $main_item['func'] . "', '" . $main_item['module'] . "')";
                 }
               }
-              $menusub .= '<li class="' . $treeview . '" id="' . $sub_item['element_name'] . '"><a href="javascript:menu_navigation(\'' . $sub_item['element_name'] . '\', \'' . $sub_item['func'] . '\', \'' . $sub_item['module'] . '\');" >' . translate($sub_item['label'], $_SESSION['log_preferred_language']) . '</a>' . $menuside . '</li>';
+              $menusub .= '<li class="' . $treeview . '" id="' . $sub_item['element_name'] . '"><a href="' . $href . '" > <i class="fa fa-angle-double-right"></i> ' . translate($sub_item['label'], $_SESSION['log_preferred_language']) . '</a>' . $menuside . '</li>';
             }
           }
           if ($menusub) {
             $treeview = 'treeview';
+            $treeview_arrow = '<i class="fa fa-angle-left pull-right"></i>';
             $menusub = '<ul class="treeview-menu">' . $menusub . '</ul>';
+            $href = '#';
+          }
+          else {
+            $href = "javascript:menu_navigation('" . $main_item['element_name'] . "', '" . $main_item['func'] . "', '" . $main_item['module'] . "')";
           }
         }
         if ($main_item['initial']) {
@@ -50,7 +68,7 @@ function menu_constructor($level, $dash_show = 0) {
         else {
           $active = '';
         }
-        // /Test if is first and last
+        // Test if is first and last.
         if ($main_key == 0) {
           $main_item_class = 'first-item';
         }
@@ -60,8 +78,8 @@ function menu_constructor($level, $dash_show = 0) {
         else {
           $main_item_class = '';
         }
-        // Main menu item
-        $menu .= '<li id="' . $main_item['element_name'] . '" class="' . $active . ' ' . $treeview . ' ' . $main_item_class . '"><a href="javascript:menu_navigation(\'' . $main_item['element_name'] . '\', \'' . $main_item['func'] . '\', \'' . $main_item['module'] . '\');" >' . translate($main_item['label'], $_SESSION['log_preferred_language']) . '</a>' . $menusub . '</li>';
+        // Main menu item.
+        $menu .= '<li id="' . $main_item['element_name'] . '" class="' . $active . ' ' . $treeview . ' ' . $main_item_class . '"> <a href="' . $href . '" > <i class="fa fa-dashboard"></i> ' . translate($main_item['label'], $_SESSION['log_preferred_language']) . $treeview_arrow . '</a>' . $menusub . '</li>';
       }
     }
     $menu .= '</ul>';
@@ -73,48 +91,60 @@ function menu_constructor($level, $dash_show = 0) {
 }
 
 /**
- * Menu Permissions function test if the user is able to visualize the menu item
+ * Menu Permissions function test if the user is able to visualize the menu item.
  */
 function menu_permission($menu_item, $level) {
-    $build = TRUE;
-    switch ($menu_item['allow']) {
-        case 'all':
-            $class = "";
-            $build = TRUE;
-            break;
-        case 'between':
-            $range = explode('and', $menu_item['allow_value']);
-            if ($range[0] < $level && $level < $range[1]) {
-                $build = TRUE;
-            } else {
-                $build = FALSE;
-            }
-            break;
-        case 'equal':
-            if ($menu_item['allow_value'] == $level) {
-                $build = TRUE;
-            } else {
-                $build = FALSE;
-            }
-            break;
-        case 'higher':
-            if ($menu_item['allow_value'] < $level) {
-                $build = TRUE;
-            } else {
-                $build = FALSE;
-            }
-            break;
-        case 'lower':
-            if ($menu_item['allow_value'] > $level) {
-                $build = TRUE;
-            } else {
-                $build = FALSE;
-            }
-            break;
-    }
-    return $build;
+  $build = TRUE;
+  switch ($menu_item['allow']) {
+    case 'all':
+      $class = '';
+      $build = TRUE;
+      break;
+
+    case 'between':
+      $range = explode('and', $menu_item['allow_value']);
+      if ($range[0] < $level && $level < $range[1]) {
+        $build = TRUE;
+      }
+      else {
+        $build = FALSE;
+      }
+      break;
+
+    case 'equal':
+      if ($menu_item['allow_value'] == $level) {
+        $build = TRUE;
+      }
+      else {
+        $build = FALSE;
+      }
+      break;
+
+    case 'higher':
+      if ($menu_item['allow_value'] < $level) {
+        $build = TRUE;
+      }
+      else {
+        $build = FALSE;
+      }
+      break;
+
+    case 'lower':
+      if ($menu_item['allow_value'] > $level) {
+        $build = TRUE;
+      }
+      else {
+        $build = FALSE;
+      }
+      break;
+
+  }
+  return $build;
 }
 
+/**
+ * Login main menu.
+ */
 function build_login_mainmenu($level) {
     $menus = new DataManager();
     $menus->dm_load_list(NATURAL_DBNAME . "." . MAIN_MENU_TABLE, "ASSOC", "id!='' ORDER BY position");
@@ -1517,5 +1547,3 @@ function build_dash_fullscreen_menu($data) {
     }
     return $menu;
 }
-
-?>
