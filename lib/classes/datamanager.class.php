@@ -1,9 +1,9 @@
-<?php 
- /* 
- * HIVE - Copyleft Open Source Mind, GP 
- * Last Modified: $Date: 2009-05-18 17:29:42 -0500 (Mon, 18 May 2009) $ @ Revision: $Rev: 11 $ 
+<?php
+ /*
+ * HIVE - Copyleft Open Source Mind, GP
+ * Last Modified: $Date: 2009-05-18 17:29:42 -0500 (Mon, 18 May 2009) $ @ Revision: $Rev: 11 $
  */
- 
+
  class DataManager{
   public $affected;
   public $errorcode = 0 ;
@@ -54,14 +54,14 @@
 			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
 		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
 			$this->total_records = $total_records[0];
-		} 
+		}
 		elseif ($count && isset($count_query)) {
-			/** 
-			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field". 
+			/**
+			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field".
 			 * So instead, you should pass "SELECT COUNT(DISTINCT(field)) FROM table" as the optional $count_query parameter
 			 */
 			$total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0]; 
+			$this->total_records = $total_records[0];
 		}
 		 $query_result = mysql_query($query,$dblink);
      $this->affected = mysql_affected_rows();
@@ -100,29 +100,29 @@
                      $row_num++ ;
                  }
              break;
-     } 
+     }
      mysql_close($dblink);
      $dblink = null ;
   }
-	
+
   public function dm_load_custom_list($query, $output, $count = FALSE, $count_query = NULL){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
 		mysql_select_db(NATURAL_DBNAME);
-		
+
 	  if ($count && !isset($count_query)) {
 			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
 		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
 			$this->total_records = $total_records[0];
   	}
 		elseif ($count && isset($count_query)) {
-			/** 
-			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field". 
+			/**
+			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field".
 			 * So instead, you should pass "SELECT COUNT(DISTINCT(field)) FROM table" as the optional $count_query parameter
 			 */
 			$total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0]; 
+			$this->total_records = $total_records[0];
 		}
 //print $query;
 		$query_result = mysql_query($query, $dblink);
@@ -155,7 +155,7 @@
           $row_num++ ;
         }
         break;
-    } 
+    }
     mysql_close($dblink);
     $dblink = null ;
   }
@@ -172,7 +172,7 @@
         $query_fields .= ",`{$key}`='{$value}'";
       }
     }
-    
+
     $query_fields = substr($query_fields,1);
     $query = "INSERT INTO {$table} SET {$query_fields}";
     $query_result = mysql_query($query,$dblink);
@@ -189,7 +189,7 @@
 
   public function dm_remove($table, $record_key){
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-		
+
 		$query = "DELETE FROM {$table} WHERE {$record_key}";
     $query_result = mysql_query($query,$dblink);
     $this->affected = mysql_affected_rows();
@@ -200,7 +200,7 @@
     mysql_close($dblink);
     $dblink = null ;
   }
- 
+
   public function dm_update($table, $update_rule, $fields){
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -212,7 +212,7 @@
         $query_fields .= ", `{$key}`='{$value}'";
       }
     }
-    
+
     $query_fields = substr($query_fields,1);
     $query = "UPDATE {$table} SET {$query_fields} WHERE {$update_rule}";
    //print $query;
@@ -242,11 +242,11 @@
 	public function dm_custom_query($query, $return_object=false, $return_id=false){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-    
+
 		mysql_select_db(NATURAL_DBNAME);
 
    	$query_result = mysql_query($query, $dblink);
-    
+
 		if (!$query_result) {
 			$this->message  = 'Invalid query: ' . mysql_error() . "\n";
 			$this->message .= 'Whole query: ' . $query;

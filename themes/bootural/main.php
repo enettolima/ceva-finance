@@ -47,7 +47,7 @@
       <aside class="left-side sidebar-offcanvas">
         <!-- Sidebar -->
         <section class="sidebar">
-          <!-- Treeview menu -->
+          <!-- T menu -->
           <?php print $menu ?>
         </section>
       </aside>

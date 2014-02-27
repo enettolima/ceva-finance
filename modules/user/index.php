@@ -1,9 +1,9 @@
 <?
 
 /**
- * HIVE - Copyleft Open Source Mind, GP 
- * Last Modified: Date: 07-18-2009 19:15:01 -0500 (Jul-Sat-2009) $ @ Revision: $Rev: 11 $ 
- * @package Hive 
+ * HIVE - Copyleft Open Source Mind, GP
+ * Last Modified: Date: 07-18-2009 19:15:01 -0500 (Jul-Sat-2009) $ @ Revision: $Rev: 11 $
+ * @package Hive
  */
 session_start();
 require_once('../../bootstrap.php');
@@ -19,6 +19,7 @@ require_once(NATURAL_CLASSES_PATH . 'panel.class.php');
 require_once(NATURAL_LIB_PATH . 'util.php');
 require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
 require_once('user.func.php');
+
 
 if (!$_SESSION['logged']) {
     echo "LOGOUT";
@@ -45,7 +46,12 @@ switch ($fn) {
         break;
 
     case 'admin_list_users':
-        print admin_list_users();
+        //print admin_list_users();
+        $template = $twig->loadTemplate('list-table.html');
+        $template->display(array(
+          'pageTitle' => 'Testing Twig',
+          'list' => $main_list,
+        ));
         break;
     case 'new_user':
         new_user();

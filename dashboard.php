@@ -19,22 +19,38 @@ require_once(NATURAL_LIB_PATH . 'util.php');
 require_once('modules/dashboard/dashboard_widgets.inc');
 require_once('modules/dashboard/dashboard.func.php');
 
+
 if ($_SESSION['log_username']) {
   if ($_SESSION['log_access_level'] > 41) {
-    $show_dashboard = 1;
     $_SESSION['dash_type'] = 1;
     $module = new Module();
     $module->load_single("module='dashboard' LIMIT 1");
     $_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
     $content = dashboard_home();
-    $menu = menu_constructor($_SESSION['log_access_level'], $show_dashboard);
     //$menu = menu_constructor($_SESSION['log_access_level'], $show_dashboard);
     $loginname = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
     $version = NATURAL_VERSION . ' - r.' . $module->version;
     $loginname = 'User: ' . $loginname;
     $actual_date = date('F jS, Y');
     $_SESSION['log_interface'] = 'skin-gray';
-    require_once(NATURAL_TEMPLATE_PATH . 'main.php');
+
+    // Menu
+    $menu = $twig->render(
+      'menu.html',
+      array(
+        'links' => menu_build('main', $_SESSION['log_access_level']),
+        'first' => TRUE,
+      )
+    );
+
+    // Page
+    $template = $twig->loadTemplate('index.html');
+    $template->display(array(
+      'project_title' => TITLE,
+      'path_to_theme' => THEME_PATH,
+      'menu' => $menu,
+    ));
+
   }
   else {
     header('Location: customer_dash.php');

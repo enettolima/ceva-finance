@@ -6,12 +6,14 @@
   require_once(NATURAL_LIB_PATH.'util.php');
 	require_once('modules/acl/acl.class.php');
   require_once('modules/acl/acl.func.php');
-	
+
 	// In order to get the functions used for billing
   require_once('modules/menu_nav/menu_nav.func.php');
 	require_once('modules/dashboard/dashboard_widgets.inc');
   require_once('modules/dashboard/dashboard.func.php');
 	require_once('modules/customer/customer.func.php');
+
+
 
   $user   = new User();
   $selected_customer   = new Customer();
@@ -35,7 +37,7 @@
 /*    $menu_main_left = build_login_mainmenu($_SESSION['log_access_level'], $show_dashboard);
     $menu_submenu   = build_login_submenu($_SESSION['log_access_level'], $show_dashboard);
 		$menu_side_menu = build_login_sidemenu($_SESSION['log_access_level'], $show_dashboard);*/
-    
+
     //$user->load_single("id='{$_SESSION['log_id']}'");
     //$user->dataquery = "id=\'1\'";
 
@@ -44,7 +46,7 @@
 		$selected_customer->load_single("id='{$_SESSION['selected_customer_id']}'");
 
     if($_SESSION['log_access_level']>42 && substr($_SERVER['SCRIPT_NAME'],-8)=="dash.php"){
-			
+
 			switch($selected_customer->status){
 				case 0:
 					$status_name = "Cancelled";
@@ -76,7 +78,8 @@
 			$account_topic    = "Account Number: {$_SESSION['selected_customer_id']} / Account Name: {$selected_customer->name} / Account Status: {$status_name}";
       $content        = view_customer_info();
     }
-		require_once(NATURAL_TEMPLATE_PATH . 'main.php');
+		//require_once(NATURAL_TEMPLATE_PATH . 'main.php');
+		$template = $twig->loadTempalte('index.html.twig');
   }else{
     $error_message  = "Invalid Login Information!";
     $password       = "";
