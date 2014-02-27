@@ -6,7 +6,56 @@
  */
 
 /**
+ * Select the menu items based on a given menu name.
+ *
+ * @param $menu_name
+ *   The specific name of the menu... main, admin, utility
+ * @param $level
+ *   The level of permission based on a giving user level
+ */
+function menu_build($menu_name = 'main', $level) {
+  $menu = new DataManager();
+  $menu->dm_load_list(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "' . $menu_name . '" ORDER BY position');
+  if ($menu->affected) {
+    $links = array();
+    foreach ($menu->data as $key => $item) {
+      // Test permission.
+      if (menu_permission($item, $level)) {
+        $links[$item['id']] = $item;
+      }
+    }
+    $tree = menu_build_tree($links);
+    return $tree;
+  }
+}
+
+/**
+ * Builds a multi dimensional array based on the menu items.
+ *
+ * @param $links
+ *   The links of the menu
+ * @param $parent_id
+ *   The parent_id (pid) of the menu item
+ */
+function menu_build_tree(array &$links, $parent_id = 0) {
+  $branch = array();
+  foreach ($links as $link) {
+    if ($link['pid'] == $parent_id) {
+      $children = menu_build_tree($links, $link['id']);
+      if ($children) {
+        $link['children'] = $children;
+      }
+      $branch[$link['id']] = $link;
+      unset($links[$link['id']]);
+    }
+  }
+
+  return $branch;
+}
+
+/**
  * Function menu_constructor.
+ * Old constructor.
  */
 function menu_constructor($level, $dash_show = 0) {
   $main_menu = new DataManager();
@@ -150,238 +199,9 @@ function menu_permission($menu_item, $level) {
 }
 
 /**
- * Function build_login_mainmenu().
+ * Function update_menu
+ * Edit menu items
  */
-function build_login_mainmenu($level) {
-  $menus = new DataManager();
-  $menus->dm_load_list(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'ASSOC', 'id!="" ORDER BY position');
-
-  $menu_options = '';
-  if ($menus->affected) {
-    $menu = '<ul class="main-menu">';
-    $menu_options = '';
-    for ($i = 0; $i < $menus->affected; $i++) {
-      $class = '';
-      $menid = '';
-      $each = '';
-      $build = FALSE;
-
-      $menid = $menus->data[$i]['id'];
-      $each = new DataManager();
-      $each->dm_load_single(NATURAL_DBNAME . '.' . MAIN_MENU_TABLE, 'id=' . $menid);
-
-      switch ($each->allow) {
-        case 'all':
-          $class = '';
-          $build = TRUE;
-          break;
-
-        case 'between':
-          $range = explode('and', $each->allow_value);
-          if ($range[0] < $level && $level < $range[1]) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'equal':
-          if ($each->allow_value == $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'higher':
-          if ($each->allow_value < $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'lower':
-          if ($each->allow_value > $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-      }
-
-      if ($each->initial) {
-        $class = 'active';
-        $build = TRUE;
-      }
-      if ($build && $each->status == 1) {
-        $href = "javascript:menu_navigation('" . $each->element_name . "', '1', '" . $each->func . "', '" . $level . "', '" . $each->module . "')";
-        $menu_options .= '<li class="' . $class . '" name="' . $each->element_name . '" id="' . $each->element_name . '"><a href="' . $href . '" title="' . $each->title . '">' . $each->label . '</a></li>';
-      }
-    }
-  }
-  $menu .= $menu_options . '</ul>';
-  return $menu;
-}
-
-/**
- * Function build_login_submenu().
- */
-function build_login_submenu($level) {
-  $df = new DataManager();
-  $df->dm_load_single(NATURAL_DBNAME .  '.' . MAIN_MENU_TABLE, 'initial=1');
-
-  $menus = new DataManager();
-  $menus->dm_load_list(NATURAL_DBNAME . '.' . SUB_MENU_TABLE, 'ASSOC', 'main_menu_id="' . $df->id);
-
-  $menu_options = '';
-  if ($menus->affected) {
-    $menu = '<ul class="sub-menu">';
-    for ($i = 0; $i < $menus->affected; $i++) {
-      $class = '';
-      $build = FALSE;
-
-      $each = '';
-      $each = new DataManager();
-      $each->dm_load_single(NATURAL_DBNAME . '.' . SUB_MENU_TABLE, 'position="' . $i . '" AND main_menu_id=' . $df->id);
-
-      switch ($each->allow) {
-        case 'all':
-          $class = '';
-          $build = TRUE;
-          break;
-
-        case 'between':
-          $range = explode('and', $each->allow_value);
-          if ($range[0] < $level && $level < $range[1]) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'equal':
-          if ($each->allow_value == $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'higher':
-          if ($each->allow_value < $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-
-        case 'lower':
-          if ($each->allow_value > $level) {
-            $build = TRUE;
-          }
-          else {
-            $build = FALSE;
-          }
-          break;
-      }
-
-      if ($each->initial) {
-        $class = 'active';
-        $build = TRUE;
-        $content = execute_initial_function($each->func, $level);
-      }
-
-      if ($build && $each->status == 1) {
-        $href = "javascript:menu_navigation('" . $each->element_name . "', '2', '" . $each->func . "', '" . $level . "', '" . $each->module . "')";
-        $menu_options .= '<li class="' . $class . '" name="' . $each->element_name . '" id="' . $each->element_name . '"><a href="' . $href . '" title="' . $each->title . '">' . $each->label . '</a></li>';
-      }
-
-    }
-  }
-  $menu .= $menu_options . '</ul>';
-  return $menu;
-}
-
-/**
- * Function build_login_sidemenu
- */
-function build_login_sidemenu($level) {
-  $df = new DataManager();
-  $df->dm_load_single(NATURAL_DBNAME . "." . SUB_MENU_TABLE, "initial='1'");
-
-  $menus = new DataManager();
-  $menus->dm_load_list(NATURAL_DBNAME . "." . SIDE_MENU_TABLE, "ASSOC", "sub_menu_id='{$df->id}'");
-
-  $menu_options = "";
-  if ($menus->affected) {
-    $menu = "\t\t\t" . '<ul class="side-menu">' . "\n";
-    for ($i = 0; $i < $menus->affected; $i++) {
-      $class = "";
-      $build = false;
-
-      $each = "";
-      $each = new DataManager();
-      $each->dm_load_single(NATURAL_DBNAME . "." . SIDE_MENU_TABLE, "position='{$i}' AND sub_menu_id='{$df->id}'");
-
-      switch ($each->allow) {
-        case "all":
-          $class = "";
-          $build = true;
-          break;
-        case "between":
-          $range = explode("and", $each->allow_value);
-          if ($range[0] < $level && $level < $range[1]) {
-            $build = true;
-          } else {
-            $build = false;
-          }
-          break;
-        case "equal":
-          if ($each->allow_value == $level) {
-            $build = true;
-          } else {
-            $build = false;
-          }
-          break;
-        case "higher":
-          if ($each->allow_value < $level) {
-            $build = true;
-          } else {
-            $build = false;
-          }
-          break;
-        case "lower":
-          if ($each->allow_value > $level) {
-            $build = true;
-          } else {
-            $build = false;
-          }
-          break;
-      }
-      if ($each->initial) {
-        $class = "active";
-        $build = true;
-      }
-
-      if ($build && $each->status == 1) {
-        $menu_options .= "<li class='{$class}' name='{$each->element_name}' id='{$each->element_name}'><a HREF=\"javascript:menu_navigation('{$each->element_name}', '3', '{$each->func}', '{$level}', '{$each->module}');\" title=\"{$each->title}\">{$each->label}</a></li>";
-      } else {
-        $menu_options .= "\n";
-      }
-    }
-    $menu .= "{$menu_options}\t\t\t</ul>\n";
-  }
-  return $menu;
-}
-
 function update_menu($data) {
   $level = $_SESSION['log_access_level'];
   switch ($data['button_level']) {
