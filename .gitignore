@@ -6,3 +6,4 @@ nbprojects/
 
 # Ignore default Natural files
 bootstrap.dev.php
+compilation_cache/

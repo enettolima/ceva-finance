@@ -10,9 +10,15 @@
 
 {% block main %}
   <div id="login-box" class="form-box">
-    <div class="login-header">Sign In</div>
+    <div class="login-header bg-blue">{{ project_title }}</div>
       <form class="form-signin" role="form" name="loginForm" id="loginForm" method="POST" action="proc_login.php">
           <div class="login-body bg-gray">
+            {% if error_message %}
+              <div class="bs-callout bs-callout-danger">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">&times;</button>
+                <h4>Error!</h4> {{ error_message }}
+              </div>
+            {% endif %}
             <div class="form-group">
               <input type="text" placeholder="User ID" class="form-control" name="username">
             </div>
@@ -24,12 +30,12 @@
             </div>
           </div>
           <div class="login-footer">
-            <button class="btn bg-olive btn-block" type="submit">Sign me in</button>
+            <button class="btn bg-blue btn-block" type="submit">Sign me in</button>
             <p><a href="reset_password.php">I forgot my password</a></p>
           </div>
       </form>
 
-    <div class="margin text-center">
+    <div class="margin text-center login-company">
       <br />
         <span>Powered by {{ company }}</span>
       <br />

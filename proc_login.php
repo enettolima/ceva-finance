@@ -18,9 +18,6 @@ if ($_SESSION['logged']) {
   header('Location: ' . NATURAL_WEB_ROOT . 'dashboard.php');
 }
 else {
-  $error_message = 'Invalid Login Information!';
-  $password = '';
-  $username = $_POST['username'];
-  require_once(NATURAL_TEMPLATE_PATH . 'login.php');
+  header('Location: ' . NATURAL_WEB_ROOT . 'index.php?login=error');
 }
 ?>
