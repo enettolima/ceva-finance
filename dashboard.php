@@ -34,7 +34,7 @@ if ($_SESSION['log_username']) {
     $actual_date = date('F jS, Y');
     $_SESSION['log_interface'] = 'skin-gray';
 
-    // Menu
+    // Twig Menu
     $menu = $twig->render(
       'menu.html',
       array(
@@ -43,11 +43,13 @@ if ($_SESSION['log_username']) {
       )
     );
 
-    // Page
-    $template = $twig->loadTemplate('index.html');
+    // Twig Base
+    $template = $twig->loadTemplate('base.html');
     $template->display(array(
       'project_title' => TITLE,
       'path_to_theme' => THEME_PATH,
+      'company' => NATURAL_COMPANY,
+      'page' => 'dashboard',
       'menu' => $menu,
     ));
 

@@ -1,7 +1,7 @@
-<?php ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    {% block head %}
     <title>{{ project_title }}</title>
     <meta charset="utf-8"
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
@@ -15,12 +15,13 @@
     <link href="{{ path_to_theme }}css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Main CSS -->
     <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
-
+    {% endblock %}
   </head>
 
-  <body class="skin-gray fixed">
+  <body class="skin-gray fixed  {{ page }}">
 
     <header class="header">
+      {% block header %}
       <span class="logo">
         {{ project_title }}
       </span>
@@ -40,9 +41,11 @@
           </ul>
         </div>
       </div>
+      {% endblock %}
     </header>
 
     <div class="wrapper row-offcanvas row-offcanvas-left">
+      {% block main %}
       <!-- Left side -->
       <aside class="left-side sidebar-offcanvas">
         <!-- Sidebar -->
@@ -67,32 +70,20 @@
 
         <!-- Main content -->
         <section class="content" id="content">
-          Main Content {{ pageTitle }}
+          {% block content %}
+          Main Content
+          {% endblock %}
         </section>
       </aside>
-    </div>
-
-
-    <div id="account-header">
-      <span id="account-topic"><?php print $account_topic; ?></span>
-      <span id="back-link"><?php print $back_link; ?> </span>
+     {% endblock %}
     </div>
 
 
 
-    <!-- loading
-    <div id="loading">
-      Loading
-    </div>
-     end loading -->
-
-    <!-- tooltip -->
-    <div id="tooltip-box"></div>
-    <!-- end tooltip -->
-
+    {% block footer %}
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery 2.0.2 -->
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script type="text/javascript" src="ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
     <!-- jQuery UI 1.10.3 -->
     <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script>
     <!-- Bootstrap v3.0.3 (http://getbootstrap.com) -->
@@ -104,8 +95,7 @@
 
     <!-- Bootural Main -->
     <script type="text/javascript" src="{{ path_to_theme }}js/bootural-main.js"></script>
-
-
+    {% endblock %}
 
   </body>
 </html>
