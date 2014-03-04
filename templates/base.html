@@ -15,6 +15,8 @@
     <link href="{{ path_to_theme }}css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Main CSS -->
     <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Loading -->
+    <link href="{{ path_to_theme }}css/bootural-loading.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
     <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
     {% endblock %}
@@ -36,10 +38,8 @@
         <!-- Top right navigation -->
         <div class="navbar-right">
           <ul class="nav navbar-nav">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="logout.php" title="Logout" class="logout">Logout</a></li>
+            <!-- <li>More item could be placed here</li> -->
+            {% include 'topnav-user-item.html' %}
           </ul>
         </div>
       </div>
@@ -80,7 +80,12 @@
      {% endblock %}
     </div>
 
-
+    <!-- Loading -->
+    <div id="circleG" class="loading">
+      <div id="circleG_1" class="circleG"></div>
+      <div id="circleG_2" class="circleG"></div>
+      <div id="circleG_3" class="circleG"></div>
+    </div>
 
     {% block footer %}
     <!-- Placed at the end of the document so the pages load faster -->

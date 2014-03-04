@@ -1,8 +1,8 @@
 <?
-/** 
-* HIVE - Copyleft Open Source Mind, GP 
-* Last Modified: Date: 07-18-2009 19:15:01 -0500 (Jul-Sat-2009) $ @ Revision: $Rev: 11 $ 
-* @package Hive 
+/**
+* HIVE - Copyleft Open Source Mind, GP
+* Last Modified: Date: 07-18-2009 19:15:01 -0500 (Jul-Sat-2009) $ @ Revision: $Rev: 11 $
+* @package Hive
 */
 
   session_start();
@@ -12,10 +12,10 @@
   require_once(NATURAL_CLASSES_PATH.'listview.class.php');
   require_once(NATURAL_LIB_PATH.'util.php');
   require_once(NATURAL_LIB_PATH.'errorcodes.lib.php');
-  require_once('../dashboard/dashboard_widgets.inc');
-  require_once('../dashboard/dashboard.func.php');
+  //require_once('../dashboard/dashboard_widgets.inc');
+  //require_once('../dashboard/dashboard.func.php');
   require_once('customer.func.php');
-  
+
   if(!$_SESSION['logged'])  {
     echo "LOGOUT";
     exit;

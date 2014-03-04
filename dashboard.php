@@ -27,11 +27,9 @@ if ($_SESSION['log_username']) {
     $module->load_single("module='dashboard' LIMIT 1");
     $_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
     $content = dashboard_home();
-    //$menu = menu_constructor($_SESSION['log_access_level'], $show_dashboard);
-    $loginname = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
+    $username = $_SESSION['log_username'];
+    $user_full_name = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
     $version = NATURAL_VERSION . ' - r.' . $module->version;
-    $loginname = 'User: ' . $loginname;
-    $actual_date = date('F jS, Y');
     $_SESSION['log_interface'] = 'skin-gray';
 
     // Twig Menu
@@ -49,8 +47,12 @@ if ($_SESSION['log_username']) {
       'project_title' => TITLE,
       'path_to_theme' => THEME_PATH,
       'company' => NATURAL_COMPANY,
+      'version' => $version,
       'page' => 'dashboard',
       'menu' => $menu,
+      'user_full_name' => $user_full_name,
+      'username' => $username,
+      'actual_date' => date('F jS, Y'),
     ));
 
   }

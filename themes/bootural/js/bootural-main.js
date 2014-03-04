@@ -21,6 +21,14 @@ $(function() {
 
   // Enable treeview
   $('.sidebar .treeview').tree();
+
+  // Ajax Loading
+  $(document).ajaxStart(function() {
+    $('.loading').fadeIn();
+  });
+  $(document).ajaxStop(function() {
+    $('.loading').fadeOut();
+  });
 });
 
 /*

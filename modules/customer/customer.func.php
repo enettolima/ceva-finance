@@ -94,16 +94,17 @@ function customer_list($row_id = null, $search_query = NULL, $sort = NULL, $page
 
 function view_customer_info($block = NULL) {
     // Dashboard Configuration according logged user personal preferences
-    $content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form($_SESSION['dash_type']) . '</div>';
+    //$content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form($_SESSION['dash_type']) . '</div>';
     // Load the dashboard widgets according pre cofigured by the logged user
-    $content .= '<div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
+    //$content .= '<div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
 
     $content .= '</div>
   <form id="dashboard-form" name="dashboard-form">
+	   Customer Test
     <input type="hidden" name="dashboard_type" id="dashboard_type" value="' . $_SESSION['dash_type'] . '">
   </form>
   <script type="text/javascript">
-    $("#account-header").slideDown(800); 
+    $("#account-header").slideDown(800);
   </script>';
     return $content;
 }
