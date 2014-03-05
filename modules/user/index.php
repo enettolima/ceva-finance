@@ -46,12 +46,8 @@ switch ($fn) {
         break;
 
     case 'admin_list_users':
-        //print admin_list_users();
-        $template = $twig->loadTemplate('list-table.html');
-        $template->display(array(
-          'pageTitle' => 'Testing Twig',
-          'list' => $main_list,
-        ));
+        $template = $twig->loadTemplate('table.html');
+        $template->display(admin_list_users());
         break;
     case 'new_user':
         new_user();

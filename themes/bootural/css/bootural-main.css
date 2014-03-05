@@ -804,3 +804,11 @@ body > .header .logo .icon {
 .bs-callout.bs-callout-info h4 {
     color: #4393D8;
 }
+
+/**
+ * Panel
+ */
+.panel-default {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 0;
+}

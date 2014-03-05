@@ -295,45 +295,54 @@ function change_my_password($data) {
 
 /**
  * Function Done by Paulo, Reviewed by Lemu on October 6, 2009
+ * This function will be a sample for lists with twigs March 4, 2014
  */
 function admin_list_users() {
-    $user = new User();
-    $view = new ListView();
-    // Selecting users higher than 41 and lower than the actual logged user level
-    $user->load_list('ASSOC', 'access_level > 41 AND access_level <= ' . $_SESSION['log_access_level']);
+  $user = new User();
+  $view = new ListView();
 
-    $line[0][0] = 'ID';
-    $line[0][1] = 'Name';
-    $line[0][2] = 'Username';
-    $line[0][3] = 'Timezone';
-    $line[0][4] = 'Reset Password';
-    $line[0][5] = 'Edit';
-    $line[0][6] = 'Delete';
+  // Selecting users higher than 41 and lower than the actual logged user level
+  $user->load_list('ASSOC', 'access_level > 41 AND access_level <= ' . $_SESSION['log_access_level']);
 
-    if ($user->affected > 0) {
+  $header[] = 'ID';
+  $header[] = 'Name';
+  $header[] = 'Username';
+  $header[] = 'Timezone';
+  $header[] = 'Reset Password';
+  $header[] = 'Edit';
+  $header[] = 'Delete';
 
-        $total = 0;
-        for ($i = 0; $i < $user->affected; $i++) {
-            $j = $i + 1;
-            $line[$j][0] = $user->data[$i]['id'];
-            $line[$j][1] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
-            $line[$j][2] = $user->data[$i]['username'];
-            $line[$j][3] = $user->data[$i]['time_zone'];
-            $line[$j][4] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
-            //$line[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
-            $line[$j][5] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
-            $line[$j][6] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
-            $total++;
-        }
-        $listview = $view->build('cellspacing="0" cellpadding="0" border="0" width="100%"', $line);
+	$empty_message = '';
 
-        $main_list = '
-    <h1>Admin Users</h1>
-    <div class="hive-table">' . $listview . '</div>';
-    } else {
-        $main_list = 'No users were found!';
-    }
-    return $main_list;
+  if ($user->affected > 0) {
+    $total = 0;
+    for ($i = 0; $i < $user->affected; $i++) {
+      $j = $i + 1;
+      $line[$j][0] = $user->data[$i]['id'];
+      $line[$j][1] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
+      $line[$j][2] = $user->data[$i]['username'];
+      $line[$j][3] = $user->data[$i]['time_zone'];
+      $line[$j][4] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
+      //$line[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
+      $line[$j][5] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
+      $line[$j][6] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
+      $total++;
+   }
+  }
+	else {
+		$empty_message = translate('No users were found!');
+	}
+
+	// Preparing array to be sent to the template
+	$list = array(
+    'page_title' => translate('Admin Users'),
+    'page_subtitle' => translate('Manage All Users'),
+		'header' => $header,
+    'list' => $line,
+    'empty_message' => $empty_message,
+  );
+	
+  return $list;
 }
 
 /**
@@ -424,7 +433,7 @@ function remove_user($user_id) {
 }
 
 /**
- * Build the user edit form inside the panel 
+ * Build the user edit form inside the panel
  */
 function edit_user($user_id) {
     $panel = new Panel();
