@@ -36,18 +36,17 @@ switch ($fn) {
         print user_list();
         break;
     case 'user_list_pager':
-        print user_list(NULL, $_GET['search_query'], $_GET['sort'], $_GET['pager_current']);
+        print user_list($_GET['search_query'], $_GET['sort'], $_GET['pager_current']);
         break;
     case 'user_list_sort':
-        print user_list(NULL, $_GET['search_query'], $_GET['sort'], 1);
+        print user_list($_GET['search_query'], $_GET['sort'], 1);
         break;
     case 'user_list_search':
-        print user_list(NULL, $_GET['search_query']);
+        print user_list($_GET['search_query']);
         break;
 
     case 'admin_list_users':
-        $template = $twig->loadTemplate('table.html');
-        $template->display(admin_list_users());
+        admin_list_users();
         break;
     case 'new_user':
         new_user();

@@ -1,130 +1,72 @@
 <?
+/**
+ * List Users
+ */
+function user_list($search_query = NULL, $sort = NULL, $pager_current = 1) {
+	$view = new ListView();
 
-function user_list($row_id = null, $search_query = NULL, $sort = NULL, $pager_current = 1) {
-    $title = '<h1>User List</h1>';
-    $view = new ListView();
+	if ($search_query) {
+		$search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
+		$exceptions = array();
+		$search_query = build_search_query($search_query, $search_fields, $exceptions);
+	}
 
-    if ($search_query) {
-        $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
-        $exceptions = array();
-        $search_query = build_search_query($search_query, $search_fields, $exceptions);
-    }
-    if ($row_id) {
-        $clause = 'u.access_level > 41 AND id="' . $row_id . '"';
-    } else {
-        $clause = 'u.access_level > 41';
-    }
+	// Sort
+	if (empty($sort)) {
+		$sort = 'u.first_name DESC';
+	}
 
-    // Sort
-    if (!$sort) {
-        $sort = 'u.first_name DESC';
-    }
+	// Search Query
+	if (empty($search_query)) {
+		$search_query = 'u.id != 0';
+	}
 
-    $limit = PAGER_LIMIT;
-    $start = ($pager_current * $limit) - $limit;
-    // Dial List Table Object
-    $user = new DataManager();
-    $user->dm_load_custom_list("SELECT u.*
-			FROM " . NATURAL_DBNAME . ".user u
-			WHERE $clause  $search_query
-			ORDER BY  $sort
-			LIMIT  $start, $limit", 'ASSOC', TRUE);
+	$limit = 2; // PAGER_LIMIT
+	$start = ($pager_current * $limit) - $limit;
+	// Dial List Table Object
+	$user = new DataManager();
+	$user->dm_load_custom_list("SELECT u.*
+		FROM " . NATURAL_DBNAME . ".user u
+		WHERE $search_query
+		ORDER BY  $sort
+		LIMIT  $start, $limit", 'ASSOC', TRUE);
 
-    if ($user->affected > 0) {
-        // Building the header with sorter
-        $fields[] = array('display' => 'Id', 'field' => 'ud.id');
-        $fields[] = array('display' => 'First Name', 'field' => 'u.first_name');
-        $fields[] = array('display' => 'Last Name', 'field' => 'u.last_name');
-        $fields[] = array('display' => 'Username', 'field' => 'u.username');
-        $fields[] = array('display' => 'Edit', 'field' => null);
-        $fields[] = array('display' => 'Delete', 'field' => null);
-        $line[0] = build_sort_header('user_list', 'user', $fields, $sort);
+	if ($user->affected > 0) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'u.id');
+		$headers[] = array('display' => 'First Name', 'field' => 'u.first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'u.last_name');
+		$headers[] = array('display' => 'Username', 'field' => 'u.username');
+		$headers[] = array('display' => 'Edit', 'field' => null);
+		$headers[] = array('display' => 'Delete', 'field' => null);
+		$headers = build_sort_header('user_list', 'user', $headers, $sort);
 
-        $total = 0;
-        for ($i = 0; $i < $user->affected; $i++) {
-            $j = $i + 1;
-            $line[$j][0] = $user->data[$i]['id'];
-            $line[$j][1] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
-            $line[$j][2] = $user->data[$i]['username'];
-            $line[$j][3] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
-            //$line[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
-            $line[$j][4] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
-            $line[$j][5] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
-            $total++;
-        }
-        if ($row_id) {
-            $main_list = '<td>' . $line[1][0] . '</td><td>' . $line[1][1] . '</td><td>' . $line[1][2] . '</td><td>' . $line[1][3] . '</td><td>' . $line[1][4] . '</td><td>' . $line[1][5] . '</td>';
-        } else {
-            $listview = $view->build(null, $line);
-            $main_list = $title . $view->realbuild(NULL, $line, 'user_list', 'user', $user->total_records, $limit, $pager_current, $sort, $search_query);
-        }
-    } else {
-        $main_list = $title . build_search_form('user_list', 'user') . 'No User to display.';
-    }
-    return $main_list;
-}
+		$total = 0;
+		for ($i = 0; $i < $user->affected; $i++) {
+			$j = $i + 1;
+			$rows[$j][0] = $user->data[$i]['id'];
+			$rows[$j][1] = $user->data[$i]['first_name'];
+			$rows[$j][2] = $user->data[$i]['last_name'];
+			$rows[$j][3] = $user->data[$i]['username'];
+			//$rows[$j][3] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
+			//$rows[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
+			$rows[$j][4] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
+			$rows[$j][5] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
+			$total++;
+		}
+	}
 
-function list_users() {
-    $user = new User();
-    $view = new ListView();
-    // Verify the package
-    $package = new DataManager();
-    $package->dm_load_custom_list('SELECT ci.package_id FROM ' . NATURAL_DBNAME . '.customer_item ci WHERE ci.customer_id = ' . $_SESSION['selected_customer_id'], 'ASSOC');
-    $package_id = $package->data[0]['package_id'];
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Users List'),
+		'page_subtitle' => translate('Manage Users'),
+		'empty_message' => translate('No users were found!'),
+		'pagination' => build_pagination('user_list', 'user', $user->total_records, $limit, $pager_current, $sort, $search_query),
+	);
 
-    // Load the list
-    $user->load_list('ASSOC', 'customer_id = ' . $_SESSION['selected_customer_id']);
-    $line[0][0] = 'Name';
-    $line[0][1] = 'Username';
-    $line[0][2] = 'Level';
-    $line[0][3] = 'Status';
-    if ($package_id == 2 || $package_id == 6) {
-        $line[0][4] = 'Remote Access Number';
-        $num = 5;
-    } else {
-        $line[0][4] = 'Mailbox';
-        $line[0][5] = 'Line';
-        $line[0][6] = 'Device';
-        $num = 7;
-    }
-    $line[0][$num] = 'Reset Password';
-    $line[0][$num + 1] = 'Edit';
-    $line[0][$num + 2] = 'Delete';
+  $listview = $view->build($rows, $headers, $options);
 
-    if ($user->affected) {
-        $total = 0;
-        for ($i = 0; $i < $user->affected; $i++) {
-            $j = $i + 1;
-            $line[$j][0] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
-            $line[$j][1] = $user->data[$i]['username'];
-
-            // Select the properly levels
-            $access_level = new DataManager();
-            $access_level->dm_load_custom_list('SELECT al.description FROM acl_levels al WHERE al.level = ' . $user->data[$i]['access_level'], 'ASSOC');
-            $line[$j][2] = ucwords($access_level->data[0]['description']);
-            $line[$j][3] = ($user->data[$i]['status'] == 1) ? 'Active' : 'Suspended';
-            if ($package_id == 2 || $package_id == 6) {
-                $line[$j][4] = '<img class="pointer" src="' . TEMPLATE . 'images/remote_access.png" onclick="proccess_information(null, \'user_edit_remote_access_form_panel\', \'remote_access\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">';
-                $num = 5;
-            } else {
-                $line[$j][4] = '<img class="pointer" src="' . TEMPLATE . 'images/mailbox.png" onclick="proccess_information(null, \'user_list_mailbox\', \'mailbox\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">';
-                $line[$j][5] = '<img class="pointer" src="' . TEMPLATE . 'images/line.png" onclick="proccess_information(null, \'user_list_extension\', \'extension\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">';
-                $line[$j][6] = '<img class="pointer" src="' . TEMPLATE . 'images/extension.png" onclick="proccess_information(null, \'user_list_device\', \'device\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">';
-                $num = 7;
-            }
-            $line[$j][$num] = '<img id="reset_password_' . $user->data[$i]['id'] . '" class="reset_password pointer" src="' . TEMPLATE . 'images/reload.png" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">';
-            $line[$j][$num + 1] = '<a class="edit-icon pointer" onclick="proccess_information(\'edituser\', \'edit_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
-            $line[$j][$num + 2] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
-            $total++;
-        }
-        $listview = $view->build('cellspacing="0" cellpadding="0" border="0" width="100%"', $line);
-        $main_list = '
-      <h2>Users</h2>
-      <div class="hive-table">' . $listview . '</div>';
-    } else {
-        $main_list = 'No users assigned for customer ' . $_SESSION['selected_customer_id'];
-    }
-    return $main_list;
+  return $listview;
 }
 
 /**
@@ -304,13 +246,13 @@ function admin_list_users() {
   // Selecting users higher than 41 and lower than the actual logged user level
   $user->load_list('ASSOC', 'access_level > 41 AND access_level <= ' . $_SESSION['log_access_level']);
 
-  $header[] = 'ID';
-  $header[] = 'Name';
-  $header[] = 'Username';
-  $header[] = 'Timezone';
-  $header[] = 'Reset Password';
-  $header[] = 'Edit';
-  $header[] = 'Delete';
+  $headers[] = 'ID';
+  $headers[] = 'Name';
+  $headers[] = 'Username';
+  $headers[] = 'Timezone';
+  $headers[] = 'Reset Password';
+  $headers[] = 'Edit';
+  $headers[] = 'Delete';
 
 	$empty_message = '';
 
@@ -318,14 +260,14 @@ function admin_list_users() {
     $total = 0;
     for ($i = 0; $i < $user->affected; $i++) {
       $j = $i + 1;
-      $line[$j][0] = $user->data[$i]['id'];
-      $line[$j][1] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
-      $line[$j][2] = $user->data[$i]['username'];
-      $line[$j][3] = $user->data[$i]['time_zone'];
-      $line[$j][4] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
-      //$line[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
-      $line[$j][5] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
-      $line[$j][6] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
+      $rows[$j][0] = $user->data[$i]['id'];
+      $rows[$j][1] = $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name'];
+      $rows[$j][2] = $user->data[$i]['username'];
+      $rows[$j][3] = $user->data[$i]['time_zone'];
+      $rows[$j][4] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
+      //$rows[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
+      $rows[$j][5] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
+      $rows[$j][6] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
       $total++;
    }
   }
@@ -333,16 +275,18 @@ function admin_list_users() {
 		$empty_message = translate('No users were found!');
 	}
 
-	// Preparing array to be sent to the template
-	$list = array(
-    'page_title' => translate('Admin Users'),
-    'page_subtitle' => translate('Manage All Users'),
-		'header' => $header,
-    'list' => $line,
-    'empty_message' => $empty_message,
-  );
-	
-  return $list;
+
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Admin Users'),
+		'page_subtitle' => translate('Manage All Users'),
+		'empty_message' => $empty_message,
+		'show_pagination' => TRUE,
+	);
+
+  $listview = $view->build($rows, $headers, $options);
+
+  return $listview;
 }
 
 /**

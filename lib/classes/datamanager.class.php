@@ -125,7 +125,8 @@
 			$total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
 			$this->total_records = $total_records[0];
 		}
-//print $query;
+
+	  //die($query);
 		$query_result = mysql_query($query, $dblink);
    	$this->affected = mysql_affected_rows();
     if(!$this->affected) {

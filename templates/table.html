@@ -8,27 +8,27 @@
   {{ page_subtitle }}
 {% endblock %}
 
-
 {% block content %}
 <div class="panel panel-default ">
 
   <div class="panel-body table-responsive">
 
-    {% if empty_message %}
+    {% if rows is empty %}
       {{ empty_message }}
     {% else %}
       <table class="table table-striped table-hover">
-
+        {% if show_headers == true %}
         <thead>
           <tr>
-            {% for item in header %}
-              <th>{{ item }}</th>
+            {% for item in headers %}
+              <th>{{ item|raw }}</th>
             {% endfor %}
           </tr>
         </thead>
+        {% endif %}
 
         <tbody>
-          {% for row, columns in list %}
+          {% for row, columns in rows %}
             <tr data-row="{{ loop.index }}">
             {% for column in columns %}
               <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}"> {{ column|raw }}</td>
@@ -38,7 +38,12 @@
         </tbody>
 
       </table>
+
       {# list_pagination #}
+      {% if pagination %}
+        {{ pagination|raw }}
+      {% endif %}
+
     {% endif %}
 
   </div>

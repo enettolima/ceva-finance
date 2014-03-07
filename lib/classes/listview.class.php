@@ -1,54 +1,28 @@
 <?php
-	/**/
-	class ListView {
-		function build($class = null, $tdata = null, $script = TRUE){
-			/* Missing actual table data information
-			 * stop right here and return an error message*/
-			/*if($tdata == null || !is_array($tdata)){
-				return "ERROR - No table data passed to build function in Class ListView";
-			}
+/**
+ * ListView Class
+ */
+class ListView {
+	function build($rows, $headers = NULL, $options = array()) {
 
-			$id = rand();
-			for ($col = 0; $col < count($tdata[0]); $col++){
-				//$header_fields .= "<th>".translate($tdata[0][$col], $_SESSION['log_preferred_language'])."</th>";
-			}
-	
-			for ($row = 1; $row < count($tdata); $row++){
-				$body_rows .= "<tr>";
-				for ($col = 0; $col < count($tdata[$row]); $col++){
-          if(str_replace(" ", "", $tdata[$row][$col])!=""){
-            $body_rows .= "<td>{$tdata[$row][$col]}</td>";
-          }else{
-            $body_rows .= "<td>&nbsp</td>";
-          }
-				}
-				$body_rows .= "</tr>";
-			}
-		
-			$header = "<thead>";
-			$header .= $header_fields;
-			$header .= "</thead>";
+		global $twig;
 
-			$body = "<tbody>";
-			$body .= $body_rows;
-			$body .= "</tbody>";
-      $out = '';
-			if ($script) {
-			$out .= "<script type=\"text/javascript\">	
-				$(document).ready(function() { 
-					$('#td{$id}').dataTable(); 
-				}); 
-			</script>";
-			}
-			$out .= "<table id='td{$id}' class='listview {$class}'>";
-			$out .= $header;
-			$out .= $body;
-			$out .= "</table>";
-			*/
-			return $out;
-		}
-		
-     function realbuild($class = NULL, $tdata = NULL, $function = NULL, $module = NULL, $total_records = NULL, $limit = NULL, $pager_current = NULL, $sort = NULL, $search_query = NULL, $build_pager = TRUE, $build_search = TRUE, $pager_length = 10, $container = ''){
+		$render = array(
+			'rows' => $rows,
+			'headers' => $headers,
+			'show_headers' => isset($options['show_headers']) ? $options['show_headers'] : TRUE,
+			'page_title' => isset($options['page_title']) ? $options['page_title'] : '',
+			'page_subtitle' => isset($options['page_subtitle']) ? $options['page_subtitle'] : '',
+			'empty_message' => isset($options['empty_message']) ? $options['empty_message'] : '',
+			'pagination' => isset($options['pagination']) ? $options['pagination'] : '',
+		 );
+
+		$template = $twig->loadTemplate('table.html');
+		$template->display($render);
+	}
+
+     function realbuild($function = NULL, $module = NULL, $total_records = NULL, $limit = NULL, $pager_current = NULL, $sort = NULL, $search_query = NULL, $build_pager = TRUE, $build_search = TRUE, $pager_length = 10, $container = '') {
+			  global $twig;
 			/* Missing actual table data information
 			 * stop right here and return an error message*/
 			if($tdata == null || !is_array($tdata)){
@@ -100,9 +74,61 @@
 			}
 			return $out;
 		}
-
-
 	}
+
+/**
+ * This function builds a pager based on given parameters
+ */
+function build_pagination($function, $module, $pager_total, $limit, $pager_current = 1, $sort = NULL, $query = NULL, $pager_length = 10, $container = '') {
+  if ($container == '') {
+    $container = 'null';
+  }
+  else {
+    $container =  "'" . $container . "'";
+  }
+  $quantity = ceil($pager_total / $limit);
+	// Links before current page
+	for($i = $pager_current - $pager_length; $i <= $pager_current - 1; $i++) {
+		if(!($i <= 0)) {
+			$items[$i]['page'] = $i;
+		}
+	}
+	// Shows the actual page wihtout the link, just the number
+	$items[$pager_current]['page'] = $pager_current;
+	$items[$pager_current]['class'] = 'active';
+	// Links after current page
+	for($i = $pager_current + 1; $i <= $pager_current + $pager_length; $i++) {
+	 if(!($i > $quantity)) {
+		 $items[$i]['page'] = $i;
+		 $items[$i]['class'] = 'pager-item pager-after';
+	 }
+	}
+	if ($quantity > 1) {
+		 $pager_first = 1;
+		 $pager_last = $quantity;
+	}
+	if ($items) {
+		$pager = '<ul class="pagination pagination-sm">';
+		$previous_page = $pager_current - 1;
+		if ($quantity > 1 && $pager_current != 1) {
+			$pager .= '<li class="pager-item pager-previous"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $previous_page . '\', null, ' . $container . ');">1</a></li>';
+		}
+		foreach ($items as $item) {
+			$pager .= '<li class="' . $item['class'] . '"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $item['page'] . '\', null, ' . $container . ');">' . $item['page'] . '</a></li>';
+		}
+		$next_page = $pager_current + 1;
+		if ($quantity > 1 && $pager_current != $quantity) {
+			$pager .= '<li class="pager-item pager-next"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $next_page . '\', null, ' . $container . ');">' . $next_page . '</a></li>';
+		}
+		$pager .= '</ul>';
+	}
+	$pager_form = '<form id="' . $function . '_pager" name="' . $function . '_pager">
+									 <input name="limit" type="hidden"  value="' . $limit . '" />
+									 <input name="sort" type="hidden"  value="' . $sort . '" />
+									 <input name="search_query" type="hidden"  value="' . $_GET['search_query'] . '" />
+								 </form>';
+	return $pager . $pager_form;
+}
 
 /**
  * This function builds a pager based on given parameters
@@ -117,7 +143,7 @@ function build_pager($function, $module, $pager_total, $limit, $pager_current = 
   $quantity = ceil($pager_total / $limit);
 	// Links before current page
 	for($i = $pager_current - $pager_length; $i <= $pager_current - 1; $i++) {
-		if(!($i <=0)) {
+		if(!($i <= 0)) {
 			$items[$i]['page'] = $i;
 			$items[$i]['class'] = 'pager-item pager-before';
 		}
@@ -269,5 +295,5 @@ function build_search_form($function, $module, $container = '') {
 function build_sort_form($function) {
 	return '<form id="'. $function . '_sort" name="' . $function . '_sort"><input type="hidden" name="search_query" value="' . $_GET['search_query'] . '" /></form>';
 }
-	
+
 ?>
