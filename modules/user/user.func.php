@@ -37,8 +37,8 @@ function user_list($search_query = NULL, $sort = NULL, $pager_current = 1) {
 		$headers[] = array('display' => 'First Name', 'field' => 'u.first_name');
 		$headers[] = array('display' => 'Last Name', 'field' => 'u.last_name');
 		$headers[] = array('display' => 'Username', 'field' => 'u.username');
-		$headers[] = array('display' => 'Edit', 'field' => null);
-		$headers[] = array('display' => 'Delete', 'field' => null);
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
 		$headers = build_sort_header('user_list', 'user', $headers, $sort);
 
 		$total = 0;
@@ -61,7 +61,13 @@ function user_list($search_query = NULL, $sort = NULL, $pager_current = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
-		'pagination' => build_pagination('user_list', 'user', $user->total_records, $limit, $pager_current, $sort, $search_query),
+		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $pager_current, $sort, $search_query),
+		'search_query' => $search_query,
+		'limit' => $limit, 
+		'function' => $fn,
+		'row_build' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
 	);
 
   $listview = $view->build($rows, $headers, $options);

@@ -8,6 +8,7 @@
   {{ page_subtitle }}
 {% endblock %}
 
+
 {% block content %}
 <div class="panel panel-default ">
 
@@ -29,7 +30,7 @@
 
         <tbody>
           {% for row, columns in rows %}
-            <tr data-row="{{ loop.index }}">
+            <tr data-row="{{ loop.index }}" data-id="{{ loop.parent.loop.id }}">
             {% for column in columns %}
               <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}"> {{ column|raw }}</td>
             {% endfor %}
@@ -39,9 +40,13 @@
 
       </table>
 
-      {# list_pagination #}
-      {% if pagination %}
-        {{ pagination|raw }}
+      {# Pagination #}
+      {% if pager_items %}
+        <ul class="pagination pagination-sm">
+        {% for item in pager_items%}
+          <li class={{ item.class }}><a href="{{ item.page }}">{{ item.label|escape }}</a></li>
+        {% endfor %}
+        </ul>
       {% endif %}
 
     {% endif %}

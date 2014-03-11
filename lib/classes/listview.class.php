@@ -3,6 +3,10 @@
  * ListView Class
  */
 class ListView {
+	/**
+	 * Method build...
+	 * Just a helper module that invokes the twig table template
+	 */
 	function build($rows, $headers = NULL, $options = array()) {
 
 		global $twig;
@@ -14,114 +18,68 @@ class ListView {
 			'page_title' => isset($options['page_title']) ? $options['page_title'] : '',
 			'page_subtitle' => isset($options['page_subtitle']) ? $options['page_subtitle'] : '',
 			'empty_message' => isset($options['empty_message']) ? $options['empty_message'] : '',
-			'pagination' => isset($options['pagination']) ? $options['pagination'] : '',
+			'pager_items' => isset($options['pager_items']) ? $options['pager_items'] : '',
+			'search_query' => isset($options['pager_items']) ? $options['pager_items'] : '',
+		  'limit' => isset($options['limit']) ? $options['limit'] : '',
+		  'function' => isset($options['function']) ? $options['function'] : '',
+		  'row_build' => isset($options['row_build']) ? $options['row_build'] : '',
+	    'table_form_id' => isset($options['table_form_id']) ? $options['table_form_id'] : '',
+		  'table_form_process' => isset($options['table_form_process']) ? $options['table_form_process'] : '',
 		 );
 
 		$template = $twig->loadTemplate('table.html');
 		$template->display($render);
 	}
-
-     function realbuild($function = NULL, $module = NULL, $total_records = NULL, $limit = NULL, $pager_current = NULL, $sort = NULL, $search_query = NULL, $build_pager = TRUE, $build_search = TRUE, $pager_length = 10, $container = '') {
-			  global $twig;
-			/* Missing actual table data information
-			 * stop right here and return an error message*/
-			if($tdata == null || !is_array($tdata)){
-				return "ERROR - No table data passed to build function in Class ListView";
-			}
-
-			$id = rand();
-			for ($col = 0; $col < count($tdata[0]); $col++){
-				$header_fields .= "<th>{$tdata[0][$col]}</th>";
-			}
-			for ($row = 1; $row < count($tdata); $row++){
-				if ($tr_class == 'odd') {
-					$tr_class = 'even';
-				}
-				else {
-					$tr_class = 'odd';
-				}
-				$body_rows .= '<tr class="' . $tr_class . '">';
-				for ($col = 0; $col < count($tdata[$row]); $col++){
-          if(str_replace(" ", "", $tdata[$row][$col])!=""){
-            $body_rows .= "<td>{$tdata[$row][$col]}</td>";
-          }
-					else{
-            $body_rows .= "<td>&nbsp</td>";
-          }
-				}
-				$body_rows .= "</tr>";
-
-			}
-
-			$header = "<thead>";
-			$header .= $header_fields;
-			$header .= "</thead>";
-
-			$body = "<tbody>";
-			$body .= $body_rows;
-			$body .= "</tbody>";
-      $out = '';
-			if ($build_search) {
-			  $out .= build_search_form($function, $module, $container);
-			}
-			$out .= build_sort_form($function);
-			$out .= "<table id='td{$id}' class='listview {$class}'>";
-			$out .= $header;
-			$out .= $body;
-			$out .= "</table>";
-			if ($build_pager) {
-				$out .= build_pager($function, $module, $total_records, $limit, $pager_current, $sort, $search_query, $pager_length, $container);
-			}
-			return $out;
-		}
-	}
+}
 
 /**
  * This function builds a pager based on given parameters
  */
-function build_pagination($function, $module, $pager_total, $limit, $pager_current = 1, $sort = NULL, $query = NULL, $pager_length = 10, $container = '') {
-  if ($container == '') {
-    $container = 'null';
-  }
-  else {
-    $container =  "'" . $container . "'";
-  }
+function build_pager($function, $module, $pager_total, $limit, $pager_current = 1, $sort = NULL, $query = NULL, $pager_length = 10) {
   $quantity = ceil($pager_total / $limit);
-	// Links before current page
-	for($i = $pager_current - $pager_length; $i <= $pager_current - 1; $i++) {
-		if(!($i <= 0)) {
-			$items[$i]['page'] = $i;
-		}
+
+  // Links before current page
+  for($i = $pager_current - $pager_length; $i <= $pager_current - 1; $i++) {
+    if(!($i <= 0)) {
+      $items[$i]['page'] = $i;
+			$items[$i]['label'] = $i;
+			$items[$i]['class'] = 'pager-item';
+    }
 	}
-	// Shows the actual page wihtout the link, just the number
+
+	// Add special class to the active link
 	$items[$pager_current]['page'] = $pager_current;
+	$items[$pager_current]['label'] = $pager_current;
 	$items[$pager_current]['class'] = 'active';
+
 	// Links after current page
 	for($i = $pager_current + 1; $i <= $pager_current + $pager_length; $i++) {
 	 if(!($i > $quantity)) {
 		 $items[$i]['page'] = $i;
-		 $items[$i]['class'] = 'pager-item pager-after';
+		 $items[$i]['label'] = $i;
+		 $items[$i]['class'] = 'pager-item';
 	 }
 	}
 	if ($quantity > 1) {
 		 $pager_first = 1;
 		 $pager_last = $quantity;
 	}
-	if ($items) {
-		$pager = '<ul class="pagination pagination-sm">';
+	if (!empty($items)) {
 		$previous_page = $pager_current - 1;
 		if ($quantity > 1 && $pager_current != 1) {
-			$pager .= '<li class="pager-item pager-previous"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $previous_page . '\', null, ' . $container . ');">1</a></li>';
-		}
-		foreach ($items as $item) {
-			$pager .= '<li class="' . $item['class'] . '"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $item['page'] . '\', null, ' . $container . ');">' . $item['page'] . '</a></li>';
+			array_unshift($items, array('page' => $previous_page, 'label' => '<'));
 		}
 		$next_page = $pager_current + 1;
 		if ($quantity > 1 && $pager_current != $quantity) {
-			$pager .= '<li class="pager-item pager-next"><a onClick="javascript:proccess_information(\'' . $function . '_pager\', \'' . $function . '_pager\', \'' . $module . '\', null, \'pager_current|' . $next_page . '\', null, ' . $container . ');">' . $next_page . '</a></li>';
+		  array_push($items, array('page' => $next_page, 'label' => '>'));
 		}
-		$pager .= '</ul>';
+		return $items;
 	}
+	else {
+		return FALSE;
+	}
+
+	die(print_r($items));
 	$pager_form = '<form id="' . $function . '_pager" name="' . $function . '_pager">
 									 <input name="limit" type="hidden"  value="' . $limit . '" />
 									 <input name="sort" type="hidden"  value="' . $sort . '" />
@@ -133,7 +91,7 @@ function build_pagination($function, $module, $pager_total, $limit, $pager_curre
 /**
  * This function builds a pager based on given parameters
  */
-function build_pager($function, $module, $pager_total, $limit, $pager_current = 1, $sort = NULL, $query = NULL, $pager_length = 10, $container = '') {
+function build_pager_old($function, $module, $pager_total, $limit, $pager_current = 1, $sort = NULL, $query = NULL, $pager_length = 10, $container = '') {
   if ($container == '') {
     $container = 'null';
   }
