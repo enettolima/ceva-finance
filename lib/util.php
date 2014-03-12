@@ -743,4 +743,38 @@ function getCustomerPlanID() {
     return $getplan->plan_id;
 }
 
+/**
+ * Builds the process_information link with its parameters
+ * process_information(formname, func, module, ask_confirm, extra_value, error_el, response_el, response_type, request_type, parent, el, proc_message, timer)
+ */
+function theme_link_process_information($text, $formname, $func, $module, $options = array()) {
+
+  $process_information_options = array(
+    'ask_confirm',
+    'extra_value',
+    'error_el',
+    'response_el',
+    'response_type',
+    'request_type',
+    'parent',
+    'el',
+    'proc_message',
+    'timer'
+  );
+
+  $render_options = '';
+
+  foreach($process_information_options as $key) {
+    if (array_key_exists($key, $options)) {
+      $render_options[] = "'" . $options[$key] . "'";
+    }
+    else {
+      $render_options[] = 'null';
+    }
+  }
+
+  $href = "javascript:process_information('" . $formname . "', '" . $func . "', '" . $module . "', " .  implode(', ', $render_options) . ")";
+  return '<a href="' . $href . '">' . $text . '</a>';
+}
+
 ?>

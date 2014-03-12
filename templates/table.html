@@ -30,7 +30,7 @@
 
         <tbody>
           {% for row, columns in rows %}
-            <tr data-row="{{ loop.index }}" data-id="{{ loop.parent.loop.id }}">
+            <tr data-row="{{ loop.index }}" data-object-id="{{ rows[row][0] }}">
             {% for column in columns %}
               <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}"> {{ column|raw }}</td>
             {% endfor %}
@@ -42,11 +42,16 @@
 
       {# Pagination #}
       {% if pager_items %}
-        <ul class="pagination pagination-sm">
+        <ul class="pagination pagination-sm pull-right">
         {% for item in pager_items%}
-          <li class={{ item.class }}><a href="{{ item.page }}">{{ item.label|escape }}</a></li>
+          <li class={{ item.class }}>{{ item.link|raw }}</li>
         {% endfor %}
         </ul>
+        <form id="{{ function }}_pager" name="{{ function }}_pager">
+          <input name="limit" type="hidden"  value="{{ limit }}" />
+          <input name="sort" type="hidden"  value="{{ sort }}" />
+          <input name="search_query" type="hidden"  value="{{ search_query }}" />
+		    </form>
       {% endif %}
 
     {% endif %}

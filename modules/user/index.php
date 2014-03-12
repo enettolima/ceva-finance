@@ -27,6 +27,7 @@ if (!$_SESSION['logged']) {
 
 $fn = $_GET['fn'];
 $user_id = $_GET['user_id'];
+
 /*
  * Declare objects here
  */
@@ -36,13 +37,13 @@ switch ($fn) {
         print user_list();
         break;
     case 'user_list_pager':
-        print user_list($_GET['search_query'], $_GET['sort'], $_GET['pager_current']);
+        print user_list($_GET['search_string'], $_GET['sort'], $_GET['pager_current']);
         break;
     case 'user_list_sort':
-        print user_list($_GET['search_query'], $_GET['sort'], 1);
+        print user_list($_GET['search_string'], $_GET['sort'], 1);
         break;
     case 'user_list_search':
-        print user_list($_GET['search_query']);
+        print user_list($_GET['search_string']);
         break;
 
     case 'admin_list_users':
