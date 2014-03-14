@@ -22,7 +22,7 @@
         <thead>
           <tr>
             {% for item in headers %}
-              <th>{{ item|raw }}</th>
+              <th class="{{ item.class }}">{{ item.display|raw }}</th>
             {% endfor %}
           </tr>
         </thead>
@@ -32,7 +32,7 @@
           {% for row, columns in rows %}
             <tr data-row="{{ loop.index }}" data-object-id="{{ rows[row][0] }}">
             {% for column in columns %}
-              <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}"> {{ column|raw }}</td>
+              <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}">{{ column|raw }}</td>
             {% endfor %}
             </tr>
           {% endfor %}
@@ -47,12 +47,14 @@
           <li class={{ item.class }}>{{ item.link|raw }}</li>
         {% endfor %}
         </ul>
-        <form id="{{ function }}_pager" name="{{ function }}_pager">
-          <input name="limit" type="hidden"  value="{{ limit }}" />
-          <input name="sort" type="hidden"  value="{{ sort }}" />
-          <input name="search_query" type="hidden"  value="{{ search_query }}" />
-		    </form>
       {% endif %}
+
+      {# Table Form - Helpser to send additional parameters #}
+      <form id="{{ function }}_table_info" name="{{ function }}_table_info">
+        <input name="limit" type="hidden"  value="{{ limit }}" />
+        <input name="sort" type="hidden"  value="{{ sort }}" />
+        <input name="search_query" type="hidden"  value="{{ search_query }}" />
+      </form>
 
     {% endif %}
 

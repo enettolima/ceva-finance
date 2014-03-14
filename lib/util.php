@@ -749,6 +749,7 @@ function getCustomerPlanID() {
  */
 function theme_link_process_information($text, $formname, $func, $module, $options = array()) {
 
+  // process_information options.
   $process_information_options = array(
     'ask_confirm',
     'extra_value',
@@ -764,9 +765,20 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
 
   $render_options = '';
 
+  // Add an icon.
+  if (!empty($options['icon'])) {
+    $text = '<i class="' . $options['icon'] . '">' . $text . '</i>';
+  }
+
+  // Set the javascript properties for the function.
   foreach($process_information_options as $key) {
     if (array_key_exists($key, $options)) {
-      $render_options[] = "'" . $options[$key] . "'";
+      if ($options[$key] == 'this') {
+        $render_options[] = $options[$key];
+      }
+      else {
+        $render_options[] = "'" . $options[$key] . "'";
+      }
     }
     else {
       $render_options[] = 'null';

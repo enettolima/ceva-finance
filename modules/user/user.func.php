@@ -48,10 +48,8 @@ function user_list($search_string = NULL, $sort = NULL, $pager_current = 1) {
 			$rows[$j][1] = $user->data[$i]['first_name'];
 			$rows[$j][2] = $user->data[$i]['last_name'];
 			$rows[$j][3] = $user->data[$i]['username'];
-			//$rows[$j][3] = '<a class="refresh-icon pointer" onclick="proccess_information(\'admin_list_users\', \'reset_user_password\', \'user\', \'Are you sure you want to reset this user`s password?\', \'user_id|' . $user->data[$i]['id'] . '\');">Reload</a>';
-			//$rows[$j][5] = '<img id="edit_admin_user_'.$user->data[$i]['id'].'" class="edit_admin_user pointer" src="'.TEMPLATE.'images/edit-16x16.gif" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|'.$user->data[$i]['id'].'\');">';
-			$rows[$j][4] = '<a class="edit-icon pointer" onclick="proccess_information(\'admin_user_edit\', \'edit_admin_user\', \'user\', \'\', \'user_id|' . $user->data[$i]['id'] . '\', \'\', this, \'slide\');">Edit</a>';
-			$rows[$j][5] = '<a class="delete-icon pointer" onclick="proccess_information(null, \'remove_user\', \'user\', \'Are you sure you want to remove this user?\', \'user_id|' . $user->data[$i]['id'] . '\', null, this, \'remove_row\');">Delete</a>';
+			$rows[$j][4] = theme_link_process_information('', 'admin_user_edit', 'edit_admin_user', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'slide', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j][5] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
 			$total++;
 		}
 	}
