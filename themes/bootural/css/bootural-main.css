@@ -575,6 +575,9 @@ body > .header .logo .icon {
 .radio {
   padding-left: 0;
 }
+.form.table-info {
+  margin: 20px 0;
+}
 
 /**
  * Buttons
@@ -820,6 +823,10 @@ body > .header .logo .icon {
 table thead a,
 table a .fa {
   color: #333333;
+}
+table thead a:hover,
+table a .fa:hover {
+  color: #666666;
 }
 table thead .sorting {
   background: url(../images/sort_both.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);

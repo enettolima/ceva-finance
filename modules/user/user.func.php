@@ -2,23 +2,21 @@
 /**
  * List Users
  */
-function user_list($search_string = NULL, $sort = NULL, $pager_current = 1) {
+function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 	$view = new ListView();
 
-	if ($search_string) {
+	if (!empty($search)) {
 		$search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
 		$exceptions = array();
-		$search_query = build_search_query($search_query, $search_fields, $exceptions);
+		$search_query = build_search_query($search, $search_fields, $exceptions);
+	}
+	else {
+		$search_query = 'u.id != 0';
 	}
 
 	// Sort
 	if (empty($sort)) {
 		$sort = 'u.first_name DESC';
-	}
-
-	// Search Query
-	if (empty($search_query)) {
-		$search_query = 'u.id != 0';
 	}
 
 	$limit = 2; // PAGER_LIMIT
@@ -59,10 +57,12 @@ function user_list($search_string = NULL, $sort = NULL, $pager_current = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
-		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $pager_current, $sort, $search_query),
-		'search_string' => $search_string,
+		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $pager_current),
+		'search' => $search,
+		'show_search' => TRUE,
 		'limit' => $limit,
 		'function' => 'user_list',
+		'module' => 'user',
 		'update_row_id' => '',
 	  'table_form_id' => '',
 		'table_form_process' => '',

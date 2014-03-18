@@ -37,13 +37,13 @@ switch ($fn) {
         print user_list();
         break;
     case 'user_list_pager':
-        print user_list($_GET['search_string'], $_GET['sort'], $_GET['pager_current']);
+        print user_list($_GET['search'], $_GET['sort'], $_GET['pager_current']);
         break;
     case 'user_list_sort':
-        print user_list($_GET['search_string'], $_GET['sort'], 1);
+        print user_list($_GET['search'], $_GET['sort'], 1);
         break;
     case 'user_list_search':
-        print user_list($_GET['search_string']);
+        print user_list($_GET['search']);
         break;
 
     case 'admin_list_users':
