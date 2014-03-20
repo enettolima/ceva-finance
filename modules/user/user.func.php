@@ -3,6 +3,8 @@
  * List Users
  */
 function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
+	$module = 'user';
+	$function = 'user_list';
 	$view = new ListView();
 
 	if (!empty($search)) {
@@ -57,12 +59,12 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
-		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $pager_current),
+		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $pager_current),
 		'search' => $search,
 		'show_search' => TRUE,
 		'limit' => $limit,
-		'function' => 'user_list',
-		'module' => 'user',
+		'function' => $function,
+		'module' => $module,
 		'update_row_id' => '',
 	  'table_form_id' => '',
 		'table_form_process' => '',
