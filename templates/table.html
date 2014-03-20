@@ -47,7 +47,10 @@
         <input name="limit" type="hidden"  value="{{ limit }}" />
         <input name="sort" type="hidden"  value="{{ sort }}" />
         {% if show_search %}
-          <input name="search" type="text" placeholder="Search" value="{{ search }}" />
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon"><i class="fa fa-search"></i></span>
+            <input class="form-control" name="search" type="text" placeholder="Search" value="{{ search }}" />
+          </div>
         {% endif %}
       </form>
 

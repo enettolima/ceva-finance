@@ -45,6 +45,9 @@ switch ($fn) {
     case 'user_list_search':
         print user_list($_GET['search']);
         break;
+    case 'user_admin_edit_form':
+        print user_admin_edit_form($_GET['user_id']);
+        break;
 
     case 'admin_list_users':
         admin_list_users();

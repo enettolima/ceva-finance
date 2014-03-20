@@ -579,6 +579,7 @@ body > .header .logo .icon {
   margin: 20px 0;
 }
 
+
 /**
  * Buttons
  */
@@ -814,6 +815,17 @@ body > .header .logo .icon {
  */
 .panel-default {
   background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 0;
+}
+
+/**
+ * Pagination
+ */
+.pagination,
+.pagination-sm > li:first-child > a,
+.pagination-sm > li:first-child > span,
+.pagination-sm > li:last-child > a,
+.pagination-sm > li:last-child > span {
   border-radius: 0;
 }
 

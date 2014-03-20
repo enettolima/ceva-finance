@@ -48,7 +48,7 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 			$rows[$j][1] = $user->data[$i]['first_name'];
 			$rows[$j][2] = $user->data[$i]['last_name'];
 			$rows[$j][3] = $user->data[$i]['username'];
-			$rows[$j][4] = theme_link_process_information('', 'admin_user_edit', 'edit_admin_user', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'slide', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j][4] = theme_link_process_information('', 'user_admin_edit_form', 'user_admin_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'icon' => NATURAL_EDIT_ICON));
 			$rows[$j][5] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
 			$total++;
 		}
@@ -383,55 +383,47 @@ function remove_user($user_id) {
 }
 
 /**
- * Build the user edit form inside the panel
- */
-function edit_user($user_id) {
-    $panel = new Panel();
-    $resp = edit_user_form($user_id);
-    return $panel->build_panel('', $resp);
-}
-
-/**
  * Build the user edit form inside the customer account
  */
-function edit_user_form($user_id) {
-    $user = new User();
-    $user->load_single('id = ' . $user_id);
-    if ($user->affected > 0) {
-        $frm = new DbForm();
-        // Contact info
-        $contact = new Contact();
-        $contact->load_single('id = ' . $user->contact_id);
-        foreach ($contact as $field => $value) {
-            if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-                $user->$field = $value;
-            }
-        }
-        // Select the properly levels
-        $access_levels = new DataManager();
-        //$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= 41', 'ASSOC');
-        $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-        if ($access_levels->affected) {
-            $items = array();
-            foreach ($access_levels->data as $access_level) {
-                $items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
-            }
-            $user->access_level_options = implode(';', $items);
-        }
-        // Override the form action case the function is for logged users
-        if ($_GET['fn'] == 'edit_logged_user') {
-            $user->action = 'javascript:proccess_information(\'user_edit\', \'save_edit_user\', \'user\', \'\', \'\');';
-        }
-        return $frm->build('user_edit', $user, $_SESSION['log_access_level']);
-    } else {
-        return 'Problems loading user ' . $user_id;
+function user_edit_form($user_id) {
+  $user = new User();
+  $user->load_single('id = ' . $user_id);
+  if ($user->affected > 0) {
+    $frm = new DbForm();
+    // Contact info
+    $contact = new Contact();
+    $contact->load_single('id = ' . $user->contact_id);
+    foreach ($contact as $field => $value) {
+      if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+        $user->$field = $value;
+      }
     }
+    // Select the properly levels
+    $access_levels = new DataManager();
+    //$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= 41', 'ASSOC');
+    $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+    if ($access_levels->affected) {
+      $items = array();
+      foreach ($access_levels->data as $access_level) {
+        $items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+      }
+      $user->access_level_options = implode(';', $items);
+    }
+    // Override the form action case the function is for logged users
+    if ($_GET['fn'] == 'edit_logged_user') {
+      $user->action = 'javascript:proccess_information(\'user_edit\', \'save_edit_user\', \'user\', \'\', \'\');';
+    }
+    $frm->build('user_edit', $user, $_SESSION['log_access_level']);
+  }
+  else {
+    return 'Problems loading user ' . $user_id;
+  }
 }
 
 /**
  * Build the admin user edit form by Lemu on October 7, 2009
  */
-function edit_admin_user($user_id) {
+function user_admin_edit_form($user_id) {
     $panel = new Panel();
     $user = new User();
     $user->load_single('id = ' . $user_id);
@@ -455,11 +447,11 @@ function edit_admin_user($user_id) {
             }
             $user->access_level_options = implode(';', $items);
         }
-        $resp = $frm->build('admin_user_edit', $user, $_SESSION['log_access_level']);
-    } else {
-        $resp = 'Problems loading user ' . $user_id;
+        return $frm->build('admin_user_edit', $user, $_SESSION['log_access_level']);
     }
-    return $panel->build_panel('', $resp);
+		else {
+      return 'Problems loading user ' . $user_id;
+    }
 }
 
 /**
