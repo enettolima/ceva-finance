@@ -563,6 +563,9 @@ body > .header .logo .icon {
   border-color: #f56954 !important;
   box-shadow: none;
 }
+.input-group {
+  margin-bottom: 15px;
+}
 .input-group .input-group-addon { /* Input group */
   border-radius: 0;
   background-color: #f4f4f4;
@@ -574,6 +577,15 @@ body > .header .logo .icon {
 .checkbox, /* Checkbox and radio inputs */
 .radio {
   padding-left: 0;
+}
+label {
+  color: #333333;
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 19px;
+  margin-bottom: 6px;
+  text-align: left;
 }
 .form.table-info {
   margin: 20px 0;
@@ -827,6 +839,22 @@ body > .header .logo .icon {
 .pagination-sm > li:last-child > a,
 .pagination-sm > li:last-child > span {
   border-radius: 0;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+  color: #777;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #999;
 }
 
 /**

@@ -10,5 +10,34 @@
 
 
 {% block content %}
-  {{ content|raw }}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {{ content|raw }}
+
+      <form id="{{ form_id }}" name="{{ form_name }}" method="{{ form_method }}" action="{{ form_action }}" onsubmit="{{ form_onsbumit }}" class="{{ form_class }}" >
+
+        {% for field in fields %}
+
+          {% if field.html == 'hidden' %}
+            <input type="hidden" value="{{ field.def_val }}">
+          {% else %}
+            <div class="input-group">
+
+              {% if field.def_label %}
+                <label>{{ field.def_label }}</label>
+              {% endif %}
+
+              {# text #}
+              {% if field.html_type == 'text' %}
+                <input type="text" class="form-control form-text {{ field.css_class }}" value="{{ field.def_val }}" size="75">
+              {% endif %}
+
+            </div>
+          {% endif %}
+
+        {% endfor %}
+
+      </form>
+    </div>
+  </div>
 {% endblock %}
