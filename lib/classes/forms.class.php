@@ -33,12 +33,13 @@ class DbForm {
     $form_param = new DataManager();
     $check_dup = new DataManager();
     $fields = array();
+    $hidden_fields = array();
 
     $formres = '';
 
     $level = ($level == NULL && isset($_SESSION['log_access_level'])) ? $_SESSION['log_access_level'] : $level;
 
-    $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_reference='" . $form_name . "' ORDER BY form_field_order DESC");
+    $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_reference='" . $form_name . "' ORDER BY form_field_order ASC");
     if (!$form_fields->affected) {
       $error_message = 'Form ' . $form_name . ' not found!';
     }
@@ -56,18 +57,14 @@ class DbForm {
       $form_action = str_replace("\'", "'", $form_param->form_action);
     }
 
-    $formres = "{$parag}{$tips}
-      <form id=\"{$form_param->form_id}\" name=\"{$form_param->form_name}\" class=\"{$form_param->form_class}\" action=\"" . $form_action . "\" method=\"{$form_param->form_method}\" onsubmit=\"$form_param->form_onsubmit\">\n" . $formres;
-    $ct = 0;
-
     // Start looping through fields.
     for ($f = 0; $f < $form_fields->affected; $f++) {
       if ($form_fields->data[$f]['level'] != $level && $form_fields->data[$f]['field_name'] == $form_fields->data[$f - 1]['field_name']) {
         continue;
       }
 
-      $form_element = '';
-      $radio_element = '';
+      // Field ID
+      $form_fields->data[$f]['field_id'] = trim($form_fields->data[$f]['field_id']);
 
       if (is_object($val)) {
         $fdef_val       = trim($form_fields->data[$f]['def_val']);
@@ -93,63 +90,122 @@ class DbForm {
         }
       }
 
-      $form_fields->data[$f]['field_id'] = trim($form_fields->data[$f]['field_id']);
-
-      // Required Field.
-      if ($form_fields->data[$f]['required']) {
-        $form_fields->data[$f]['def_label'] .= ' <span class="field-required">*</span>';
-      }
-
-      /**
-       * Tooltip
-       */
-      if ($form_fields->data[$f]['tooltip']) {
-        $form_fields->data[$f]['def_label'] .= ' <a class="tooltip">Tooltip</a><span class="tooltip-text">' . $form_fields->data[$f]['tooltip'] . '</span>';
-      }
-
-      /*
-       * Verifies the form field Level and applies the ACL if needed
-       * to make this work you must set the level field in the field_template
-       * to the minimum level that has access to the raw field withou the ACL
-       * being applied. for example if you set the Level to 41 and ACL to readonly
-       * anyone with level 41 and below will not be able to edit the field
-       * only people with level 42 and above.
-       */
-
+      // Verifies the form field Level and applies the ACL if needed to make this work you must set the level field in the field_template
+      // to the minimum level that has access to the raw field withou the ACL being applied. for example if you set the Level to 41 and ACL to readonly
+      // anyone with level 41 and below will not be able to edit the field only people with level 42 and above.
       if ($form_fields->data[$f]['level'] >= $level) {
         if ($form_fields->data[$f]['acl'] != "" && $form_fields->data[$f]['html_type'] != 'list') {
           $form_fields->data[$f]['html_type'] = $form_fields->data[$f]['acl'];
         }
         // If you insert something in the level and don't specify anything on acl then acl will be hidden by default...
         else {
-          if ($form_fields->data[$f]['html_type'] != 'list')
+          if ($form_fields->data[$f]['html_type'] != 'list') {
             $form_fields->data[$f]['html_type'] = 'hidden';
+          }
         }
       }
 
-      // THE CODE BELOW MUST GO - TO BE REMOVED
+      // Preprocess some fields before sendint to th template engine.
       switch ($form_fields->data[$f]['html_type']) {
+        case 'hidden':
+          // We need to put the hidden fields after all other fields.
+          $hidden_fields[] = $form_fields->data[$f];
+          unset($form_fields->data[$f]);
+          continue;
+          break;
+        case 'list':
+          $options = array();
+          if ($form_fields->data[$f]['data_table'] != '') {
+            $query_field_name = '';
+            while (strpos($form_fields->data[$f]['data_query'], "s{") > 0) {
+              $query_field_name = $this->_get_session_var($form_fields->data[$f]['data_query']);
+              $form_fields->data[$f]['data_query'] = str_replace("s{{$query_field_name}}", "{$_SESSION[$query_field_name]}", $form_fields->data[$f]['data_query']);
+            }
+            $dm = new DataManager;
+            $query_select = ($form_fields->data[$f]['data_value'] == $form_fields->data[$f]['data_label']) ? $form_fields->data[$f]['data_value'] : "{$form_fields->data[$f]['data_value']},{$form_fields->data[$f]['data_label']}";
+            $query = "SELECT {$query_select} FROM {$form_fields->data[$f]['data_table']} WHERE {$form_fields->data[$f]['data_query']} ORDER BY {$form_fields->data[$f]['data_sort']}";
+            $dm->dm_load_custom_list($query, 'ASSOC');
+
+            $data_value = explode(',', $form_fields->data[$f]['data_value']);
+            $data_label = explode(',', $form_fields->data[$f]['data_label']);
+            for ($dvf = 0; $dvf < count($data_value); $dvf++) {
+              $value = $data_value[$dvf];
+              $label = $data_label[$dvf];
+
+              for ($y = 0; $y < $dm->affected; $y++) {
+                if ($dm->data[$y][$value] == $prev_value && $dm->data[$y][$label] == $prev_label)
+                  continue;
+
+                if ($dm->data[$y][$data_value[$dvf]] == $form_fields->data[$f]['def_val']) {
+                  $status = 'selected';
+                  $readonly_data['label'] = $dm->data[$y][$label];
+                  $readonly_data['value'] = $dm->data[$y][$value];
+                }
+                else {
+                  $status = '';
+                }
+
+                $options[] = array('value' => $dm->data[$y][$value], 'label' => $dm->data[$y][$label], 'status' => $status);
+                $prev_value = $dm->data[$y][$value];
+                $prev_label = $dm->data[$y][$label];
+              }
+            }
+
+            if ($form_fields->data[$f]['field_values']) {
+              $opt = explode(';', $form_fields->data[$f]['field_values']);
+              for ($i = 0; $i < count($opt); $i++) {
+                if ($opt[$i]) {
+                  $values_pair = explode('=', $opt[$i]);
+                  if ($values_pair[1] == $form_fields->data[$f]['def_val']) {
+                    $status = 'selected';
+                    $readonly_data['label'] = $values_pair[0];
+                    $readonly_data['value'] = $values_pair[1];
+                  }
+                  else {
+                    $status = '';
+                  }
+                  $options[] = array('value' => $values_pair[1], 'label' => $values_pair[0], 'status' => $status);
+                }
+              }
+            }
+          }
+          else {
+            $opt = explode(';', $form_fields->data[$f]['field_values']);
+            for ($i = 0; $i < count($opt); $i++) {
+              $values_pair = explode("=", $opt[$i]);
+              if ($values_pair[1] == $form_fields->data[$f]['def_val']) {
+                $status = 'selected';
+                $readonly_data['label'] = $values_pair[0];
+                $readonly_data['value'] = $values_pair[1];
+              }
+              else {
+                $status = '';
+              }
+              $options[] = array('value' => $values_pair[1], 'label' => $values_pair[0], 'status' => $status);
+            }
+          }
+          // Prepare select list
+          if ($form_fields->data[$f]['acl'] == 'readonly' && $form_fields->data[$f]['level'] >= $level) {
+            $form_fields->data[$f]['def_label'] = NULL;
+            $form_fields->data[$f]['def_value'] = $readonly_data['value'];
+            $hidden_fields[] = $form_fields->data[$f];
+            unset($form_fields->data[$f]);
+          }
+          else {
+            $form_fields->data[$f]['options'] = $options;
+          }
+          break;
+
+
+        // TODO: Review bellow items
         case 'fileuploader':
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-file"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
           $form_element .= $form_fields->data[$f]['prefix'] . '<span id="' . $form_fields->data[$f]['field_id'] . '" class="upload-button ' . $form_fields->data[$f]['css_class'] . '"> <span>' . $form_fields->data[$f]['field_name'] . '</span> </span>' . $form_fields->data[$f]['suffix'] . '</div>';
           $script = '<script  type="text/javascript">file_uploader(\'' . $form_fields->data[$f]['field_id'] . '\', \'' . $form_fields->data[$f]['field_values'] . '\');</script>';
           $form_element .= '<div class="form-item '. $form_fields->data[$f]['vertical'].'"><span id="file-message"></span><ol id="uploaded-files"></ol> <textarea id="files" name="files"></textarea>' . $script . '</div>';
           break;
-        case 'submit':
-          $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-submit"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_label'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
         case 'reset':
           $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-reset"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'button':
-          $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-button"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'text':
-          $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-text"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-          $form_element .= $form_fields->data[$f]['prefix'] . '<input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" onChange="' . $form_fields->data[$f]['onchange'] . '" onChange="' . $form_fields->data[$f]['onchange'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'hidden':
-          $hidden_element .= '<input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '">';
           break;
         case 'readonly':
           if ($form_fields->data[$f]['data_table'] != '') {
@@ -174,88 +230,6 @@ class DbForm {
         case 'checkbox': //Buggy
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-password"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
           $form_element .= $form_fields->data[$f]['prefix'] . '<input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '"' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" >' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'list':
-          if ($form_fields->data[$f]['data_table'] != "") {
-            $select_options = '';
-            $query_field_name = '';
-            while (strpos($form_fields->data[$f]['data_query'], "s{") > 0) {
-              $query_field_name = $this->_get_session_var($form_fields->data[$f]['data_query']);
-              $form_fields->data[$f]['data_query'] = str_replace("s{{$query_field_name}}", "{$_SESSION[$query_field_name]}", $form_fields->data[$f]['data_query']);
-            }
-            $dm = new DataManager;
-            $query_select = ($form_fields->data[$f]['data_value'] == $form_fields->data[$f]['data_label']) ? $form_fields->data[$f]['data_value'] : "{$form_fields->data[$f]['data_value']},{$form_fields->data[$f]['data_label']}";
-            $query = "SELECT {$query_select} FROM {$form_fields->data[$f]['data_table']} WHERE {$form_fields->data[$f]['data_query']} ORDER BY {$form_fields->data[$f]['data_sort']}";
-            $dm->dm_load_custom_list($query, "ASSOC");
-
-            $data_value = explode(',', $form_fields->data[$f]['data_value']);
-            $data_label = explode(',', $form_fields->data[$f]['data_label']);
-            for ($dvf = 0; $dvf < count($data_value); $dvf++) {
-              $value = $data_value[$dvf];
-              $label = $data_label[$dvf];
-
-              for ($y = 0; $y < $dm->affected; $y++) {
-                if ($dm->data[$y][$value] == $prev_value && $dm->data[$y][$label] == $prev_label)
-                  continue;
-
-                if ($dm->data[$y][$data_value[$dvf]] == $form_fields->data[$f]['def_val']) {
-                  $status = 'selected';
-                  $readonly_data['label'] = $dm->data[$y][$label];
-                  $readonly_data['value'] = $dm->data[$y][$value];
-                } else {
-                  $status = '';
-                }
-
-                $select_options .= '<option value="' . $dm->data[$y][$value] . '" ' . $status . '>' . $dm->data[$y][$label] . '</option>';
-                $prev_value = $dm->data[$y][$value];
-                $prev_label = $dm->data[$y][$label];
-              }
-            }
-
-            if ($form_fields->data[$f]['field_values']) {
-              $opt = explode(';', $form_fields->data[$f]['field_values']);
-              for ($i = 0; $i < count($opt); $i++) {
-                if ($opt[$i]) {
-                  $values_pair = explode('=', $opt[$i]);
-                  if ($values_pair[1] == $form_fields->data[$f]['def_val']) {
-                    $status = 'selected';
-                    $readonly_data['label'] = $values_pair[0];
-                    $readonly_data['value'] = $values_pair[1];
-                  } else {
-                    $status = "";
-                  }
-                  $select_options .= "\n\t\t\t\t<option value=" . $values_pair[1] . ' ' . $status . '>' . $values_pair[0] . '</option>';
-                }
-              }
-            }
-          }
-          else {
-            $opt = explode(';', $form_fields->data[$f]['field_values']);
-            $select_options = '';
-
-            for ($i = 0; $i < count($opt); $i++) {
-              $values_pair = explode("=", $opt[$i]);
-              if ($values_pair[1] == $form_fields->data[$f]['def_val']) {
-                $status = 'selected';
-                $readonly_data['label'] = $values_pair[0];
-                $readonly_data['value'] = $values_pair[1];
-              } else {
-                $status = '';
-              }
-              $select_options .= '<option value="' . $values_pair[1] . '" ' . $status . '>' . $values_pair[0] . '</option>';
-            }
-          }
-          if ($form_fields->data[$f]['acl'] == 'readonly' && $form_fields->data[$f]['level'] >= $level) {
-            $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-select"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-            $form_element .= $form_fields->data[$f]['prefix'] . $readonly_data['label'] . '<input type="hidden" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $readonly_data['value'] . '"' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" >' . $form_fields->data[$f]['suffix'] . '</div>';
-          } else {
-            $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-select"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-            $form_element .= $form_fields->data[$f]['prefix'] . '<select id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" onChange="' . $form_fields->data[$f]['onchange'] . '">' . $select_options . '</select >' . $form_fields->data[$f]['suffix'] . '</div>';
-          }
-          break;
-        case 'textarea':
-          $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-textarea"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-          $form_element .= $form_fields->data[$f]['prefix'] . '<textarea id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" >' . $form_fields->data[$f]['def_val'] . '</textarea >' . $form_fields->data[$f]['suffix'] . '</div>';
           break;
         case 'radio': //Buggy
           if ($form_fields->data[$f]['data_table'] != "") {
@@ -309,27 +283,23 @@ class DbForm {
       }
       if ($form_fields->data[$f]['html_type'] != 'hidden') {
         $fieldset[$form_fields->data[$f]['form_field_order']] = $form_element;
-        $ct++;
       }
     }
     ksort($fieldset);
     foreach ($fieldset as $key => $value) {
       $field_out .= $value;
     }
-    $formres .= $field_out;
-    $formres .= $hidden_element . '</form>';
 
     // Render Array
     $render = array(
       'page_title' => !empty($form_param->form_title) ? $form_param->form_title : '',
-      'content'=> $formres, // TEMPORARY TO BE REMOVED
       'form_id' => $form_param->form_id,
       'form_name' => $form_param->form_name,
       'form_action' => $form_action,
       'form_method' => $form_param->form_method,
       'form_onsubmit' => $form_param->form_onsubmit,
       'form_class' => $form_param->form_class,
-      'fields' => $form_fields->data,
+      'fields' => $form_fields->data + $hidden_fields,
     );
 
     $template = $twig->loadTemplate('form.html');
