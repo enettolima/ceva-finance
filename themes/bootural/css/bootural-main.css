@@ -594,7 +594,7 @@ label {
   -webkit-appearance:none;
   -moz-appearance: none;
   -moz-box-sizing: border-box;
-  padding-right: 45px;
+  -webkit-padding-end: 45px;
 }
 .list i {
     background: none repeat scroll 0 0 #FFFFFF;
