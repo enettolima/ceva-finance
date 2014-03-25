@@ -14,49 +14,62 @@
     <div class="panel-body">
       {{ content|raw }}
 
-      <form id="{{ form_id }}" name="{{ form_name }}" method="{{ form_method }}" action="{{ form_action }}" onsubmit="{{ form_onsbumit }}" class="{{ form_class }}" >
+      <form id="{{ form_id }}" name="{{ form_name }}" method="{{ form_method }}" action="{{ form_action }}" onsubmit="{{ form_onsbumit }}" class="form-horizontal {{ form_class }}" >
 
         {% for field in fields %}
 
           {% if field.html_type == 'hidden' %}
             <input type="hidden" data-id="{{ field.id }}" id="{{ field.field_id }}" class="form-control form-hidden" value="{{ field.def_val }}" {{ field.html_options }}>
           {% else %}
-            <div class="input-group {{ field.html_type }}">
+            <div class="form-group {{ field.html_type }}">
 
               {% if field.def_label %}
-                <label>{{ field.def_label }} {% if field.required == true %}<span class="field-required">*</span>{% endif %}</label>
+                <label class="col-sm-2 control-label">{% if field.required == true %}<span class="field-required">*</span>{% endif %} {{ field.def_label }}</label>
+
+                <div class="col-sm-10">
+              {% else %}
+
+                <div class="col-sm-10 col-sm-offset-2">
+
               {% endif %}
 
-              {{ field.prefix }}
+                {{ field.prefix }}
 
-              {# text #}
-              {% if field.html_type == 'text' %}
-                <input type="text" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-text {{ field.css_class }}" value="{{ field.def_val }}" {% if field.html_options %} {{ field.html_options }} {% else %} size="75" {% endif %} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
-              {% endif %}
+                {# readonly #}
+                {% if field.html_type == 'readonly' %}
+                  <input type="text" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-readonly {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} readonly onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                {% endif %}
 
-              {# textarea #}
-              {% if field.html_type == 'textarea' %}
-                <textarea data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-textarea {{ field.css_class }}" {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
-                  {{ field.def_val }}
-                </textarea>
-              {% endif %}
+                {# text #}
+                {% if field.html_type == 'text' %}
+                  <input type="text" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-text {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                {% endif %}
 
-              {# select #}
-              {% if field.html_type == 'list' %}
-                <select data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-select {{ field.css_class }}"  {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
-                  {% for option in field.options %}
-                     <option value="{{ option.value }}" {{ option.status }}>{{ option.label }}</option>
-                  {% endfor %}
-                </select>
-                <i></i>
-              {% endif %}
+                {# textarea #}
+                {% if field.html_type == 'textarea' %}
+                  <textarea data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-textarea {{ field.css_class }}" {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                    {{ field.def_val }}
+                  </textarea>
+                {% endif %}
 
-              {# button/submit #}
-              {% if (field.html_type == 'button' or field.html_type == 'submit') %}
-                <input type="{{ field.html_type }}" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="btn btn-primary {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
-              {% endif %}
+                {# select #}
+                {% if field.html_type == 'list' %}
+                  <select data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-select {{ field.css_class }}"  {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                    {% for option in field.options %}
+                       <option value="{{ option.value }}" {{ option.status }}>{{ option.label }}</option>
+                    {% endfor %}
+                  </select>
+                  <i></i>
+                {% endif %}
 
-              {{ field.suffix }}
+                {# button/submit #}
+                {% if (field.html_type == 'button' or field.html_type == 'submit') %}
+                  <input type="{{ field.html_type }}" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="btn btn-primary {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                {% endif %}
+
+                {{ field.suffix }}
+
+              </div>
 
             </div>
           {% endif %}

@@ -195,6 +195,18 @@ class DbForm {
             $form_fields->data[$f]['options'] = $options;
           }
           break;
+        case 'readonly':
+          if ($form_fields->data[$f]['data_table'] != '') {
+            $dm = new DataManager;
+            $query = "SELECT {$form_fields->data[$f]['data_label']} FROM {$form_fields->data[$f]['data_table']} WHERE {$form_fields->data[$f]['data_value']} = '{$form_fields->data[$f]['def_val']}' AND {$form_fields->data[$f]['data_query']}  ORDER BY {$form_fields->data[$f]['data_sort']} LIMIT 1";
+            $dm->dm_custom_query($query, true);
+            $data_label = $form_fields->data[$f]['data_label'];
+            if (!$dm->$data_label) {
+              $dm->$data_label = '-';
+            }
+            $form_fields->data[$f]['def_val'] = $dm->$data_label;
+          }
+          break;
 
 
         // TODO: Review bellow items
@@ -206,22 +218,6 @@ class DbForm {
           break;
         case 'reset':
           $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-reset"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'readonly':
-          if ($form_fields->data[$f]['data_table'] != '') {
-            $dm = new DataManager;
-            $query = "SELECT {$form_fields->data[$f]['data_label']} FROM {$form_fields->data[$f]['data_table']} WHERE {$form_fields->data[$f]['data_value']} = '{$form_fields->data[$f]['def_val']}' AND {$form_fields->data[$f]['data_query']}  ORDER BY {$form_fields->data[$f]['data_sort']} LIMIT 1";
-            $dm->dm_custom_query($query, true);
-            $data_label = $form_fields->data[$f]['data_label'];
-            if (!$dm->$data_label) {
-              $dm->$data_label = '-';
-            }
-            $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-readonly"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-            $form_element .= $form_fields->data[$f]['prefix'] . $dm->$data_label . '<input type="hidden" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '"' . $form_fields->data[$f]['html_options'] . '/>' . $form_fields->data[$f]['suffix'] . '</div>';
-          } else {
-            $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-readonly"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-            $form_element .= $form_fields->data[$f]['prefix'] . $form_fields->data[$f]['def_val'] . '<input type="hidden" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '"' . $form_fields->data[$f]['html_options'] . '/>' . $form_fields->data[$f]['suffix'] . '</div>';
-          }
           break;
         case 'password':
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-password"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
