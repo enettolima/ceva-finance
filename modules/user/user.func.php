@@ -108,7 +108,7 @@ function admin_new_user() {
     $user = new User();
     $customer = new Customer();
     $frm = new DbForm();
-
+ /*
     // Select the properly levels
     $access_levels = new DataManager();
     $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'] . ' AND al.level > 41 ORDER BY al.level', 'ASSOC');
@@ -119,7 +119,7 @@ function admin_new_user() {
         }
         $user->access_level_options = implode(';', $items);
     }
-    $gt = new Geolocation();
+   $gt = new Geolocation();
     $gt->load_list("ASSOC", "country='US' GROUP BY timezone");
     if ($gt->affected > 0) {
         $items = array();
@@ -128,8 +128,7 @@ function admin_new_user() {
         }
     }
     $timezone_list = implode(';', $items);
-    $user->timezone_list = $timezone_list;
-
+    $user->timezone_list = $timezone_list;*/
     return $frm->build('admin_user_new', $user, $_SESSION['log_access_level']);
 }
 

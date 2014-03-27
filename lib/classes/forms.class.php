@@ -111,8 +111,7 @@ class DbForm {
           // We need to put the hidden fields after all other fields.
           $hidden_fields[] = $form_fields->data[$f];
           unset($form_fields->data[$f]);
-          continue;
-          break;
+          continue; // Get out of the loop
         case 'list':
           $options = array();
           if ($form_fields->data[$f]['data_table'] != '') {
@@ -209,6 +208,7 @@ class DbForm {
           break;
 
 
+
         // TODO: Review bellow items
         case 'fileuploader':
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-file"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
@@ -218,10 +218,6 @@ class DbForm {
           break;
         case 'reset':
           $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-reset"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
-          break;
-        case 'password':
-          $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-password"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-          $form_element .= $form_fields->data[$f]['prefix'] . '<input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '"' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" >' . $form_fields->data[$f]['suffix'] . '</div>';
           break;
         case 'checkbox': //Buggy
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-password"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
@@ -277,14 +273,23 @@ class DbForm {
           $form_element = '<div name="' . $form_fields->data[$f]['form_name'] . '" id="' . $form_fields->data[$f]['form_id'] . '" class="' . $form_fields->data[$f]['style'] . '"><p>' . $form_fields->data[$f]['message'] . '</p></div>';
           break;
       }
-      if ($form_fields->data[$f]['html_type'] != 'hidden') {
-        $fieldset[$form_fields->data[$f]['form_field_order']] = $form_element;
+
+
+      // Fieldset
+      if (empty($form_fields->data[$f]['fieldset_name'])) {
+        $fieldsets['blank'][] = $form_fields->data[$f];
       }
+      else {
+        $fieldsets[$form_fields->data[$f]['fieldset_name']] = $form_fields->data[$f];
+      }
+
     }
-    ksort($fieldset);
-    foreach ($fieldset as $key => $value) {
-      $field_out .= $value;
-    }
+
+    // Get Fieldset information
+    //--
+
+    // Adding the hidden fields
+    $fieldsets['blank'] = $fieldsets['blank'] + $hidden_fields;
 
     // Render Array
     $render = array(
