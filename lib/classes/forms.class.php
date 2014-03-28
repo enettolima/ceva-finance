@@ -274,22 +274,30 @@ class DbForm {
           break;
       }
 
-
       // Fieldset
-      if (empty($form_fields->data[$f]['fieldset_name'])) {
-        $fieldsets['blank'][] = $form_fields->data[$f];
-      }
-      else {
-        $fieldsets[$form_fields->data[$f]['fieldset_name']] = $form_fields->data[$f];
+      if (!empty($form_fields->data[$f]['fieldset_name'])) {
+        $fieldsets[$form_fields->data[$f]['fieldset_name']]['fields'][] = $form_fields->data[$f];
       }
 
     }
 
     // Get Fieldset information
-    //--
+    $fieldset_clause = array();
+    foreach ($fieldsets as $key => $fieldset) {
+      $fieldset_clause[] = "'" . $key . "'";
+    }
+
+    $fs = new DataManager();
+    $fs->dm_load_list("" . NATURAL_DBNAME . "." . FIELDSET_TABLE . "", "ASSOC", "name IN (" . implode(', ', $fieldset_clause) .  ") ORDER BY position");
+    for ($z = 0; $z < $fs->affected; $z++) {
+      $fieldsets[$fs->data[$z]['name']]['id'] = $fs->data[$z]['id'];
+      $fieldsets[$fs->data[$z]['name']]['name'] = $fs->data[$z]['name'];
+      $fieldsets[$fs->data[$z]['name']]['label'] = $fs->data[$z]['label'];
+      $fieldsets[$fs->data[$z]['name']]['css_class'] = $fs->data[$z]['css_class'];
+    }
 
     // Adding the hidden fields
-    $fieldsets['blank'] = $fieldsets['blank'] + $hidden_fields;
+    $fieldsets['blank']['fields'] =  $form_fields->data + $hidden_fields;
 
     // Render Array
     $render = array(
@@ -300,16 +308,17 @@ class DbForm {
       'form_method' => $form_param->form_method,
       'form_onsubmit' => $form_param->form_onsubmit,
       'form_class' => $form_param->form_class,
-      'fields' => $form_fields->data + $hidden_fields,
+      'fieldsets' => $fieldsets, // This includes non fieldsets fields into the blank array
     );
 
     $template = $twig->loadTemplate('form.html');
     $template->display($render);
-    //return $formres;
   }
 
 }
 
+
+// TO BE REMOVED
 class DbFieldset {
 
   function _get_session_var($data) {

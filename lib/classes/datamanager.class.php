@@ -50,7 +50,7 @@
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
-		 //die($query);
+
 		if ($count && !isset($count_query)) {
 			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
 		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
