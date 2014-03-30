@@ -27,6 +27,7 @@ class ListView {
       'page_subtitle' => isset($options['page_subtitle']) ? $options['page_subtitle'] : '',
       'empty_message' => isset($options['empty_message']) ? $options['empty_message'] : '',
       'pager_items' => isset($options['pager_items']) ? $options['pager_items'] : '',
+			'page' => isset($options['page']) ? $options['page'] : 1,
       'search' => isset($options['search']) ? $options['search'] : '',
 			'show_search' => isset($options['show_search']) ? $options['show_search'] : TRUE,
       'limit' => isset($options['limit']) ? $options['limit'] : '',
@@ -45,16 +46,16 @@ class ListView {
 /**
  * This function builds a pager based on given parameters.
  */
-function build_pager($function, $module, $pager_total, $limit, $pager_current = 1, $pager_length = 10) {
+function build_pager($function, $module, $pager_total, $limit, $page = 1, $pager_length = 10) {
   $quantity = ceil($pager_total / $limit);
 
   // Links before current page.
   for ($i = 1; $i <= $quantity; $i++) {
     // theme_link_process_information($text, $formname, $func, $module, $options = array())
     // <a href="javascript:proccess_information('user_list_pager', 'user_list_pager', 'user', null, 'pager_current|1', null, null);">2</a>
-    $items[$i]['link'] = theme_link_process_information($i, $function . '_table_info', $function . '_pager', $module, array('extra_value' => 'pager_current|' . $i));
+    $items[$i]['link'] = theme_link_process_information($i, $function . '_table_info', $function . '_pager', $module, array('extra_value' => 'page|' . $i));
     $items[$i]['class'] = 'pager-item';
-    if ($i == $pager_current) {
+    if ($i == $page) {
       $items[$i]['class'] = 'active';
     }
   }

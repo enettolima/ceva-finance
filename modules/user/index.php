@@ -37,7 +37,7 @@ switch ($fn) {
         print user_list();
         break;
     case 'user_list_pager':
-        print user_list($_GET['search'], $_GET['sort'], $_GET['pager_current']);
+        print user_list($_GET['search'], $_GET['sort'], $_GET['page']);
         break;
     case 'user_list_sort':
         print user_list($_GET['search'], $_GET['sort'], 1);

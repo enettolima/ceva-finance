@@ -2,7 +2,7 @@
 /**
  * List Users
  */
-function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
+function user_list($search = NULL, $sort = NULL, $page = 1) {
 	$module = 'user';
 	$function = 'user_list';
 	$view = new ListView();
@@ -22,7 +22,7 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 	}
 
 	$limit = 2; // PAGER_LIMIT
-	$start = ($pager_current * $limit) - $limit;
+	$start = ($page * $limit) - $limit;
 	// Dial List Table Object
 	$user = new DataManager();
 	$user->dm_load_custom_list("SELECT u.*
@@ -48,7 +48,7 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 			$rows[$j][1] = $user->data[$i]['first_name'];
 			$rows[$j][2] = $user->data[$i]['last_name'];
 			$rows[$j][3] = $user->data[$i]['username'];
-			$rows[$j][4] = theme_link_process_information('', 'user_admin_edit_form', 'user_admin_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j][4] = theme_link_process_information('', 'user_admin_edit_form', 'user_admin_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'icon' => NATURAL_EDIT_ICON, 'response_type' => 'modal'));
 			$rows[$j][5] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
 			$total++;
 		}
@@ -59,7 +59,8 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
-		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $pager_current),
+		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $page),
+		'page' => $page,
 		'search' => $search,
 		'show_search' => TRUE,
 		'limit' => $limit,
@@ -457,35 +458,36 @@ function user_admin_edit_form($user_id) {
  * Build the admin user edit form by Lemu on October 7, 2009
  */
 function save_edit_user($data) {
-    $panel = new Panel();
-    $user = new User();
-    $user->load_single('id = ' . $data['id']);
-    $contact = new Contact();
-    $contact->load_single('id = ' . $data['contact_id']);
-    $error = '';
-    foreach ($user as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-            $error .= validate_user_fields($field, $data[$field]);
-            $user->$field = $data[$field];
-        }
+  $user = new User();
+  $user->load_single('id = ' . $data['id']);
+  $contact = new Contact();
+  $contact->load_single('id = ' . $data['contact_id']);
+  $error = '';
+  foreach ($user as $field => $value) {
+    if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+      $error .= validate_user_fields($field, $data[$field]);
+      $user->$field = $data[$field];
     }
-    foreach ($contact as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-            $error .= validate_user_fields($field, $data[$field]);
-            $contact->$field = $data[$field];
-        }
+  }
+  foreach ($contact as $field => $value) {
+    if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+      $error .= validate_user_fields($field, $data[$field]);
+      $contact->$field = $data[$field];
     }
-    if ($error != '') {
-        print 'ERROR||<br>' . $error;
-        exit;
-    } else {
-        //$user->update('id = ' . $data['id']);
-        $contact->update('id = ' . $data['contact_id']);
-        print 'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
-        if ($_GET['fn'] == 'save_edit_admin_user') {
-            print admin_list_users();
-        }
-    }
+  }
+  if ($error != '') {
+    print 'ERROR||<br>' . $error;
+    exit;
+  }
+	else {
+    $user->update('id = ' . $data['id']);
+    $contact->update('id = ' . $data['contact_id']);
+    print 'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
+
+  	//if ($_GET['fn'] == 'save_edit_admin_user') {
+    //    print admin_list_users();
+    //}
+  }
 }
 
 /**

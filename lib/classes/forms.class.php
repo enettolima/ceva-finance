@@ -25,7 +25,7 @@ class DbForm {
   /**
    * Form builder
    */
-  function build($form_name, $val = NULL, $level = NULL) {
+  function build($form_name, $val = NULL, $level = NULL, $modal = TRUE) {
 
     global $twig;
 
@@ -34,8 +34,6 @@ class DbForm {
     $check_dup = new DataManager();
     $fields = array();
     $hidden_fields = array();
-
-    $formres = '';
 
     $level = ($level == NULL && isset($_SESSION['log_access_level'])) ? $_SESSION['log_access_level'] : $level;
 
@@ -283,8 +281,10 @@ class DbForm {
 
     // Get Fieldset information
     $fieldset_clause = array();
-    foreach ($fieldsets as $key => $fieldset) {
-      $fieldset_clause[] = "'" . $key . "'";
+    if (!empty($fieldsets)) {
+      foreach ($fieldsets as $key => $fieldset) {
+        $fieldset_clause[] = "'" . $key . "'";
+      }
     }
 
     $fs = new DataManager();
@@ -302,13 +302,9 @@ class DbForm {
     // Render Array
     $render = array(
       'page_title' => !empty($form_param->form_title) ? $form_param->form_title : '',
-      'form_id' => $form_param->form_id,
-      'form_name' => $form_param->form_name,
-      'form_action' => $form_action,
-      'form_method' => $form_param->form_method,
-      'form_onsubmit' => $form_param->form_onsubmit,
-      'form_class' => $form_param->form_class,
+      'form' => $form_param,
       'fieldsets' => $fieldsets, // This includes non fieldsets fields into the blank array
+      'modal' => $modal,
     );
 
     $template = $twig->loadTemplate('form.html');

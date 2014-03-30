@@ -856,6 +856,13 @@ label {
 }
 
 /**
+ * Modal
+ */
+.modal {
+  border-radius: 4px;
+}
+
+/**
  * Panel
  */
 .panel-default {

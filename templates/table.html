@@ -45,6 +45,7 @@
       <form id="{{ function }}_table_info" name="{{ function }}_table_info" role= "form" class="form table-info pull-left" action="javascript:process_information('{{ function }}_table_info', '{{ function }}_search', '{{ module }}',  null, null, null)">
         <input name="limit" type="hidden"  value="{{ limit }}" />
         <input name="sort" type="hidden"  value="{{ sort }}" />
+        <input name="page" type="hidden"  value="{{ page }}" />
         {% if show_search %}
           <div class="input-group input-group-sm">
             <span class="input-group-addon"><i class="fa fa-search"></i></span>

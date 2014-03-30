@@ -126,7 +126,7 @@
 			$this->total_records = $total_records[0];
 		}
 
-	  //die($query);
+	  //print($query);
 		$query_result = mysql_query($query, $dblink);
    	$this->affected = mysql_affected_rows();
     if(!$this->affected) {
