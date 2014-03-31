@@ -30,7 +30,6 @@ class ListView {
 			'page' => isset($options['page']) ? $options['page'] : 1,
       'search' => isset($options['search']) ? $options['search'] : '',
 			'show_search' => isset($options['show_search']) ? $options['show_search'] : TRUE,
-      'limit' => isset($options['limit']) ? $options['limit'] : '',
       'function' => isset($options['function']) ? $options['function'] : '',
       'module' => isset($options['module']) ? $options['module'] : '',
       'update_row_id' => isset($options['update_row_id']) ? $options['update_row_id'] : '',

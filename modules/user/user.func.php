@@ -63,7 +63,6 @@ function user_list($search = NULL, $sort = NULL, $page = 1) {
 		'page' => $page,
 		'search' => $search,
 		'show_search' => TRUE,
-		'limit' => $limit,
 		'function' => $function,
 		'module' => $module,
 		'update_row_id' => '',
@@ -130,7 +129,7 @@ function admin_new_user() {
     }
     $timezone_list = implode(';', $items);
     $user->timezone_list = $timezone_list;*/
-    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level']);
+    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level'], FALSE);
 }
 
 /**
@@ -374,7 +373,7 @@ function remove_user($user_id) {
         $contact->remove('id = ' . $user->contact_id);
         // Remove user
         $user->remove('id = ' . $user_id);
-        $resp = 'User ' . $user->first_name . ' ' . $user->last_name . ' was removed sucessfully!';
+        $resp = 'User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!';
         $panel = new Panel();
         return $panel->build_panel('', '', $resp);
     } else {
@@ -462,21 +461,24 @@ function save_edit_user($data) {
   $user->load_single('id = ' . $data['id']);
   $contact = new Contact();
   $contact->load_single('id = ' . $data['contact_id']);
-  $error = '';
+  $errors = array();
   foreach ($user as $field => $value) {
     if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-      $error .= validate_user_fields($field, $data[$field]);
+      $errors[] = validate_user_fields($field, $data[$field]);
       $user->$field = $data[$field];
     }
   }
   foreach ($contact as $field => $value) {
     if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-      $error .= validate_user_fields($field, $data[$field]);
+      $errors[] = validate_user_fields($field, $data[$field]);
       $contact->$field = $data[$field];
     }
   }
-  if ($error != '') {
-    print 'ERROR||<br>' . $error;
+  if (!empty($errors)) {
+		foreach($errors as $error) {
+		  natural_set_message($error, 'error');
+		}
+    print 'ERROR||';
     exit;
   }
 	else {
@@ -499,15 +501,15 @@ function validate_user_fields($key, $value) {
         case 'first_name':
         case 'last_name':
             if ($value == '') {
-                return 'Field ' . $field_name . ' is empty!<br>';
+                return 'Field ' . $field_name . ' is empty!';
             }
             break;
         case 'pin':
             if (!is_numeric($value)) {
-                return 'Invalid format for ' . $field_name . '!<br/>';
+                return 'Invalid format for ' . $field_name . '!';
             }
             if (strlen($value) != 4) {
-                return 'Only 4 digits for ' . $field_name . '!<br/>';
+                return 'Only 4 digits for ' . $field_name . '!';
             }
             break;
         case 'default_caller_id':
@@ -519,20 +521,20 @@ function validate_user_fields($key, $value) {
         case 'fax':
             // Mobile phone is required
             if ($value == '' && $key == 'mobile_phone') {
-                return 'Field ' . $field_name . ' is empty!<br>';
+                return 'Field ' . $field_name . ' is empty!';
             }
             // If there is a value, make the validation if is a valid 10 digits phone number
             if ($value) {
                 if (!is_numeric($value)) {
-                    return 'Invalid format for ' . $field_name . '!<br/>';
+                    return 'Invalid format for ' . $field_name . '!';
                 } elseif (strlen($value) != 10 || substr($value, 0, 1) < 2) {
-                    return 'Invalid format for ' . $field_name . ', please insert a valid phone number!<br/>';
+                    return 'Invalid format for ' . $field_name . ', please insert a valid phone number!';
                 }
             }
             break;
         case 'email':
             if (!(isValidEmail($value))) {
-                return 'Invalid format for ' . $field_name . ', please insert a valid email!<br/>';
+                return 'Invalid format for ' . $field_name . ', please insert a valid email!';
             }
             break;
         default:
