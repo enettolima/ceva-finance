@@ -461,31 +461,30 @@ function save_edit_user($data) {
   $user->load_single('id = ' . $data['id']);
   $contact = new Contact();
   $contact->load_single('id = ' . $data['contact_id']);
-  $errors = array();
-  foreach ($user as $field => $value) {
-    if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-      $errors[] = validate_user_fields($field, $data[$field]);
-      $user->$field = $data[$field];
-    }
-  }
-  foreach ($contact as $field => $value) {
-    if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-      $errors[] = validate_user_fields($field, $data[$field]);
-      $contact->$field = $data[$field];
-    }
-  }
-  if (!empty($errors)) {
-		foreach($errors as $error) {
-		  natural_set_message($error, 'error');
+  // Validate User Fields
+	$error = validate_user_fields($data);
+  if (!empty($error)) {
+		foreach($error as $msg) {
+		  natural_set_message($msg, 'error');
 		}
-    print 'ERROR||';
+    print 'ERROR||' . print_r($error, TRUE);
     exit;
   }
 	else {
+		foreach ($user as $field => $value) {
+			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+				$user->$field = $data[$field];
+			}
+		}
+		foreach ($contact as $field => $value) {
+			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+				$contact->$field = $data[$field];
+			}
+		}
     $user->update('id = ' . $data['id']);
     $contact->update('id = ' . $data['contact_id']);
-    print 'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
-
+    $msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
+    natural_set_message($msg, 'success');
   	//if ($_GET['fn'] == 'save_edit_admin_user') {
     //    print admin_list_users();
     //}
@@ -495,52 +494,54 @@ function save_edit_user($data) {
 /**
  * Validate User Admin Fields
  */
-function validate_user_fields($key, $value) {
-    $field_name = ucwords(str_replace('_', ' ', $key));
+function validate_user_fields($fields) {
+	$error = array();
+	foreach ($fields as $key => $value) {
+	  $field_name = ucwords(str_replace('_', ' ', $key));
     switch ($key) {
-        case 'first_name':
-        case 'last_name':
-            if ($value == '') {
-                return 'Field ' . $field_name . ' is empty!';
-            }
-            break;
-        case 'pin':
-            if (!is_numeric($value)) {
-                return 'Invalid format for ' . $field_name . '!';
-            }
-            if (strlen($value) != 4) {
-                return 'Only 4 digits for ' . $field_name . '!';
-            }
-            break;
-        case 'default_caller_id':
-        case 'home_phone':
-        case 'home_phone':
-        case 'work_phone':
-        case 'work_extension':
-        case 'mobile_phone':
-        case 'fax':
-            // Mobile phone is required
-            if ($value == '' && $key == 'mobile_phone') {
-                return 'Field ' . $field_name . ' is empty!';
-            }
-            // If there is a value, make the validation if is a valid 10 digits phone number
-            if ($value) {
-                if (!is_numeric($value)) {
-                    return 'Invalid format for ' . $field_name . '!';
-                } elseif (strlen($value) != 10 || substr($value, 0, 1) < 2) {
-                    return 'Invalid format for ' . $field_name . ', please insert a valid phone number!';
-                }
-            }
-            break;
-        case 'email':
-            if (!(isValidEmail($value))) {
-                return 'Invalid format for ' . $field_name . ', please insert a valid email!';
-            }
-            break;
-        default:
-            return '';
-            break;
+      case 'first_name':
+      case 'last_name':
+        if ($value == '') {
+          $error[] = 'Field ' . $field_name . ' is empty!';
+        }
+        break;
+      case 'pin':
+        if (!is_numeric($value)) {
+          $error[] = 'Invalid format for ' . $field_name . '!';
+        }
+        if (strlen($value) != 4) {
+          $error[] = 'Only 4 digits for ' . $field_name . '!';
+        }
+        break;
+      case 'default_caller_id':
+      case 'home_phone':
+      case 'home_phone':
+      case 'work_phone':
+      case 'work_extension':
+      case 'mobile_phone':
+      case 'fax':
+        // Mobile phone is required
+        if ($value == '' && $key == 'mobile_phone') {
+          $error[] = 'Field ' . $field_name . ' is empty!';
+        }
+        // If there is a value, make the validation if is a valid 10 digits phone number
+        if ($value) {
+          if (!is_numeric($value)) {
+            $error[] = 'Invalid format for ' . $field_name . '!';
+          }
+      		elseif (strlen($value) != 10 || substr($value, 0, 1) < 2) {
+            $error[] = 'Invalid format for ' . $field_name . ', please insert a valid phone number!';
+          }
+        }
+        break;
+      case 'email':
+        if (!(isValidEmail($value))) {
+          $error[] = 'Invalid format for ' . $field_name . ', please insert a valid email!';
+        }
+        break;
     }
+	}
+	return $error;
 }
 
 ?>
