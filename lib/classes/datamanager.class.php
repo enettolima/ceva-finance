@@ -338,7 +338,7 @@
   public function dm_custom_update($query){
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-setcookie('query', $query);
+
     $query_result = mysql_query($query,$dblink);
     $this->affected = mysql_affected_rows();
     if(!$this->affected){
