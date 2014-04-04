@@ -14,7 +14,7 @@
   <div class="panel-body table-responsive">
 
     {% if rows is empty %}
-      {{ empty_message }}
+      <p>{{ empty_message }}</p>
     {% else %}
 
 
@@ -41,27 +41,28 @@
 
       </table>
 
-      {# Table Form - Search and Helper form to send additional parameters #}
-      <form id="{{ function }}_table_info" name="{{ function }}_table_info" role= "form" class="form table-info pull-left" action="javascript:process_information('{{ function }}_table_info', '{{ function }}_search', '{{ module }}',  null, null, null)">
-        <input name="sort" type="hidden"  value="{{ sort }}" />
-        <input name="page" type="hidden"  value="{{ page }}" />
-        {% if show_search %}
-          <div class="input-group input-group-sm">
-            <span class="input-group-addon"><i class="fa fa-search"></i></span>
-            <input class="form-control" name="search" type="text" placeholder="Search" value="{{ search }}" />
-          </div>
-        {% endif %}
-      </form>
 
-      {# Pagination #}
-      {% if pager_items %}
-        <ul class="pagination pagination-sm pull-right">
-        {% for item in pager_items%}
-          <li class={{ item.class }}>{{ item.link|raw }}</li>
-        {% endfor %}
-        </ul>
+    {% endif %}
+
+    {# Table Form - Search and Helper form to send additional parameters #}
+    <form id="{{ function }}_table_info" name="{{ function }}_table_info" role= "form" class="form table-info pull-left" action="javascript:process_information('{{ function }}_table_info', '{{ function }}_search', '{{ module }}',  null, null, null)">
+      <input name="sort" type="hidden"  value="{{ sort }}" />
+      <input name="page" type="hidden"  value="{{ page }}" />
+      {% if show_search %}
+        <div class="input-group input-group-sm">
+          <span class="input-group-addon"><i class="fa fa-search"></i></span>
+          <input class="form-control" name="search" type="text" placeholder="Search" value="{{ search }}" />
+        </div>
       {% endif %}
+    </form>
 
+    {# Pagination #}
+    {% if pager_items %}
+      <ul class="pagination pagination-sm pull-right">
+      {% for item in pager_items%}
+        <li class={{ item.class }}>{{ item.link|raw }}</li>
+      {% endfor %}
+      </ul>
     {% endif %}
 
   </div>

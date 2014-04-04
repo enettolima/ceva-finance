@@ -485,9 +485,6 @@ function save_edit_user($data) {
     $contact->update('id = ' . $data['contact_id']);
     $msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
     natural_set_message($msg, 'success');
-  	//if ($_GET['fn'] == 'save_edit_admin_user') {
-    //    print admin_list_users();
-    //}
   }
 }
 
