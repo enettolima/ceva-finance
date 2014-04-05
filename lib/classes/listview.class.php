@@ -140,7 +140,7 @@ function build_search_query($query, $search_fields, $exceptions = NULL) {
         $query_fields[] = "$field LIKE '%$query%'";
       }
     }
-    $query = '(' . implode(' OR ', $query_fields) . ')';
+    $query = ' AND (' . implode(' OR ', $query_fields) . ')';
   }
   return $query;
 }

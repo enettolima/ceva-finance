@@ -2,18 +2,27 @@
 /**
  * User List.
  */
-function user_list($search = NULL, $sort = NULL, $page = 1) {
+function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 	$module = 'user';
 	$function = 'user_list';
 	$view = new ListView();
 
+	// Row Id for update only row
+	if (!empty($row_id)) {
+		$row_id = 'u.id = ' . $row_id;
+	}
+	else {
+		$row_id = 'u.id != 0';
+	}
+
+	// Search
 	if (!empty($search)) {
 		$search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
 		$exceptions = array();
 		$search_query = build_search_query($search, $search_fields, $exceptions);
 	}
 	else {
-		$search_query = 'u.id != 0';
+		$search_query = '';
 	}
 
 	// Sort
@@ -27,7 +36,7 @@ function user_list($search = NULL, $sort = NULL, $page = 1) {
 	$user = new DataManager();
 	$user->dm_load_custom_list("SELECT u.*
 		FROM " . NATURAL_DBNAME . ".user u
-		WHERE $search_query
+		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
 
@@ -48,8 +57,8 @@ function user_list($search = NULL, $sort = NULL, $page = 1) {
 			$rows[$j]['first_name'] = $user->data[$i]['first_name'];
 			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
 			$rows[$j]['username'] = $user->data[$i]['username'];
-			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'icon' => NATURAL_EDIT_ICON, 'response_type' => 'modal'));
-			$rows[$j]['delete'] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
+			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
 
@@ -122,7 +131,7 @@ function user_edit_form_submit($data) {
 		foreach($error as $msg) {
 		  natural_set_message($msg, 'error');
 		}
-    return 'ERROR||' . print_r($error, TRUE);
+    return 'ERROR||';
     exit;
   }
 	else {
@@ -140,10 +149,10 @@ function user_edit_form_submit($data) {
     $contact->update('id = ' . $data['contact_id']);
     $msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
     natural_set_message($msg, 'success');
-		return json_encode($user);
+		// return json_encode($user);
+		return user_list($data['id']);
   }
 }
-
 
 /**
  * User Validate Fields.
@@ -198,6 +207,52 @@ function user_validate_fields($fields) {
 	return $error;
 }
 
+/**
+ * User Delete Form Builder.
+ */
+function user_delete_form($user_id) {
+  $user = new User();
+  $user->load_single('id = ' . $user_id);
+  if ($user->affected > 0) {
+    $frm = new DbForm();
+		$user->first_last_name = $user->first_name . ' ' . $user->last_name;
+    $frm->build('user_delete_form', $user, $_SESSION['log_access_level']);
+  }
+  else {
+		natural_set_message('Problems loading user ' . $user_id, 'error');
+	  return 'ERROR||';
+  }
+}
+
+/**
+ * User Delete Form Submit.
+ */
+function user_delete_form_submit($data) {
+  $user = new User();
+  $user->load_single('id = ' . $data['id']);
+  if ($user->affected > 0) {
+    // Remove contact
+    $contact = new Contact();
+    //$contact->remove('id = ' . $user->contact_id);
+    // Remove user
+    //$user->remove('id = ' . $data['id']);
+    natural_set_message('User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!', 'success');
+    return $data['id'];
+  }
+	else {
+		natural_set_message('Problems removing user ' . $user->first_name . ' ' . $user->last_name . '!', 'error');
+    return 'ERROR||';
+  }
+}
+
+
+
+
+
+
+
+
+// TODO: Review Code
 /**
  * Create new users inside the account management
  */

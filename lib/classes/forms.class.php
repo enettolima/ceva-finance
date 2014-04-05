@@ -204,6 +204,9 @@ class DbForm {
             $form_fields->data[$f]['def_val'] = $dm->$data_label;
           }
           break;
+        case 'submit':
+          $submit_text = $form_fields->data[$f]['def_val'];
+          break;
 
 
 
@@ -267,9 +270,6 @@ class DbForm {
           $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-radio"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
           $form_element .= $form_fields->data[$f]['prefix'] . $radio_element . $form_fields->data[$f]['suffix'] . '</div>';
           break;
-        case 'message':
-          $form_element = '<div name="' . $form_fields->data[$f]['form_name'] . '" id="' . $form_fields->data[$f]['form_id'] . '" class="' . $form_fields->data[$f]['style'] . '"><p>' . $form_fields->data[$f]['message'] . '</p></div>';
-          break;
       }
 
       // Fieldset
@@ -307,6 +307,7 @@ class DbForm {
       'page_title' => !empty($form_param->form_title) ? $form_param->form_title : '',
       'form' => $form_param,
       'fieldsets' => $fieldsets, // This includes non fieldsets fields into the blank array
+      'submit_text' => !empty($submit_text) ? $submit_text : 'Save',
       'modal' => $modal,
     );
 
