@@ -107,7 +107,7 @@ class DbForm {
       switch ($form_fields->data[$f]['html_type']) {
         case 'hidden':
           // We need to put the hidden fields after all other fields.
-          $hidden_fields[] = $form_fields->data[$f];
+          $hidden_fields[$form_fields->data[$f]['id']] = $form_fields->data[$f];
           unset($form_fields->data[$f]);
           continue; // Get out of the loop
         case 'list':
@@ -297,7 +297,10 @@ class DbForm {
     }
 
     // Adding the hidden fields
-    $fieldsets['blank']['fields'] =  $form_fields->data + $hidden_fields;
+    if (!empty($form_fields->data)) {
+      $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
+    }
+
 
     // Render Array
     $render = array(

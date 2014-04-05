@@ -31,9 +31,9 @@
 
         <tbody>
           {% for row, columns in rows %}
-            <tr data-row="{{ loop.index }}" data-object-id="{{ rows[row][0] }}">
-            {% for column in columns %}
-              <td data-row-column="{{ loop.parent.loop.index }}:{{ loop.index }}">{{ column|raw }}</td>
+            <tr data-row="{{ loop.index }}" data-info-id="{{ rows[row].row_id }}">
+            {% for key, column in columns if key != 'row_id' %}
+              <td data-info-field="{{ key }}">{{ column|raw }}</td>
             {% endfor %}
             </tr>
           {% endfor %}

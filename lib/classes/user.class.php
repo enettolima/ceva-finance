@@ -49,6 +49,7 @@
 		public function update($upd_rule){
 			$NATURAL_key = NATURAL_MAGIC_KEY;
 			parent::dm_custom_update("UPDATE ".NATURAL_DBNAME.".user SET group_id='{$this->group_id}',
+      id='{$this->id}',
 			first_name='{$this->first_name}',
 			last_name='{$this->last_name}',
 			contact_id='{$this->contact_id}',
@@ -61,7 +62,7 @@
 			preferred_language='{$this->preferred_language}',
       dashboard_1='".serialize($this->dashboard_1)."',
       dashboard_2='".serialize($this->dashboard_2)."' WHERE ".$upd_rule);
-      $this->id = $this->dbid;
+      //$this->id = $this->dbid;
     }
     public function remove($rec_key){
       parent::dm_remove(NATURAL_DBNAME . ".user", $rec_key);
