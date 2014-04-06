@@ -164,8 +164,8 @@ function user_validate_fields($fields) {
     switch ($key) {
       case 'first_name':
       case 'last_name':
-        if ($value == '') {
-          $error[] = 'Field ' . $field_name . ' is empty!';
+        if (trim($value) == '') {
+          $error[] = 'Field ' . $field_name . ' is required!';
         }
         break;
       case 'pin':
@@ -185,7 +185,7 @@ function user_validate_fields($fields) {
       case 'fax':
         // Mobile phone is required
         if ($value == '' && $key == 'mobile_phone') {
-          $error[] = 'Field ' . $field_name . ' is empty!';
+          $error[] = 'Field ' . $field_name . ' is required!';
         }
         // If there is a value, make the validation if is a valid 10 digits phone number
         if ($value) {
