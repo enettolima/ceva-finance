@@ -824,18 +824,18 @@ label {
     padding: 5px 10px 15px 25px;
 }
 .bs-callout.bs-callout-default {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #e1e1e8;
 }
 .bs-callout.bs-callout-success {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #f4f8fa;
     border-left-color: #3C8DBC;
 }
 .bs-callout.bs-callout-warning {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #fcf8f2;
     border-left-color: #F7CB17;
 }
 .bs-callout.bs-callout-danger {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #fdf7f7;
     border-left-color: #D9534F;
 }
 .bs-callout.bs-callout-info {

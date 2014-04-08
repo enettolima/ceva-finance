@@ -58,6 +58,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
 			$rows[$j]['username'] = $user->data[$i]['username'];
 			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			//$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
@@ -113,7 +114,7 @@ function user_edit_form($user_id) {
   }
   else {
 		natural_set_message('Problems loading user ' . $user_id, 'error');
-	  return 'ERROR||';
+	  return FALSE;
   }
 }
 
@@ -131,8 +132,7 @@ function user_edit_form_submit($data) {
 		foreach($error as $msg) {
 		  natural_set_message($msg, 'error');
 		}
-    return 'ERROR||';
-    exit;
+    return FALSE;
   }
 	else {
 		foreach ($user as $field => $value) {
@@ -146,10 +146,11 @@ function user_edit_form_submit($data) {
 			}
 		}
     $user->update('id = ' . $data['id']);
-    $contact->update('id = ' . $data['contact_id']);
-    $msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
-    natural_set_message($msg, 'success');
-		// return json_encode($user);
+		$contact->update('id = ' . $data['contact_id']);
+		if ($user->affected > 0) {
+			$msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
+		  natural_set_message($msg, 'success');
+		}
 		return user_list($data['id']);
   }
 }
@@ -220,7 +221,7 @@ function user_delete_form($user_id) {
   }
   else {
 		natural_set_message('Problems loading user ' . $user_id, 'error');
-	  return 'ERROR||';
+	  return FALSE;
   }
 }
 
@@ -241,7 +242,7 @@ function user_delete_form_submit($data) {
   }
 	else {
 		natural_set_message('Problems removing user ' . $user->first_name . ' ' . $user->last_name . '!', 'error');
-    return 'ERROR||';
+    return FALSE;
   }
 }
 
