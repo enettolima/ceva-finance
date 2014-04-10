@@ -19,7 +19,7 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		$sort = 'u.first_name DESC';
 	}
 
-	$limit = 2; // PAGER_LIMIT
+	$limit = PAGER_LIMIT; // PAGER_LIMIT
 	$start = ($pager_current * $limit) - $limit;
 	// Dial List Table Object
 	$user = new DataManager();
@@ -46,7 +46,7 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 			$rows[$j][1] = $user->data[$i]['first_name'];
 			$rows[$j][2] = $user->data[$i]['last_name'];
 			$rows[$j][3] = $user->data[$i]['username'];
-			$rows[$j][4] = theme_link_process_information('', 'admin_user_edit', 'edit_admin_user', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'slide', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j][4] = theme_link_process_information('', 'admin_user_edit', 'edit_admin_user', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_EDIT_ICON));
 			$rows[$j][5] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
 			$total++;
 		}
