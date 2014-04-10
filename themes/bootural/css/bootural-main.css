@@ -532,11 +532,31 @@ body > .header .logo .icon {
  * Form elements
  * All form elements including input, select, textarea etc.
  */
+.form-control > .form-control,
+.form-control > .input-group-addon,
+.form-control > .input-group-btn > .btn,
+.form-control.list .form-control:not(:first-child):not(:last-child),
 .form-control {
-  -webkit-border-radius: 0px !important;
-  -moz-border-radius: 0px !important;
-  border-radius: 0px !important;
+  border-radius: 2px;
   box-shadow: none;
+  position: relative;
+}
+
+.form-control .input-group-addon { /* Input group */
+  border-radius: 0;
+  background-color: #f4f4f4;
+}
+label {
+  color: #333333;
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 19px;
+  margin-bottom: 6px;
+  text-align: left;
+}
+.field-required {
+  color: #999;
 }
 .form-control:focus {
   border-color: #3c8dbc !important;
@@ -563,21 +583,47 @@ body > .header .logo .icon {
   border-color: #f56954 !important;
   box-shadow: none;
 }
-.input-group .input-group-addon { /* Input group */
-  border-radius: 0;
-  background-color: #f4f4f4;
-}
 .btn-group-vertical .btn.btn-flat:first-of-type, /* button groups */
 .btn-group-vertical .btn.btn-flat:last-of-type {
   border-radius: 0;
 }
-.checkbox, /* Checkbox and radio inputs */
-.radio {
+.form-checkbox, /* Checkbox and radio inputs */
+.form-radio {
   padding-left: 0;
+}
+.form-select {
+  -webkit-appearance:none;
+  -moz-appearance: none;
+  -moz-box-sizing: border-box;
+  -webkit-padding-end: 45px;
+}
+.list i {
+    background: none repeat scroll 0 0 #FFFFFF;
+    box-shadow: 0 0 0 9px #FFFFFF;
+    height: 11px;
+    position: absolute;
+    top: 12px;
+    right: 29px;
+    width: 5px;
+    z-index: 999;
+}
+.list i:before {
+  border-top: 4px solid #404040;
+  top: 0;
+}
+.list i:after,
+.list i:before {
+  border-left: 4px solid rgba(0, 0, 0, 0);
+  border-right: 4px solid rgba(0, 0, 0, 0);
+  content: "";
+  position: absolute;
+  right: 0;
 }
 .form.table-info {
   margin: 20px 0;
+  max-width: 185px;
 }
+
 
 /**
  * Buttons
@@ -778,35 +824,46 @@ body > .header .logo .icon {
     padding: 5px 10px 15px 25px;
 }
 .bs-callout.bs-callout-default {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #e1e1e8;
 }
 .bs-callout.bs-callout-success {
-    background: none repeat scroll 0 0 #FFFFFF;
-    border-left-color: #65BD77;
+    background: none repeat scroll 0 0 #f4f8fa;
+    border-left-color: #3C8DBC;
 }
 .bs-callout.bs-callout-warning {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #fcf8f2;
     border-left-color: #F7CB17;
 }
 .bs-callout.bs-callout-danger {
-    background: none repeat scroll 0 0 #FFFFFF;
+    background: none repeat scroll 0 0 #fdf7f7;
     border-left-color: #D9534F;
 }
 .bs-callout.bs-callout-info {
     background: none repeat scroll 0 0 #FFFFFF;
     border-left-color: #4393D8;
 }
-.bs-callout.bs-callout-success h4 {
-    color: #65BD77;
+.bs-callout.bs-callout-success h4,
+.bs-callout.bs-callout-success span {
+    color: #3C8DBC;
 }
-.bs-callout.bs-callout-warning h4 {
+.bs-callout.bs-callout-warning h4,
+.bs-callout.bs-callout-warning span {
     color: #F7CB17;
 }
-.bs-callout.bs-callout-danger h4 {
+.bs-callout.bs-callout-danger h4,
+.bs-callout.bs-callout-danger span {
     color: #D9534F;
 }
-.bs-callout.bs-callout-info h4 {
+.bs-callout.bs-callout-info h4,
+.bs-callout.bs-callout-info span {
     color: #4393D8;
+}
+
+/**
+ * Modal
+ */
+.modal-content {
+  border-radius: 4px;
 }
 
 /**
@@ -815,6 +872,38 @@ body > .header .logo .icon {
 .panel-default {
   background-color: rgba(255, 255, 255, 0.6);
   border-radius: 0;
+}
+
+/**
+ * Pagination
+ */
+.pagination,
+.pagination-sm > li:first-child > a,
+.pagination-sm > li:first-child > span {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+
+.pagination-sm > li:last-child > a,
+.pagination-sm > li:last-child > span {
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+  color: #777;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #999;
 }
 
 /**

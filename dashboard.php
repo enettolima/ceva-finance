@@ -31,7 +31,7 @@ if ($_SESSION['log_username']) {
     $user_full_name = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
     $version = NATURAL_VERSION . ' - r.' . $module->version;
     $_SESSION['log_interface'] = 'skin-gray';
-
+    
     // Twig Menu
     $menu = $twig->render(
       'menu.html',

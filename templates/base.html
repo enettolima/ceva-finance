@@ -17,6 +17,8 @@
     <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
     <!-- Loading -->
     <link href="{{ path_to_theme }}css/bootural-loading.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Notifications -->
+    <link href="{{ path_to_theme }}css/bootural-notifications.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
     <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
     {% endblock %}
@@ -63,6 +65,10 @@
      {% endblock %}
     </div>
 
+
+    <!-- Modal -->
+    <div id="modal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true"></div>
+
     <!-- Loading -->
     <div id="circleG" class="loading">
       <div id="circleG_1" class="circleG"></div>
@@ -78,7 +84,8 @@
     <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script>
     <!-- Bootstrap v3.1.1 (http://getbootstrap.com) -->
     <script type="text/javascript" src="{{ path_to_theme }}js/bootstrap.min.js"></script>
-
+    <!-- Notifications -->
+    <script type="text/javascript" src="{{ path_to_theme }}js/notifications.min.js"></script>
 
     <!-- Natural Controler -->
     <script type="text/javascript" src="lib/js/controller.js"></script>

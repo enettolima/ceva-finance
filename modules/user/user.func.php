@@ -1,17 +1,28 @@
 <?
 /**
- * List Users
+ * User List.
  */
-function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
+function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+	$module = 'user';
+	$function = 'user_list';
 	$view = new ListView();
 
+	// Row Id for update only row
+	if (!empty($row_id)) {
+		$row_id = 'u.id = ' . $row_id;
+	}
+	else {
+		$row_id = 'u.id != 0';
+	}
+
+	// Search
 	if (!empty($search)) {
 		$search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
 		$exceptions = array();
 		$search_query = build_search_query($search, $search_fields, $exceptions);
 	}
 	else {
-		$search_query = 'u.id != 0';
+		$search_query = '';
 	}
 
 	// Sort
@@ -19,13 +30,14 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		$sort = 'u.first_name DESC';
 	}
 
-	$limit = PAGER_LIMIT; // PAGER_LIMIT
-	$start = ($pager_current * $limit) - $limit;
+	$limit = 2; // PAGER_LIMIT
+	$start = ($page * $limit) - $limit;
+
 	// Dial List Table Object
 	$user = new DataManager();
 	$user->dm_load_custom_list("SELECT u.*
 		FROM " . NATURAL_DBNAME . ".user u
-		WHERE $search_query
+		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
 
@@ -39,16 +51,16 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		$headers[] = array('display' => 'Delete', 'field' => NULL);
 		$headers = build_sort_header('user_list', 'user', $headers, $sort);
 
-		$total = 0;
 		for ($i = 0; $i < $user->affected; $i++) {
 			$j = $i + 1;
-			$rows[$j][0] = $user->data[$i]['id'];
-			$rows[$j][1] = $user->data[$i]['first_name'];
-			$rows[$j][2] = $user->data[$i]['last_name'];
-			$rows[$j][3] = $user->data[$i]['username'];
-			$rows[$j][4] = theme_link_process_information('', 'admin_user_edit', 'edit_admin_user', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_EDIT_ICON));
-			$rows[$j][5] = theme_link_process_information('', 'null', 'remove_user', 'user', array('ask_confirm' => 'Are you sure you want to remove this user?', 'extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_el' => 'this', 'response_type' => 'remove_row', 'icon' => NATURAL_REMOVE_ICON));
-			$total++;
+			$rows[$j]['row_id'] = $user->data[$i]['id'];
+			$rows[$j]['id'] = $user->data[$i]['id'];
+			$rows[$j]['first_name'] = $user->data[$i]['first_name'];
+			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
+			$rows[$j]['username'] = $user->data[$i]['username'];
+			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			//$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
 
@@ -57,12 +69,12 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
-		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $pager_current),
+		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $page),
+		'page' => $page,
 		'search' => $search,
 		'show_search' => TRUE,
-		'limit' => $limit,
-		'function' => 'user_list',
-		'module' => 'user',
+		'function' => $function,
+		'module' => $module,
 		'update_row_id' => '',
 	  'table_form_id' => '',
 		'table_form_process' => '',
@@ -73,6 +85,176 @@ function user_list($search = NULL, $sort = NULL, $pager_current = 1) {
   return $listview;
 }
 
+/**
+ * User Edit Form Builder.
+ */
+function user_edit_form($user_id) {
+  $user = new User();
+  $user->load_single('id = ' . $user_id);
+  if ($user->affected > 0) {
+    $frm = new DbForm();
+    // Contact info
+    $contact = new Contact();
+    $contact->load_single('id = ' . $user->contact_id);
+    foreach ($contact as $field => $value) {
+      if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+        $user->$field = $value;
+      }
+    }
+    // Select the properly levels
+    $access_levels = new DataManager();
+    $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+    if ($access_levels->affected) {
+      $items = array();
+      foreach ($access_levels->data as $access_level) {
+        $items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+      }
+      $user->access_level_options = implode(';', $items);
+    }
+    $frm->build('user_edit_form', $user, $_SESSION['log_access_level']);
+  }
+  else {
+		natural_set_message('Problems loading user ' . $user_id, 'error');
+	  return FALSE;
+  }
+}
+
+/**
+ * User Edit Form Submit.
+ */
+function user_edit_form_submit($data) {
+  $user = new User();
+  $user->load_single('id = ' . $data['id']);
+  $contact = new Contact();
+  $contact->load_single('id = ' . $data['contact_id']);
+  // Validate User Fields
+	$error = user_validate_fields($data);
+  if (!empty($error)) {
+		foreach($error as $msg) {
+		  natural_set_message($msg, 'error');
+		}
+    return FALSE;
+  }
+	else {
+		foreach ($user as $field => $value) {
+			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+				$user->$field = $data[$field];
+			}
+		}
+		foreach ($contact as $field => $value) {
+			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+				$contact->$field = $data[$field];
+			}
+		}
+    $user->update('id = ' . $data['id']);
+		$contact->update('id = ' . $data['contact_id']);
+		if ($user->affected > 0) {
+			$msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
+		  natural_set_message($msg, 'success');
+		}
+		return user_list($data['id']);
+  }
+}
+
+/**
+ * User Validate Fields.
+ */
+function user_validate_fields($fields) {
+	$error = array();
+	foreach ($fields as $key => $value) {
+	  $field_name = ucwords(str_replace('_', ' ', $key));
+    switch ($key) {
+      case 'first_name':
+      case 'last_name':
+        if (trim($value) == '') {
+          $error[] = 'Field ' . $field_name . ' is required!';
+        }
+        break;
+      case 'pin':
+        if (!is_numeric($value)) {
+          $error[] = 'Invalid format for ' . $field_name . '!';
+        }
+        if (strlen($value) != 4) {
+          $error[] = 'Only 4 digits for ' . $field_name . '!';
+        }
+        break;
+      case 'default_caller_id':
+      case 'home_phone':
+      case 'home_phone':
+      case 'work_phone':
+      case 'work_extension':
+      case 'mobile_phone':
+      case 'fax':
+        // Mobile phone is required
+        if ($value == '' && $key == 'mobile_phone') {
+          $error[] = 'Field ' . $field_name . ' is required!';
+        }
+        // If there is a value, make the validation if is a valid 10 digits phone number
+        if ($value) {
+          if (!is_numeric($value)) {
+            $error[] = 'Invalid format for ' . $field_name . '!';
+          }
+      		elseif (strlen($value) != 10 || substr($value, 0, 1) < 2) {
+            $error[] = 'Invalid format for ' . $field_name . ', please insert a valid phone number!';
+          }
+        }
+        break;
+      case 'email':
+        if (!(isValidEmail($value))) {
+          $error[] = 'Invalid format for ' . $field_name . ', please insert a valid email!';
+        }
+        break;
+    }
+	}
+	return $error;
+}
+
+/**
+ * User Delete Form Builder.
+ */
+function user_delete_form($user_id) {
+  $user = new User();
+  $user->load_single('id = ' . $user_id);
+  if ($user->affected > 0) {
+    $frm = new DbForm();
+		$user->first_last_name = $user->first_name . ' ' . $user->last_name;
+    $frm->build('user_delete_form', $user, $_SESSION['log_access_level']);
+  }
+  else {
+		natural_set_message('Problems loading user ' . $user_id, 'error');
+	  return FALSE;
+  }
+}
+
+/**
+ * User Delete Form Submit.
+ */
+function user_delete_form_submit($data) {
+  $user = new User();
+  $user->load_single('id = ' . $data['id']);
+  if ($user->affected > 0) {
+    // Remove contact
+    $contact = new Contact();
+    //$contact->remove('id = ' . $user->contact_id);
+    // Remove user
+    //$user->remove('id = ' . $data['id']);
+    natural_set_message('User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!', 'success');
+    return $data['id'];
+  }
+	else {
+		natural_set_message('Problems removing user ' . $user->first_name . ' ' . $user->last_name . '!', 'error');
+    return FALSE;
+  }
+}
+
+
+
+
+
+
+
+
+// TODO: Review Code
 /**
  * Create new users inside the account management
  */
@@ -106,7 +288,7 @@ function admin_new_user() {
     $user = new User();
     $customer = new Customer();
     $frm = new DbForm();
-
+ /*
     // Select the properly levels
     $access_levels = new DataManager();
     $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'] . ' AND al.level > 41 ORDER BY al.level', 'ASSOC');
@@ -117,7 +299,7 @@ function admin_new_user() {
         }
         $user->access_level_options = implode(';', $items);
     }
-    $gt = new Geolocation();
+   $gt = new Geolocation();
     $gt->load_list("ASSOC", "country='US' GROUP BY timezone");
     if ($gt->affected > 0) {
         $items = array();
@@ -126,9 +308,8 @@ function admin_new_user() {
         }
     }
     $timezone_list = implode(';', $items);
-    $user->timezone_list = $timezone_list;
-
-    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level']);
+    $user->timezone_list = $timezone_list;*/
+    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level'], FALSE);
 }
 
 /**
@@ -372,7 +553,7 @@ function remove_user($user_id) {
         $contact->remove('id = ' . $user->contact_id);
         // Remove user
         $user->remove('id = ' . $user_id);
-        $resp = 'User ' . $user->first_name . ' ' . $user->last_name . ' was removed sucessfully!';
+        $resp = 'User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!';
         $panel = new Panel();
         return $panel->build_panel('', '', $resp);
     } else {
@@ -381,57 +562,9 @@ function remove_user($user_id) {
 }
 
 /**
- * Build the user edit form inside the panel
- */
-function edit_user($user_id) {
-    $panel = new Panel();
-    $resp = edit_user_form($user_id);
-    return $panel->build_panel('', $resp);
-}
-
-/**
- * Build the user edit form inside the customer account
- */
-function edit_user_form($user_id) {
-    $user = new User();
-    $user->load_single('id = ' . $user_id);
-    if ($user->affected > 0) {
-        $frm = new DbForm();
-        // Contact info
-        $contact = new Contact();
-        $contact->load_single('id = ' . $user->contact_id);
-        foreach ($contact as $field => $value) {
-            if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-                $user->$field = $value;
-            }
-        }
-        // Select the properly levels
-        $access_levels = new DataManager();
-        //$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= 41', 'ASSOC');
-        $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-        if ($access_levels->affected) {
-            $items = array();
-            foreach ($access_levels->data as $access_level) {
-                $items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
-            }
-            $user->access_level_options = implode(';', $items);
-        }
-        // Override the form action case the function is for logged users
-        if ($_GET['fn'] == 'edit_logged_user') {
-            $user->action = 'javascript:proccess_information(\'user_edit\', \'save_edit_user\', \'user\', \'\', \'\');';
-        }
-        return $frm->build('user_edit', $user, $_SESSION['log_access_level']);
-    } else {
-        return 'Problems loading user ' . $user_id;
-    }
-}
-
-/**
  * Build the admin user edit form by Lemu on October 7, 2009
  */
-function edit_admin_user($user_id) {
-    $panel = new Panel();
-    $user = new User();
+function user_admin_edit_form($user_id) {
     $user->load_single('id = ' . $user_id);
     if ($user->affected > 0) {
         $frm = new DbForm();
@@ -453,97 +586,12 @@ function edit_admin_user($user_id) {
             }
             $user->access_level_options = implode(';', $items);
         }
-        $resp = $frm->build('admin_user_edit', $user, $_SESSION['log_access_level']);
-    } else {
-        $resp = 'Problems loading user ' . $user_id;
+        return $frm->build('admin_user_edit', $user, $_SESSION['log_access_level']);
     }
-    return $panel->build_panel('', $resp);
-}
-
-/**
- * Build the admin user edit form by Lemu on October 7, 2009
- */
-function save_edit_user($data) {
-    $panel = new Panel();
-    $user = new User();
-    $user->load_single('id = ' . $data['id']);
-    $contact = new Contact();
-    $contact->load_single('id = ' . $data['contact_id']);
-    $error = '';
-    foreach ($user as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-            $error .= validate_user_fields($field, $data[$field]);
-            $user->$field = $data[$field];
-        }
-    }
-    foreach ($contact as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-            $error .= validate_user_fields($field, $data[$field]);
-            $contact->$field = $data[$field];
-        }
-    }
-    if ($error != '') {
-        print 'ERROR||<br>' . $error;
-        exit;
-    } else {
-        //$user->update('id = ' . $data['id']);
-        $contact->update('id = ' . $data['contact_id']);
-        print 'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
-        if ($_GET['fn'] == 'save_edit_admin_user') {
-            print admin_list_users();
-        }
+		else {
+      return 'Problems loading user ' . $user_id;
     }
 }
 
-/**
- * Validate User Admin Fields
- */
-function validate_user_fields($key, $value) {
-    $field_name = ucwords(str_replace('_', ' ', $key));
-    switch ($key) {
-        case 'first_name':
-        case 'last_name':
-            if ($value == '') {
-                return 'Field ' . $field_name . ' is empty!<br>';
-            }
-            break;
-        case 'pin':
-            if (!is_numeric($value)) {
-                return 'Invalid format for ' . $field_name . '!<br/>';
-            }
-            if (strlen($value) != 4) {
-                return 'Only 4 digits for ' . $field_name . '!<br/>';
-            }
-            break;
-        case 'default_caller_id':
-        case 'home_phone':
-        case 'home_phone':
-        case 'work_phone':
-        case 'work_extension':
-        case 'mobile_phone':
-        case 'fax':
-            // Mobile phone is required
-            if ($value == '' && $key == 'mobile_phone') {
-                return 'Field ' . $field_name . ' is empty!<br>';
-            }
-            // If there is a value, make the validation if is a valid 10 digits phone number
-            if ($value) {
-                if (!is_numeric($value)) {
-                    return 'Invalid format for ' . $field_name . '!<br/>';
-                } elseif (strlen($value) != 10 || substr($value, 0, 1) < 2) {
-                    return 'Invalid format for ' . $field_name . ', please insert a valid phone number!<br/>';
-                }
-            }
-            break;
-        case 'email':
-            if (!(isValidEmail($value))) {
-                return 'Invalid format for ' . $field_name . ', please insert a valid email!<br/>';
-            }
-            break;
-        default:
-            return '';
-            break;
-    }
-}
 
 ?>

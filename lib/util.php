@@ -744,6 +744,17 @@ function getCustomerPlanID() {
 }
 
 /**
+ * Set messages to the Session. - Session based
+ */
+function natural_set_message($msg, $type = 'status') {
+
+  $_SESSION['messages'][] = array('type' => $type, 'msg' => $msg);
+
+  return isset($_SESSION['messages']) ? $_SESSION['messages'] : NULL;
+}
+
+
+/**
  * Builds the process_information link with its parameters
  * process_information(formname, func, module, ask_confirm, extra_value, error_el, response_el, response_type, request_type, parent, el, proc_message, timer)
  */

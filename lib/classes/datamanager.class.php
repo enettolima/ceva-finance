@@ -50,7 +50,7 @@
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
-		 //die($query);
+
 		if ($count && !isset($count_query)) {
 			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
 		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
@@ -126,7 +126,7 @@
 			$this->total_records = $total_records[0];
 		}
 
-	  //die($query);
+	  //print($query);
 		$query_result = mysql_query($query, $dblink);
    	$this->affected = mysql_affected_rows();
     if(!$this->affected) {
@@ -217,7 +217,7 @@
 
     $query_fields = substr($query_fields,1);
     $query = "UPDATE {$table} SET {$query_fields} WHERE {$update_rule}";
-   //print $query;
+
     $query_result = mysql_query($query,$dblink);
     $this->affected = mysql_affected_rows();
     if(!$this->affected){
