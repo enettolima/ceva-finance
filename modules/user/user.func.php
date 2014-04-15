@@ -32,6 +32,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 	$limit = 2; // PAGER_LIMIT
 	$start = ($page * $limit) - $limit;
+
 	// Dial List Table Object
 	$user = new DataManager();
 	$user->dm_load_custom_list("SELECT u.*
