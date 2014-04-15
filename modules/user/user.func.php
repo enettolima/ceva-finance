@@ -59,7 +59,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			$rows[$j]['username'] = $user->data[$i]['username'];
 			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
 			//$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
-			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+			$rows[$j]['delete'] = theme_link_process_information('', '', 'user_delete_form_submit', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'delete_row', 'icon' => NATURAL_REMOVE_ICON, 'ask_confirm' => 'Are you sure you want to delete user: ' . $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name']));
 		}
 	}
 
@@ -230,7 +230,7 @@ function user_delete_form($user_id) {
  */
 function user_delete_form_submit($data) {
   $user = new User();
-  $user->load_single('id = ' . $data['id']);
+  $user->load_single('id = ' . $data['user_id']);
   if ($user->affected > 0) {
     // Remove contact
     $contact = new Contact();
@@ -238,7 +238,7 @@ function user_delete_form_submit($data) {
     // Remove user
     //$user->remove('id = ' . $data['id']);
     natural_set_message('User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!', 'success');
-    return $data['id'];
+    return $data['user_id'];
   }
 	else {
 		natural_set_message('Problems removing user ' . $user->first_name . ' ' . $user->last_name . '!', 'error');
