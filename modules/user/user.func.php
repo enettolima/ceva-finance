@@ -59,8 +59,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
 			$rows[$j]['username'] = $user->data[$i]['username'];
 			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-			//$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
-			$rows[$j]['delete'] = theme_link_process_information('', '', 'user_delete_form_submit', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'delete_row', 'icon' => NATURAL_REMOVE_ICON, 'ask_confirm' => 'Are you sure you want to delete user: ' . $user->data[$i]['first_name'] . ' ' . $user->data[$i]['last_name']));
+			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
 
@@ -69,6 +68,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No users were found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New User'), 'user_create_form', 'user_create_form', 'user', array('response_type' => 'modal')),
 		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $page),
 		'page' => $page,
 		'search' => $search,
@@ -83,6 +83,58 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
   $listview = $view->build($rows, $headers, $options);
 
   return $listview;
+}
+
+/**
+ * User Create Form.
+ */
+function user_create_form() {
+	$frm = new DbForm();
+  // Select the properly levels
+	$access_levels = new DataManager();
+	$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+	if ($access_levels->affected) {
+		$items = array();
+		foreach ($access_levels->data as $access_level) {
+			$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+		}
+		$frm->access_level_options = implode(';', $items);
+	}
+  $frm->build('user_create_form', $frm, $_SESSION['log_access_level']);
+}
+
+/**
+ * User Create Form Submit.
+ */
+function user_create_form_submit($data) {
+  $user = new User();
+	// Validate User Fields
+	$error = user_validate_fields($data);
+  if (!empty($error)) {
+		foreach($error as $msg) {
+		  natural_set_message($msg, 'error');
+		}
+    return FALSE;
+  }
+	else {
+		// Verify Username
+		$user->load_single('username = "' . $data['username'] . '"');
+    if ($user->affected) {
+		  natural_set_message('User with username "' . $data['username'] . '" already exists.', 'error');
+      return FALSE;
+    }
+		// Adding values
+		$user->first_name = $data['first_name'];
+		$user->last_name = $data['last_name'];
+		$user->username = $data['username'];
+		$user->access_level = $data['access_level'];
+		$user->status = 1;
+    $user->insert();
+	  if ($user->affected > 0) {
+	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
+	  }
+	  return user_list($user->id);
+	}
 }
 
 /**
@@ -149,8 +201,7 @@ function user_edit_form_submit($data) {
     $user->update('id = ' . $data['id']);
 		$contact->update('id = ' . $data['contact_id']);
 		if ($user->affected > 0) {
-			$msg =  'User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!';
-		  natural_set_message($msg, 'success');
+		  natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!', 'success');
 		}
 		return user_list($data['id']);
   }
@@ -166,6 +217,7 @@ function user_validate_fields($fields) {
     switch ($key) {
       case 'first_name':
       case 'last_name':
+			case 'username':
         if (trim($value) == '') {
           $error[] = 'Field ' . $field_name . ' is required!';
         }
@@ -234,7 +286,7 @@ function user_delete_form_submit($data) {
   $user->load_single('id = ' . $data['user_id']);
   if ($user->affected > 0) {
     // Remove contact
-    $contact = new Contact();
+    //$contact = new Contact();
     //$contact->remove('id = ' . $user->contact_id);
     // Remove user
     //$user->remove('id = ' . $data['id']);

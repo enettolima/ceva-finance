@@ -13,10 +13,13 @@
 <div class="panel panel-default ">
   <div class="panel-body table-responsive">
 
+    {% if table_prefix %}
+      <p>{{ table_prefix|raw }}</p>
+    {% endif %}
+
     {% if rows is empty %}
       <p>{{ empty_message }}</p>
     {% else %}
-
 
       <table class="table table-striped table-hover">
         {% if show_headers == true %}

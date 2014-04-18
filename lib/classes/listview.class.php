@@ -26,6 +26,7 @@ class ListView {
       'page_title' => isset($options['page_title']) ? $options['page_title'] : '',
       'page_subtitle' => isset($options['page_subtitle']) ? $options['page_subtitle'] : '',
       'empty_message' => isset($options['empty_message']) ? $options['empty_message'] : '',
+			'table_prefix' => isset($options['table_prefix']) ? $options['table_prefix'] : '',
       'pager_items' => isset($options['pager_items']) ? $options['pager_items'] : '',
 			'page' => isset($options['page']) ? $options['page'] : 1,
       'search' => isset($options['search']) ? $options['search'] : '',

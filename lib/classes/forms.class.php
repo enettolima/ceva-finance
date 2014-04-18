@@ -109,7 +109,8 @@ class DbForm {
           // We need to put the hidden fields after all other fields.
           $hidden_fields[$form_fields->data[$f]['id']] = $form_fields->data[$f];
           unset($form_fields->data[$f]);
-          continue; // Get out of the loop
+          // Get out of the loop
+          continue;
         case 'list':
           $options = array();
           if ($form_fields->data[$f]['data_table'] != '') {
@@ -300,7 +301,6 @@ class DbForm {
     if (!empty($form_fields->data)) {
       $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
     }
-
 
     // Render Array
     $render = array(
@@ -663,7 +663,6 @@ class DbFieldset {
           }
         }
         ksort($fieldset);
-        //die(print_r($fieldset));
         $fields = '';
         foreach ($fieldset as $key => $value) {
           $fields .= $value;

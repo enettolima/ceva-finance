@@ -55,7 +55,12 @@ switch ($_GET['fn']) {
   case 'user_delete_form_submit':
     print user_delete_form_submit($_GET);
     break;
-
+  case 'user_create_form':
+    print user_create_form();
+    break;
+  case 'user_create_form_submit':
+    print user_create_form_submit($_GET);
+    break;
 
     // TODO: REVIEW
     case 'admin_list_users':
