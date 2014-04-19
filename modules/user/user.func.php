@@ -27,7 +27,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 	// Sort
 	if (empty($sort)) {
-		$sort = 'u.first_name DESC';
+		$sort = 'u.first_name ASC';
 	}
 
 	$limit = 2; // PAGER_LIMIT
@@ -71,6 +71,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'table_prefix' => theme_link_process_information(translate('Create New User'), 'user_create_form', 'user_create_form', 'user', array('response_type' => 'modal')),
 		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $page),
 		'page' => $page,
+		'sort' => $sort,
 		'search' => $search,
 		'show_search' => TRUE,
 		'function' => $function,

@@ -29,6 +29,7 @@ class ListView {
 			'table_prefix' => isset($options['table_prefix']) ? $options['table_prefix'] : '',
       'pager_items' => isset($options['pager_items']) ? $options['pager_items'] : '',
 			'page' => isset($options['page']) ? $options['page'] : 1,
+			'sort' => isset($options['sort']) ? $options['sort'] : '',
       'search' => isset($options['search']) ? $options['search'] : '',
 			'show_search' => isset($options['show_search']) ? $options['show_search'] : TRUE,
       'function' => isset($options['function']) ? $options['function'] : '',
