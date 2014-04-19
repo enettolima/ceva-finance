@@ -1,22 +1,36 @@
 <?php
 /**
  * Function dashboard_home
- */ 
+ */
 function dashboard_home() {
-  // Checks if there is a system update
-	/*
-	 * Check if the system is enabled to do software update on system_control table
-	 * */
-  if($_SESSION['log_access_level']>70){
-    //$content  = check_update_home();
-  }
-  // Dashboard Configuration according logged user personal preferences
-  $content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form($_SESSION['dash_type']) . '</div>';
-  // Load the dashboard widgets according pre cofigured by the logged user
-  $content .= '<div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>'; 
-	//$content .= server_dashboard();
-  return $title . $content;
+
+  global $twig;
+
+	$render = array(
+	  'page_title' => 'Dashboard',
+		'page_subtitle' => 'Widgets',
+		'content' => '<div id="myfirstchart"></div>',
+  );
+	$template = $twig->loadTemplate('content.html');
+  $template->display($render);
 }
+
+//function dashboard_home() {
+//  // Checks if there is a system update
+//	/*
+//	 * Check if the system is enabled to do software update on system_control table
+//	 * */
+//  if($_SESSION['log_access_level']>70){
+//    //$content  = check_update_home();
+//  }
+//  // Dashboard Configuration according logged user personal preferences
+//  $content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form($_SESSION['dash_type']) . '</div>';
+//  // Load the dashboard widgets according pre cofigured by the logged user
+//  $content .= '<div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
+//	//$content .= server_dashboard();
+//  return $title . $content;
+//}
+
 /*
  * Build the widgets
  */
@@ -42,20 +56,20 @@ function dashboard_widgets($dashboard_type) {
           $widget->load_single("id = '{$user_widgets[$i][$x]}' AND dashboard_type='{$dashboard_type}'");
           if ($widget->enabled) {
             $content[$i] .= '<li id="widget_' . $widget->id . '" class="' . $widget->class . '">
-                             <h1>' . $widget->title . '</h1> 
+                             <h1>' . $widget->title . '</h1>
                              <div id="widget_' . $widget->id . '_content" class="content">' . call_user_func($widget->widget_function , $user_widgets[$i][$x]) . '
                              </div>
-                             <div class="dashboard-delete-widget" onclick="dashboard_delete_widget(\'widget_' . $widget->id . '\');" title="Close" alt="Close"></div> 
+                             <div class="dashboard-delete-widget" onclick="dashboard_delete_widget(\'widget_' . $widget->id . '\');" title="Close" alt="Close"></div>
                              </li>';
           }
-        }               
+        }
       }
     }
   }else{
     // Return the message to configure his/her dashboard
   //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
   }
-   
+
   $content ='<ul id="sortable1" class="droptrue">
     '.$content[0].'
   </ul>
@@ -186,7 +200,7 @@ function dashboard_progress($campaign_id){
 
   //get the data and calculate the percentual
   $completed = round(($dp->complete_records * 100)/$dp->total_records, 2);
-  
+
   return '<div id="progress-wrapp" style="width: 100%; height:50px">
     <div id="progress-message">'.$dp->complete_records.' Completed Records('.$completed.'%)</div>
     <div id="progressbar"></div>
@@ -194,8 +208,8 @@ function dashboard_progress($campaign_id){
   <script type="text/javascript">
     startProgress();
     updateProgress("'.$completed.'","'.$completed.'% Completed ('.$dp->complete_records.' Calls of '.$dp->total_records . $calc.')");
-  </script>'; 
-      
+  </script>';
+
 }
 /**
  * Build the graph for each campaign
@@ -367,12 +381,12 @@ function dashboard_campaign_get_info($campaign_id){
         $widget->load_single('id = ' . $user_widget);
         if ($widget->enabled) {
 				  $content .= '<li id="widget_' . $widget->id . '" class="' . $widget->class . '">
-					               <span class="dashboard-delete-widget" onclick="dashboard_delete_widget(\'widget_' . $widget->id . '\');" title="Close" alt="Close"></span> 
-                         <h1>' . $widget->title . '</h1> 
+					               <span class="dashboard-delete-widget" onclick="dashboard_delete_widget(\'widget_' . $widget->id . '\');" title="Close" alt="Close"></span>
+                         <h1>' . $widget->title . '</h1>
                          <div id="widget_' . $widget->id . '_content" class="content">' . call_user_func($widget->widget_function , $user_widget) . '
                          </div>
                        </li>';
-        }               
+        }
       }
       $content .= '</ul>
                   <form id="dashboard-form" name="dashboard-form">
@@ -380,12 +394,12 @@ function dashboard_campaign_get_info($campaign_id){
                    </form>';
     }
   }
-  
+
   else {
     // Return the message to configure his/her dashboard
   //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
   }
-   
+
   return $content;
 }*/
 
@@ -458,7 +472,7 @@ function dashboard_setup_form($dashboard_type=1) {
           }
         }
       }
-      
+
       $inputs[] = '<div class="form-item form-checkbox">
                      <label for="input_widget_' . $widgets->data[$i]['id'] . '">
                        <input onclick="dashboard_setup()" value="' . $widgets->data[$i]['id'] . '" type="checkbox" name="widget[' . $widgets->data[$i]['id'] . ']" id="input_widget_' . $widgets->data[$i]['id'] . '" ' . $checked . ' />
@@ -500,18 +514,18 @@ function dashboard_setup($data) {
         }
       }
     }
-    
+
     foreach($wgt as $v){
       if(in_array($v, $nlist[0]) || in_array($v,$nlist[1]) || in_array($v, $nlist[2])){
         //skipp setting this widget to the array cause it already exists
       }else{
-        if(!$nlist[0][0]){ 
+        if(!$nlist[0][0]){
           $nlist[0][0] = $v;
         }else{
-          if(!$nlist[1][0]){ 
+          if(!$nlist[1][0]){
             $nlist[1][0] = $v;
           }else{
-            if(!$nlist[2][0]){ 
+            if(!$nlist[2][0]){
               $nlist[2][0] = $v;
             }else{
               $nlist[0][] = $v;
@@ -558,7 +572,7 @@ function user_change_color($data) {
 }
 
 function change_console_panel($data){
-//	echo print_debug($data);	
+//	echo print_debug($data);
 	if($data['customer_id']){
 		$_SESSION['dash_type'] 			= 3;
 		$_SESSION['console_message']= "Admin Console";
@@ -602,7 +616,7 @@ function build_right_topic_info(){
 		if($customer->company_name){
 			$account_name = $customer->company_name;
 		}else{
-			$account_name = $customer->contact_name; 
+			$account_name = $customer->contact_name;
 		}
 		$right_topic    = '<li>' . NATURAL_VERSION . '</li> <li>User: ' . $loginname . '</li> <li>Account: ' . $account_name . '</li>';
 	}
@@ -622,7 +636,7 @@ function build_right_topic_info(){
 }
 
 function build_logout_button(){
-	
+
 /*	if($_SESSION['dash_type']==3){
 		switch($_SESSION['log_access_level']){
 			case 81:
@@ -688,7 +702,7 @@ function back_original_panel(){
  */
 function check_update_home(){
 	$url = "license.opensourcemind.net/api.php?request_type=isAlive";
-	
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -712,7 +726,7 @@ function check_update_home(){
 	if($r){
 		return $r;
 	}
-		
+
 	$doc = new SimpleXmlElement($response, LIBXML_NOCDATA);
 
  	if($doc->command->code==1){
@@ -820,7 +834,7 @@ function reboot_system(){
   fwrite($fh, "DoRestart=yes");
   fclose($fh);
   return "Server Restarting! Please wait!<input type='hidden' name='reboot_checker' id='reboot_checker' value='1'>";*/
-  
+
   echo '<h2>Hive Service Restart</h2>
 		<span id="main-message"><p>Please wait while your System is beign restarted</p></span><div id="progress-wrapp" style="width: 98%; height:100px">
 		<div id="progressbar"></div><div id="progress-message"></div>
@@ -885,7 +899,7 @@ function validate_app(){
   $sc = new SystemControl();
   $sc->load_single("id!='0' LIMIT 1");
 	$url = "license.opensourcemind.net/api.php?request_type=authApp&license={$sc->license_key}&api_key={$sc->api_key}";
-	
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -958,7 +972,7 @@ function validate_modules(){
 	}
 	//checking if Dialer module is enabled and taking some action to block/unblock if necessary
 	if($sc->dialer<1){
-		//blocking main menu Dialer 
+		//blocking main menu Dialer
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE main_menu SET status='0' WHERE element_name='campaign_list_main'");
 		//blocking Outbound Script Sub Menu Under Call Flow
@@ -971,7 +985,7 @@ function validate_modules(){
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE campaigns SET status='P', paused_by_user='1' WHERE status!='C'");
 	}else{
-		//Unblocking main menu Dialer 
+		//Unblocking main menu Dialer
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE main_menu SET status='1' WHERE element_name='campaign_list_main'");
 		//Unblocking Outbound Script Sub Menu Under Call Flow
@@ -983,14 +997,14 @@ function validate_modules(){
 	}
 	//checking if PBX module is enabled and taking some action to block/unblock if necessary
 	if($sc->pbx<1){
-		//blocking main menu PBX 
+		//blocking main menu PBX
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE main_menu SET status='0' WHERE element_name='pbx_main'");
 		//blocking route_profile
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE yaml_template SET type='disabled' WHERE name='fax2email' OR name='ring-group' OR name='voicemail' OR name='dial-exten'");
 	}else{
-		//Unblocking main menu PBX 
+		//Unblocking main menu PBX
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE main_menu SET status='1' WHERE element_name='pbx_main'");
 		//Unblocking route_profile
@@ -999,7 +1013,7 @@ function validate_modules(){
 	}
 	//checking if Conference module is enabled and taking some action to block/unblock if necessary
 	if($sc->conference_room<1){
-		//blocking main menu Conference 
+		//blocking main menu Conference
 		$dm = new DataManager();
 		$dm->dm_custom_query("UPDATE main_menu SET status='0' WHERE element_name='conference_main'");
 		//blocking route_profile
@@ -1056,7 +1070,7 @@ function check_update(){
     exit(0);
   }
 	$url = "license.opensourcemind.net/api.php?request_type=getLastDialerVersion&license={$sc->license_key}&api_key={$sc->api_key}&devmode=".NATURAL_DEV_MODE;
-			
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1107,7 +1121,7 @@ function update_license(){
   $sc = new SystemControl();
   $sc->load_single("id!='0' LIMIT 1");
 	$url = "license.opensourcemind.net/api.php?request_type=getDialerLicense&license={$sc->license_key}&api_key={$sc->api_key}";
-			
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1121,7 +1135,7 @@ function update_license(){
 
   if($doc->command->code==1){
     if($sc->call_paths!=$doc->command->call_paths || $sc->campaign_limit!=$doc->command->campaigns_limit){
-      $sc->call_paths=$doc->command->call_paths; 
+      $sc->call_paths=$doc->command->call_paths;
       $sc->campaign_limit=$doc->command->campaigns_limit;
       $sc->update("id>'0'");
     }
@@ -1130,7 +1144,7 @@ function update_license(){
 
 function register_license($data){
   $url = "license.opensourcemind.net/api.php?request_type=registerLicense&license=".$data['license_key'];
-			
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1162,9 +1176,9 @@ function register_license($data){
     $company->created    = date("Y-m-d H:i:s");
     $company->insert();
     enable_main_menu();
-    
+
     $url = "license.opensourcemind.net/api.php?request_type=setCreationDate&license=".$data['license_key'];
-        
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1202,7 +1216,7 @@ function enable_main_menu(){
 
 function system_update(){
 	$url = "license.opensourcemind.net/api.php?request_type=getLastDialerVersion&devmode=".NATURAL_DEV_MODE;
-			
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1222,7 +1236,7 @@ function system_update(){
 		startProgress();
 		proccess_information(null, "starting_update", "dashboard",null,"new_version|'.$doc->command->current_version.'",null,"progress-message");
 	</script>';
-	
+
 }
 
 function starting_update($data){
@@ -1230,7 +1244,7 @@ function starting_update($data){
     updateProgress("22","Cleaning and Updating OS Repository - '.$msg.'");
     proccess_information(null, "clean_update_os", "dashboard",null,"new_version|'.$data['new_version'].'",null,"progress-message");
   </script>';
-    
+
 }
 
 function clean_update_os($data){
@@ -1282,7 +1296,7 @@ function update_modules($data){
     exit(0);
 	}
 }
- 
+
 function unzip_files($data){
 	$unzip = shell_exec("tar -xvzf ../../data/smartdialer_update.tar.gz");
 	$chg_permission = shell_exec("chmod -R 777 data/");
@@ -1291,10 +1305,10 @@ function unzip_files($data){
 		proccess_information(null, "update_modules", "dashboard",null,"new_version|'.$data['new_version'].'",null,"progress-message");
 	</script>';
 }
- 
+
 function update_modules($data){
-  //Stopping Manager and Daemon here to prevent any issues with 
-  //broken reloaders and what not... campaigns should be put on pause too.	
+  //Stopping Manager and Daemon here to prevent any issues with
+  //broken reloaders and what not... campaigns should be put on pause too.
   $svcstop = shell_exec("sh /var/hive/bin/srvcontrol.sh HSDStopServices");
 	$replace = shell_exec("cp -r data/build/* ../../");
   $replace = shell_exec("cp -r data/build/engine/*.sh /var/hive/bin/");
@@ -1308,12 +1322,12 @@ function update_modules($data){
 	      proccess_information(null, "update_db", "dashboard",null,"new_version|'.$data['new_version'].'",null,"progress-message");
 	  </script>';
 }*/
- 
+
 function update_db($data){
   //Add here the code to replace the database structure
   $exec = shell_exec("ls ".NATURAL_ROOT_PATH."/data/");
   $folders = explode("\n",$exec);
-  
+
   $vs = new DataManager();
   $vs->dm_custom_query("SELECT * FROM module WHERE module='acl' LIMIT 1",true,true);
   $current 				= $vs->version + 1;
@@ -1353,13 +1367,13 @@ function clean_folders($data){
 }
 
 function finish_update($data){
-	
+
   setSystemToReboot();
 
   $sc = new SystemControl();
   $sc->load_single("id!='0' LIMIT 1");
   $url = "license.opensourcemind.net/api.php?request_type=logUpdateDialerVersion&version={$data['new_version']}&apikey={$sc->api_key}";
-		
+
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1372,7 +1386,7 @@ function finish_update($data){
 
   #Starting services before update done even if restart required
 //  $svcstart = shell_exec("sh /var/hive/bin/srvcontrol.sh HSDStartServices &");
-  
+
   $vs = new DataManager();
   $vs->dm_custom_query("UPDATE module SET version='{$data['new_version']}'");
   return 'Update Complete <script type="text/javascript">
@@ -1445,7 +1459,7 @@ HSD.CallFlowDispatcherDelay=".$hsd->hsd_dispatcherdelay."
 function dash_list_agents($campaign_id){
   //Getting Live List Name
   $camp = new Campaigns();
-  $camp->load_single("id='{$campaign_id}'");  
+  $camp->load_single("id='{$campaign_id}'");
   //Getting total of answered calls
   $ta = new DataManager();
   $ta->dm_custom_query("SELECT COUNT(id) as answered FROM ".$camp->dial_list." WHERE NATURAL_last_dial_status='ANSWER'",true);
@@ -1461,7 +1475,7 @@ function dash_list_agents($campaign_id){
       if($ca->data[$i]['answered']>0){
         $percent = round(($ca->data[$i]['answered'] * 100) / $ta->answered, 2);
       }
-      
+
       $user = new AcdAgent();
       $user->load_single("username='{$ca->data[$i]['agent']}'");
 
@@ -1508,7 +1522,7 @@ function dash_list_agents($campaign_id){
           <th>Answered</th>
         </thead>
         <tbody>
-        {$list} 
+        {$list}
         </tbody>
       </table><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>";
   }else{
@@ -1529,7 +1543,7 @@ function show_dashboard_fullscreen_content($data){
 	$qc = new Campaigns();
 	$qc->load_list("ASSOC","id='{$data['campaign_id']}'");
 //	print_debug($qc);
-	
+
 	if($qc->affected<1){
 		$dashtable = "No Active Campaign found at this time!";
 	}else{
@@ -1559,8 +1573,8 @@ function show_dashboard_fullscreen_content($data){
     $info = dashboard_campaign_get_info($qc->data[0]['id']);
     if($info['data']!=100){
       $dashtable .= '<div id="dashboard-progress">'.dashboard_progress($qc->data[0]['id']).'</div>';
-    
-  
+
+
       $dashtable .= '<div id="chart-agent-wrapp">';
       $dashtable .= '<div id="dash-chart"></div>
                <script>

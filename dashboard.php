@@ -26,12 +26,11 @@ if ($_SESSION['log_username']) {
     $module = new Module();
     $module->load_single("module='dashboard' LIMIT 1");
     $_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
-    $content = dashboard_home();
     $username = $_SESSION['log_username'];
     $user_full_name = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
     $version = NATURAL_VERSION . ' - r.' . $module->version;
     $_SESSION['log_interface'] = 'skin-gray';
-    
+
     // Twig Menu
     $menu = $twig->render(
       'menu.html',
@@ -48,11 +47,14 @@ if ($_SESSION['log_username']) {
       'path_to_theme' => THEME_PATH,
       'company' => NATURAL_COMPANY,
       'version' => $version,
-      'page' => 'dashboard',
       'menu' => $menu,
       'user_full_name' => $user_full_name,
       'username' => $username,
       'actual_date' => date('F jS, Y'),
+      // Dashboard - Passing default variables to content.html
+      'page_title' => 'Dashboard',
+		  'page_subtitle' => 'Widgets',
+		  'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
     ));
 
   }

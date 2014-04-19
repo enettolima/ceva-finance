@@ -21,10 +21,12 @@
     <link href="{{ path_to_theme }}css/bootural-notifications.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
     <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Morris Charts -->
+    <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css">
     {% endblock %}
   </head>
 
-  <body class="skin-gray fixed  {{ page }}">
+  <body class="skin-gray fixed">
 
     <header class="header">
       {% block header %}
@@ -80,12 +82,16 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery 2.0.2 -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <!-- Rapha‘lÑJavaScript Library 2.1.0 -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <!-- jQuery.history.js -->
     <script type="text/javascript" src="lib/js/jquery.history.js"></script>
     <!-- Bootstrap v3.1.1 (http://getbootstrap.com) -->
     <script type="text/javascript" src="{{ path_to_theme }}js/bootstrap.min.js"></script>
     <!-- Notifications -->
     <script type="text/javascript" src="{{ path_to_theme }}js/notifications.min.js"></script>
+    <!-- Morris Charts -->
+    <script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
 
     <!-- Natural Controler -->
     <script type="text/javascript" src="lib/js/controller.js"></script>
