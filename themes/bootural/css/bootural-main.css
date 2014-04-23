@@ -592,13 +592,16 @@ label {
 .form-radio {
   padding-left: 0;
 }
+.form-checkbox input[type=checkbox] {
+  margin: 4px 10px 0 0;
+}
 .form-select {
   -webkit-appearance:none;
   -moz-appearance: none;
   -moz-box-sizing: border-box;
   -webkit-padding-end: 45px;
 }
-.list i {
+.field-type-list i {
     background: none repeat scroll 0 0 #FFFFFF;
     box-shadow: 0 0 0 9px #FFFFFF;
     height: 11px;
@@ -608,12 +611,12 @@ label {
     width: 5px;
     z-index: 999;
 }
-.list i:before {
+.field-type-list i:before {
   border-top: 4px solid #404040;
   top: 0;
 }
-.list i:after,
-.list i:before {
+.field-type-list i:after,
+.field-type-list i:before {
   border-left: 4px solid rgba(0, 0, 0, 0);
   border-right: 4px solid rgba(0, 0, 0, 0);
   content: "";

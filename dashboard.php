@@ -47,6 +47,7 @@ if ($_SESSION['log_username']) {
       'path_to_theme' => THEME_PATH,
       'company' => NATURAL_COMPANY,
       'version' => $version,
+      'page' => 'dashboard',
       'menu' => $menu,
       'user_full_name' => $user_full_name,
       'username' => $username,
@@ -66,6 +67,6 @@ else {
   $error_message = 'Invalid Login Information!';
   $password = '';
   $username = $_POST['username'];
-  require_once(NATURAL_TEMPLATE_PATH . 'login.php');
+  require_once('index.php');
 }
 ?>

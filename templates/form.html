@@ -29,7 +29,7 @@
             {% if field.html_type == 'hidden' %}
               <input type="hidden" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-hidden" value="{{ field.def_val }}" {{ field.html_options }}>
             {% else %}
-              <div class="form-group {{ field.html_type }}">
+              <div class="form-group field-type-{{ field.html_type }}">
 
                 {% if field.def_label %}
                   <label class="col-sm-3 control-label">{% if field.required == true %}<span class="field-required">*</span>{% endif %} {{ field.def_label }}</label>
@@ -78,6 +78,18 @@
                       {% endfor %}
                     </select>
                     <i></i>
+                  {% endif %}
+
+                  {# checkbox #}
+                  {% if field.html_type == 'checkbox' %}
+                    {% for checkbox_key, option in field.options %}
+                    <div class="checkbox form-checkbox">
+                      <label for="{{ field.field_id }}[{{ option.value }}]">
+                        <input type="checkbox" data-id="{{ field.id }}-{{ checkbox_key }}" name="{{ field.field_id }}[{{ option.value }}]" id="{{ field.field_id }}-{{ checkbox_key }}" class="{{ field.css_class }}" value="{{ option.value }}" {{ option.status }} {{ field.html_options }} onClick="{{ field.click }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
+                        {{ option.label }}
+                      </label>
+                    </div>
+                    {% endfor %}
                   {% endif %}
 
                   {# button #}
