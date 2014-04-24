@@ -592,7 +592,8 @@ label {
 .form-radio {
   padding-left: 0;
 }
-.form-checkbox input[type=checkbox] {
+.form-checkbox input[type=checkbox],
+.form-radio input[type=radio] {
   margin: 4px 10px 0 0;
 }
 .form-select {
@@ -622,6 +623,9 @@ label {
   content: "";
   position: absolute;
   right: 0;
+}
+.form-readonly {
+  opacity: 0.4;
 }
 .form.table-info {
   margin: 20px 0;
