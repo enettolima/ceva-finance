@@ -603,14 +603,14 @@ label {
   -webkit-padding-end: 45px;
 }
 .field-type-list i {
-    background: none repeat scroll 0 0 #FFFFFF;
-    box-shadow: 0 0 0 9px #FFFFFF;
-    height: 11px;
-    position: absolute;
-    top: 12px;
-    right: 29px;
-    width: 5px;
-    z-index: 999;
+  background: none repeat scroll 0 0 #FFFFFF;
+  box-shadow: 0 0 0 9px #FFFFFF;
+  height: 11px;
+  position: absolute;
+  top: 12px;
+  right: 29px;
+  width: 5px;
+  z-index: 999;
 }
 .field-type-list i:before {
   border-top: 4px solid #404040;
@@ -631,7 +631,14 @@ label {
   margin: 20px 0;
   max-width: 185px;
 }
+.form-fileuploader .uploaded-files {
+  padding: 0 0 0 20px;
+}
 
+.form-fileuploader .file-delete {
+  color: #333;
+  margin-left: 20px;
+}
 
 /**
  * Buttons

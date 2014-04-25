@@ -257,7 +257,7 @@ function user_validate_fields($fields) {
         }
         break;
       case 'email':
-        if (!(isValidEmail($value))) {
+        if (!(filter_var($value, FILTER_VALIDATE_EMAIL))) {
           $error[] = 'Invalid format for ' . $field_name . ', please insert a valid email!';
         }
         break;

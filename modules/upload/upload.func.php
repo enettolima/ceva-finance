@@ -6,12 +6,12 @@
 */
 
 /**
- * Delete Items 
+ * Delete Items
  */
 function file_remove ($data) {
-  unlink('files/' . $data['file']);
-  $delete = $data['file'] . ' was deleted successfully!';
-  return $delete;
+  unlink('tmp_files/' . $data['file']);
+  natural_set_message('File "' . $data['file'] . '" was deleted successfully!', 'success');
+  return TRUE;
 }
 
 ?>

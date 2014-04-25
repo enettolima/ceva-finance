@@ -223,16 +223,6 @@ class DbForm {
         case 'submit':
           $submit_text = $form_fields->data[$f]['def_val'];
           break;
-
-
-
-        // TODO: Review bellow items
-        case 'fileuploader':
-          $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-file"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-          $form_element .= $form_fields->data[$f]['prefix'] . '<span id="' . $form_fields->data[$f]['field_id'] . '" class="upload-button ' . $form_fields->data[$f]['css_class'] . '"> <span>' . $form_fields->data[$f]['field_name'] . '</span> </span>' . $form_fields->data[$f]['suffix'] . '</div>';
-          $script = '<script  type="text/javascript">file_uploader(\'' . $form_fields->data[$f]['field_id'] . '\', \'' . $form_fields->data[$f]['field_values'] . '\');</script>';
-          $form_element .= '<div class="form-item '. $form_fields->data[$f]['vertical'].'"><span id="file-message"></span><ol id="uploaded-files"></ol> <textarea id="files" name="files"></textarea>' . $script . '</div>';
-          break;
       }
 
       // Fieldset
