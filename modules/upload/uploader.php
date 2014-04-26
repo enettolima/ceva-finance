@@ -1,27 +1,134 @@
 <?php
+  /**
+   * @file: uploader.php
+   * Server Side Ajax Uplader
+   */
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
   require_once(NATURAL_LIB_PATH . 'util.php');
+  require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
+  require_once(NATURAL_CLASSES_PATH . 'field_templates.class.php');
+  require_once(NATURAL_CLASSES_PATH . 'files.class.php');
 
-  // Based on the button id $_GET['button_id'] we can perform validations TODO: also uplaoded to a specifc directory
-
-  $uploaddir = 'tmp_files/';
-  $uploadfile = $uploaddir . basename($_FILES['myfile']['name']);
-  if ($_FILES['myfile']['size'] > 20000000) {
-    natural_set_message('File is too big.', 'error');
+  // Based on the element id $_GET['field_id'] we can perform validations.
+  $field = new FieldTemplates();
+  $field->load_single('id = ' . $_GET['field_id']);
+  if (!$field->affected > 0) {
+    // DataManager should output the error.
     return FALSE;
   }
-  else {
-    //die(print_r($_FILES));
-    if (move_uploaded_file($_FILES['myfile']['tmp_name'], $uploadfile)) {
-      chmod($uploadfile, 0777);
-      natural_set_message('File "' . $_FILES['myfile']['name'] . '" was uploaded successfully!', 'success');
-      print 'uploaded';
-    }
-    else {
-      natural_set_message('File was not uploaded.', 'error');
-      return FALSE;
+
+  // Field values attributes.
+  if (!empty($field->field_values)) {
+    $field_values = explode('|', $field->field_values);
+    foreach ($field_values as $value) {
+      $option = explode('=', $value);
+      switch ($option[0]) {
+        case 'limit':
+          $field_limit = $option[1];
+          break;
+        case 'type':
+          $field_type = explode(',', $option[1]);
+          break;
+        case 'size':
+          $field_size = substr($option[1], 0, -1);
+          $field_size_unit = substr($option[1], -1);
+          switch($field_size_unit) {
+            case 'B': // Bytes
+              $field_size_limit = $field_size . ' bytes';
+              break;
+            case 'K': // Kilobytes
+              $field_size_limit = $field_size . ' kilobytes';
+              $field_size = $field_size * 1024;
+              break;
+            case 'M': // Megabytes
+              $field_size_limit = $field_size . ' megabytes';
+              $field_size = $field_size * 1048576;
+              break;
+            case 'G': // Gigabytes
+              $field_size_limit = $field_size . ' gigabytes';
+              $field_size = $field_size * 1073741824;
+              break;
+          }
+          break;
+        case 'dir':
+          $field_dir = $option[1];
+          break;
+        case 'preview':
+          $field_preview = $option[1];
+          break;
+      }
     }
   }
+  else {
+    natural_set_message('Problems to load attributes for the ' . $field->def_label . ' field.', 'error');
+    return FALSE;
+  }
+
+  // Size Validation.
+  if ($_FILES['myfile']['size'] > $field_size) {
+    natural_set_message('File is bigger than ' . $field_size_limit . '.', 'error');
+    return FALSE;
+  }
+
+  // Extension Validation.
+  $ext = pathinfo( $_FILES['myfile']['name'], PATHINFO_EXTENSION);
+  if(!in_array($ext, $field_type) ) {
+    natural_set_message('Only ' . implode(', ', $field_type) . ' formats are accepted.', 'error');
+    return FALSE;
+  }
+
+  // Upload directory.
+  $upload_dir = NATURAL_ROOT_PATH . '/' . $field_dir . '/';
+  $upload_file = $upload_dir . basename($_FILES['myfile']['name']);
+
+  // Validate filename.
+  if (file_exists($upload_file)) {
+     natural_set_message('File "' . $_FILES['myfile']['name'] . '" already exists.', 'error');
+    return FALSE;
+  }
+
+  // Create Directory if it does not exist.
+  if (!is_dir($upload_dir) && !mkdir($upload_dir, 0777, TRUE)) {
+    natural_set_message('Error creating folder ' . $field_dir, 'error');
+    return FALSE;
+  }
+
+  if (move_uploaded_file($_FILES['myfile']['tmp_name'], $upload_file)) {
+    // Add the file to the files table.
+    $file = new Files();
+    $file->uid = $_SESSION['log_id'];
+    $file->filename = $_FILES['myfile']['name'];
+    $file->uri = $field_dir . '/' . $_FILES['myfile']['name'];
+    $file->filemime = $_FILES['myfile']['type'];
+    $file->filesize = $_FILES['myfile']['size'];
+    // TODO: If filetype = music or video file... add duration
+    $file->timestamp = time();
+    $file->insert();
+    if ($file->affected > 0) {
+      chmod($upload_file, 0777);
+      natural_set_message('File "' . $_FILES['myfile']['name'] . '" was uploaded successfully!', 'success');
+      $response = array(
+        'uploaded' => TRUE,
+        'preview' => ($field_preview == 'true') ? TRUE : FALSE,
+        'preview_uri' => $field_dir . '/' . $_FILES['myfile']['name'],
+        'limit' => $field_limit,
+        'fid' => $file->fid,
+      );
+      print json_encode($response);
+      return;
+    }
+    else {
+      // Due to a database error we need to delete the uploaded file
+      unlink($upload_file);
+      natural_set_message('Problems creating uploaded file record.' , 'error');
+      return FALSE;
+    }
+
+  }
+  else {
+    natural_set_message('File was not uploaded.', 'error');
+    return FALSE;
+  }
+
 ?>

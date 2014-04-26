@@ -9,7 +9,7 @@
  * Delete Items
  */
 function file_remove ($data) {
-  unlink('tmp_files/' . $data['file']);
+  unlink(NATURAL_ROOT_PATH . '/files/' . $data['file']);
   natural_set_message('File "' . $data['file'] . '" was deleted successfully!', 'success');
   return TRUE;
 }

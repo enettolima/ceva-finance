@@ -11,7 +11,7 @@
   public $data;
   public $dbid;
 
-  public function dm_load_single( $table, $search_str ){
+  public function dm_load_single($table, $search_str) {
      //Use configuration from bootstrap
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 

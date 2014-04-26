@@ -634,10 +634,13 @@ label {
 .form-fileuploader .uploaded-files {
   padding: 0 0 0 20px;
 }
-
 .form-fileuploader .file-delete {
   color: #333;
   margin-left: 20px;
+}
+.form-fileuploader img {
+  max-width: 100px;
+  margin-top: 10px;
 }
 
 /**

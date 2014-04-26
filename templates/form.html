@@ -110,7 +110,7 @@
                       <ol id="uploaded-files-{{ field.id }}" class="uploaded-files"></ol>
                       <textarea id="files-{{ field.id }}" name="{{ field.field_name }}" class="hide"></textarea>
                     </div>
-                    <button id="{{ field.id }}" type="button" class="btn btn-default btn-sm {{ field.css_class }}" onClick="file_uploader('{{ field.id }}', '{{ field.field_values }}');">
+                    <button data-id="{{ field.id }}" id="upload-button-{{ field.id }}" type="button" class="btn btn-default btn-sm upload-button {{ field.css_class }}">
                       Upload <i class="fa fa-download"></i>
                     </button>
                   {% endif %}
