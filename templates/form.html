@@ -104,13 +104,13 @@
                     {% endfor %}
                   {% endif %}
 
-                  {# fileuploader #}
-                  {% if field.html_type == 'fileuploader' %}
-                    <div class="fileuploader form-fileuploader">
+                  {# uploader #}
+                  {% if field.html_type == 'uploader' %}
+                    <div class="uploader form-uploader">
                       <ol id="uploaded-files-{{ field.id }}" class="uploaded-files"></ol>
                       <textarea id="files-{{ field.id }}" name="{{ field.field_name }}" class="hide"></textarea>
                     </div>
-                    <button data-id="{{ field.id }}" id="upload-button-{{ field.id }}" type="button" class="btn btn-default btn-sm upload-button {{ field.css_class }}">
+                    <button data-id="{{ field.id }}" id="uploader-button-{{ field.id }}" type="button" class="btn btn-default btn-sm uploader-button {{ field.css_class }}">
                       Upload <i class="fa fa-download"></i>
                     </button>
                   {% endif %}

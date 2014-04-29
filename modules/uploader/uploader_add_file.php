@@ -1,6 +1,6 @@
 <?php
   /**
-   * @file: uploader.php
+   * @file: uploader_add_file.php
    * Server Side Ajax Uplader
    */
   session_start();
@@ -10,9 +10,11 @@
   require_once(NATURAL_CLASSES_PATH . 'field_templates.class.php');
   require_once(NATURAL_CLASSES_PATH . 'files.class.php');
 
+  $field_id = $_GET['field_id'];
+
   // Based on the element id $_GET['field_id'] we can perform validations.
   $field = new FieldTemplates();
-  $field->load_single('id = ' . $_GET['field_id']);
+  $field->load_single('id = ' . $field_id);
   if (!$field->affected > 0) {
     // DataManager should output the error.
     return FALSE;
@@ -108,10 +110,17 @@
     if ($file->affected > 0) {
       chmod($upload_file, 0777);
       natural_set_message('File "' . $_FILES['myfile']['name'] . '" was uploaded successfully!', 'success');
-      $response = array(
-        'uploaded' => TRUE,
+      $render = array(
+        'filename'=> $file->filename,
         'preview' => ($field_preview == 'true') ? TRUE : FALSE,
         'preview_uri' => $field_dir . '/' . $_FILES['myfile']['name'],
+        'fid' => $file->fid,
+        'field_id' => $field_id,
+      );
+      // File item
+      $file_item = $twig->render('uploader-file-item.html', $render);
+      $response = array(
+        'file_item' => $file_item,
         'limit' => $field_limit,
         'fid' => $file->fid,
       );

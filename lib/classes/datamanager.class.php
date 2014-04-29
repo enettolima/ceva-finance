@@ -16,6 +16,7 @@
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
+		 
      $query_result = mysql_query($query,$dblink);
 
      if($query_result)

@@ -631,14 +631,14 @@ label {
   margin: 20px 0;
   max-width: 185px;
 }
-.form-fileuploader .uploaded-files {
+.form-uploader .uploaded-files {
   padding: 0 0 0 20px;
 }
-.form-fileuploader .file-delete {
+.form-uploader .file-delete {
   color: #333;
   margin-left: 20px;
 }
-.form-fileuploader img {
+.form-uploader img {
   max-width: 100px;
   margin-top: 10px;
 }
