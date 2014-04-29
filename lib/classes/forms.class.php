@@ -185,14 +185,12 @@ class DbForm {
       // to the minimum level that has access to the raw field withou the ACL being applied. for example if you set the Level to 41 and ACL to readonly
       // anyone with level 41 and below will not be able to edit the field only people with level 42 and above.
       if ($form_fields->data[$f]['level'] >= $level) {
-        if ($form_fields->data[$f]['acl'] != "" && $form_fields->data[$f]['html_type'] != 'list') {
-          $form_fields->data[$f]['html_type'] = $form_fields->data[$f]['acl'];
+        if ($form_fields->data[$f]['acl'] == 'readonly') {
+          $form_fields->data[$f]['css_class'] .= 'form-readonly';
         }
-        // If you insert something in the level and don't specify anything on acl then acl will be hidden by default...
         else {
-          if ($form_fields->data[$f]['html_type'] != 'list') {
-            $form_fields->data[$f]['html_type'] = 'hidden';
-          }
+          $form_fields->data[$f]['html_type'] = 'hidden';
+          $form_fields->data[$f]['def_val'] = is_array($form_fields->data[$f]['def_val']) ? implode(', ', $form_fields->data[$f]['def_val']) : $form_fields->data[$f]['def_val'];
         }
       }
 
@@ -204,29 +202,11 @@ class DbForm {
           unset($form_fields->data[$f]);
           // Get out of the loop
           continue;
+        case 'checkbox':
+        case 'radio':
         case 'list':
           $options = $this->_get_field_options($form_fields->data[$f]);
-          // Prepare select list options
-          if ($form_fields->data[$f]['acl'] == 'readonly' && $form_fields->data[$f]['level'] >= $level) {
-            // TODO Readonly - get the selected data based on options array and display
-            $hidden_fields[] = $form_fields->data[$f];
-            unset($form_fields->data[$f]);
-          }
-          else {
-            $form_fields->data[$f]['options'] = $options;
-          }
-          break;
-        case 'checkbox':
-          $options = $this->_get_field_options($form_fields->data[$f]);
-          // Prepare Checkbox options
-          if ($form_fields->data[$f]['acl'] == 'readonly' && $form_fields->data[$f]['level'] >= $level) {
-            // TODO Readonly - get the selected data based on options array and display
-            $hidden_fields[] = $form_fields->data[$f];
-            unset($form_fields->data[$f]);
-          }
-          else {
-            $form_fields->data[$f]['options'] = $options;
-          }
+          $form_fields->data[$f]['options'] = $options;
           break;
         case 'readonly':
           if ($form_fields->data[$f]['data_table'] != '') {
@@ -242,19 +222,6 @@ class DbForm {
           break;
         case 'submit':
           $submit_text = $form_fields->data[$f]['def_val'];
-          break;
-
-
-
-        // TODO: Review bellow items
-        case 'fileuploader':
-          $form_element = '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-file"><label for="' . $form_fields->data[$f]['field_id'] . '">' . $form_fields->data[$f]['def_label'] . '</label>';
-          $form_element .= $form_fields->data[$f]['prefix'] . '<span id="' . $form_fields->data[$f]['field_id'] . '" class="upload-button ' . $form_fields->data[$f]['css_class'] . '"> <span>' . $form_fields->data[$f]['field_name'] . '</span> </span>' . $form_fields->data[$f]['suffix'] . '</div>';
-          $script = '<script  type="text/javascript">file_uploader(\'' . $form_fields->data[$f]['field_id'] . '\', \'' . $form_fields->data[$f]['field_values'] . '\');</script>';
-          $form_element .= '<div class="form-item '. $form_fields->data[$f]['vertical'].'"><span id="file-message"></span><ol id="uploaded-files"></ol> <textarea id="files" name="files"></textarea>' . $script . '</div>';
-          break;
-        case 'reset':
-          $form_element .= '<div id="form-item-' . $form_fields->data[$f]['field_id'] . '" class="form-item '. $form_fields->data[$f]['vertical'].' form-reset"> <input type="' . $form_fields->data[$f]['html_type'] . '" id="' . $form_fields->data[$f]['field_id'] . '" name="' . $form_fields->data[$f]['field_name'] . '" class="' . $form_fields->data[$f]['css_class'] . '" value="' . $form_fields->data[$f]['def_val'] . '" ' . $form_fields->data[$f]['html_options'] . ' onClick="' . $form_fields->data[$f]['click'] . '" onFocus="' . $form_fields->data[$f]['focus'] . '" onBlur="' . $form_fields->data[$f]['blur'] . '" />' . $form_fields->data[$f]['suffix'] . '</div>';
           break;
       }
 
@@ -295,11 +262,10 @@ class DbForm {
       'submit_text' => !empty($submit_text) ? $submit_text : 'Save',
       'modal' => $modal,
     );
-//die(print_r($render));
+
     $template = $twig->loadTemplate('form.html');
     $template->display($render);
   }
-
 }
 
 ?>

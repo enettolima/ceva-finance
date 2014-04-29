@@ -7,7 +7,9 @@
 
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
+	require_once(NATURAL_LIB_PATH . 'util.php');
+  require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
+	require_once(NATURAL_CLASSES_PATH . 'files.class.php');
   require_once('upload.func.php');
 
   if(!$_SESSION['logged']) {

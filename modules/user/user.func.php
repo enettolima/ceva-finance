@@ -166,6 +166,8 @@ function user_edit_form($user_id) {
     }
 		// Testing chekboxes
 		$user->user_race = array('caucasian', 'asian', 'indian');
+		// Testing radio buttons
+		//$user->user_race = 'asian';
     $frm->build('user_edit_form', $user, $_SESSION['log_access_level']);
   }
   else {
@@ -255,7 +257,7 @@ function user_validate_fields($fields) {
         }
         break;
       case 'email':
-        if (!(isValidEmail($value))) {
+        if (!(filter_var($value, FILTER_VALIDATE_EMAIL))) {
           $error[] = 'Invalid format for ' . $field_name . ', please insert a valid email!';
         }
         break;
