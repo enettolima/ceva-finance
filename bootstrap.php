@@ -73,5 +73,21 @@
 
     //SET HIVE CURRENT VERSION
     define('NATURAL_VERSION', 'Clean Project 1.0');
+
+    //SET DEFAULT ICONS
+    define('NATURAL_EDIT_ICON', 'fa fa-pencil');
+    define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
+
+    // Twig Template Engine.
+    require_once NATURAL_ROOT_PATH . '/lib/Twig/Autoloader.php';
+    Twig_Autoloader::register();
+
+    $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');
+    $twig = new Twig_Environment($loader, array(
+      'debug' => TRUE,
+      'cache' => NATURAL_ROOT_PATH . '/compilation_cache',
+      'auto_reload' => TRUE,
+    ));
+    $twig->addExtension(new Twig_Extension_Debug());
   }
 ?>

@@ -168,6 +168,8 @@ function user_edit_form($user_id) {
 		$user->user_race = array('caucasian', 'asian', 'indian');
 		// Testing radio buttons
 		//$user->user_race = 'asian';
+		// Testing uploader - avatar field with fids
+		$user->avatar = array(13, 14);
     $frm->build('user_edit_form', $user, $_SESSION['log_access_level']);
   }
   else {
