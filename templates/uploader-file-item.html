@@ -1,8 +1,10 @@
 <li class="file-item">
   {% if preview %}
     <img src="{{ preview_uri }}" class="img-thumbnail" />
-    <br/>
+    <br />
   {% endif %}
   <span class="file-name">{{ filename }}</span>
-  <a id="file-{{ fid }}" class="file-delete" title="Delete" onClick="uploader_remove_file({{ fid }}, {{ field_id }});"><i class="fa fa-trash-o"></i></a>
+  <a id="file-item-{{ fid }}" class="file-delete" data-info-fid="{{ fid }}" title="Delete" onClick="uploader_remove_file({{ fid }}, {{ field_id }});">
+    <i class="fa fa-trash-o"></i>
+  </a>
 </li>

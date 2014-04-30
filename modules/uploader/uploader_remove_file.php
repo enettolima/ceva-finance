@@ -23,7 +23,7 @@
   }
 
   // Remove file
-  $file->remove('fid > 0');
+  $file->remove('fid = ' . $fid);
   if ($file->affected > 0) {
     unlink(NATURAL_ROOT_PATH . '/' . $uri);
     natural_set_message('File "' . $filename . '" was removed successfully.', 'success');

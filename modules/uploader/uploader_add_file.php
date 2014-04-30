@@ -119,8 +119,11 @@
       );
       // File item
       $file_item = $twig->render('uploader-file-item.html', $render);
+      $breaks = array("\r\n", "\n", "\r");
+      $file_item = str_replace($breaks, "", $file_item);
+      $file_item = str_replace('"', "'", $file_item);
       $response = array(
-        'file_item' => $file_item,
+        'file_item' => htmlentities($file_item),
         'limit' => $field_limit,
         'fid' => $file->fid,
       );

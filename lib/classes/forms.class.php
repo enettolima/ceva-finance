@@ -220,6 +220,29 @@ class DbForm {
             $form_fields->data[$f]['def_val'] = $dm->$data_label;
           }
           break;
+        case 'uploader':
+          $form_fields->data[$f]['file_items'] = '';
+          $form_fields->data[$f]['fids'] = '';
+          //natural_set_message(print_r($form_fields->data[$f]['def_val'], TRUE), 'error');
+          if (!empty($form_fields->data[$f]['def_val']) && is_array($form_fields->data[$f]['def_val'])) {
+            $files = new DataManager;
+            $files->dm_load_custom_list('SELECT * FROM files WHERE fid IN (' . implode(',', $form_fields->data[$f]['def_val']) . ') ORDER BY fid', 'ASSOC');
+            if ($files->affected > 0) {
+              foreach ($files->data as $file) {
+                $render = array(
+                  'filename'=> $file['filename'],
+                  'preview' => (strpos($form_fields->data[$f]['field_values'], 'preview=true') !== false) ? TRUE : FALSE,
+                  'preview_uri' => $file['uri'],
+                  'fid' => $file['fid'],
+                  'field_id' => $form_fields->data[$f]['id'],
+                );
+                // File item
+                $form_fields->data[$f]['file_items'] .= $twig->render('uploader-file-item.html', $render);
+                $form_fields->data[$f]['fids'] .= $file['fid'] . "\n";
+              }
+            }
+          }
+          break;
         case 'submit':
           $submit_text = $form_fields->data[$f]['def_val'];
           break;

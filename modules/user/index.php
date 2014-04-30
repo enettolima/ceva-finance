@@ -15,7 +15,6 @@ require_once(NATURAL_CLASSES_PATH . 'group.class.php');
 require_once(NATURAL_CLASSES_PATH . 'acl_levels.class.php');
 require_once(NATURAL_CLASSES_PATH . 'listview.class.php');
 require_once(NATURAL_CLASSES_PATH . 'contact.class.php');
-require_once(NATURAL_CLASSES_PATH . 'panel.class.php');
 require_once(NATURAL_LIB_PATH . 'util.php');
 require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
 require_once('user.func.php');
