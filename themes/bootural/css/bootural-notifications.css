@@ -73,7 +73,9 @@
 .LoadingBoxContainer .MsgTitle{
   font-size: 26px
 }
-#LoadingPoints { position: absolute }
+#LoadingPoints {
+  position: absolute
+}
 .bigBox {
   position: fixed;
   right: 10px;
@@ -142,6 +144,13 @@
   right: 0;
   top: 70px;
   z-index: 99999;
+}
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 768px) {
+  #divSmallBoxes {
+    top: 0px;
+  }
 }
 .SmallBox {
   position: absolute;
