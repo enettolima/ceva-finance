@@ -188,8 +188,8 @@ body > .header .logo {
 body > .header .logo .icon {
   margin-right: 10px;
 }
-.right-side { /* TODO Dynamically */
-  min-height: 800px;
+.right-side { 
+  min-height: 100%;
 }
 .right-side > .content-header {
   position: relative;
