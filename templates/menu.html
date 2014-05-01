@@ -19,7 +19,7 @@
       </li>
     {% else %}
       <li data-menu-id="{{ link.id }}">
-        <a href="javascript:menu_navigation('{{ link.element_name }}', '{{ link.func }}', '{{ link.module }}')">
+        <a id="menu-item-{{ link.id }}" href="javascript:menu_navigation({{ link.id }}, '{{ link.func }}', '{{ link.module }}')">
           {% if link.icon_class %}
             <i class="{{ link.icon_class }}"></i>
           {% else %}
