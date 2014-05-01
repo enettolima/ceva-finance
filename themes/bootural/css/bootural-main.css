@@ -938,12 +938,14 @@ table thead a:hover,
 table a .fa:hover {
   color: #666666;
 }
-table thead .sorting {
-  background: url(../images/sort_both.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
-}
-table thead .sorting_asc {
-  background: url(../images/sort_asc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
-}
-table thead .sorting_desc {
-  background: url(../images/sort_desc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+@media only screen and (min-width : 768px) {
+  table thead .sorting {
+    background: url(../images/sort_both.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
+  table thead .sorting_asc {
+    background: url(../images/sort_asc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
+  table thead .sorting_desc {
+    background: url(../images/sort_desc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
 }
