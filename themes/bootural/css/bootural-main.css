@@ -49,6 +49,7 @@ body > .header {
 .left-side {
   position: absolute;
   width: 220px;
+  min-height: 600px;
   top: 0;
 }
 @media screen and (min-width: 992px) {
@@ -188,8 +189,8 @@ body > .header .logo {
 body > .header .logo .icon {
   margin-right: 10px;
 }
-.right-side { /* TODO Dynamically */
-  min-height: 800px;
+.right-side {
+  min-height: 100%;
 }
 .right-side > .content-header {
   position: relative;
@@ -533,7 +534,7 @@ body > .header .logo .icon {
 }
 
 /**
- * Form elements
+ * Forms elements
  * All form elements including input, select, textarea etc.
  */
 .form-control > .form-control,
@@ -644,6 +645,28 @@ label {
 .form-uploader img {
   max-width: 100px;
   margin-top: 10px;
+}
+.chosen-container {
+  color: #555555 !important;
+  width: 100% !important;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+.chosen-container-multi .chosen-choices {
+  background-color: #f4f4f4;
+  border-color: #ccc !important;
+  border-radius: 2px;
+  box-shadow: none;
+  background: none !important;
+  height: 32px !important;
+  padding-top: 2px;
+}
+.chosen-container-active .chosen-choices {
+  border-color: #3c8dbc !important;
+}
+.chosen-container-multi .chosen-choices li.search-field input[type="text"]  {
+  color: #555555 !important;
+  height: 25px;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 /**
@@ -938,12 +961,14 @@ table thead a:hover,
 table a .fa:hover {
   color: #666666;
 }
-table thead .sorting {
-  background: url(../images/sort_both.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
-}
-table thead .sorting_asc {
-  background: url(../images/sort_asc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
-}
-table thead .sorting_desc {
-  background: url(../images/sort_desc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+@media only screen and (min-width : 768px) {
+  table thead .sorting {
+    background: url(../images/sort_both.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
+  table thead .sorting_asc {
+    background: url(../images/sort_asc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
+  table thead .sorting_desc {
+    background: url(../images/sort_desc.png) no-repeat scroll 90% center rgba(0, 0, 0, 0);
+  }
 }

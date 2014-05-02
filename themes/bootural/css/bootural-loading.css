@@ -1,10 +1,10 @@
 /**
  * Loading in CSS
  */
-
 #circleG {
   width: 70px;
   position: fixed;
+  z-index: 9999;
   right: 0px;
   bottom: 7px;
   display: none;
