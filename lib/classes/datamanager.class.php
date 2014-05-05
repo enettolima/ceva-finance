@@ -1,9 +1,10 @@
 <?php
- /*
- * HIVE - Copyleft Open Source Mind, GP
- * Last Modified: $Date: 2009-05-18 17:29:42 -0500 (Mon, 18 May 2009) $ @ Revision: $Rev: 11 $
- */
 
+/**
+ *
+ * @access private
+ *
+ */
  class DataManager{
   public $affected;
   public $errorcode = 0 ;
@@ -11,9 +12,14 @@
   public $data;
   public $dbid;
 
+ /**
+ *
+ * @access private
+ *
+ */
   public function dm_load_single($table, $search_str) {
      //Use configuration from bootstrap
-		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+	 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
 		 
@@ -45,7 +51,12 @@
      mysql_close($dblink);
      $dblink = null ;
   }
-
+  
+/**
+ *
+ * @access private
+ *
+ */
   public function dm_load_list($table, $output, $search_str, $count = FALSE, $count_query = NULL){
      //Use configuration from bootstrap
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -107,6 +118,12 @@
      $dblink = null ;
   }
 
+ /**
+ *
+ * @access private
+ *
+ */
+  
   public function dm_load_custom_list($query, $output, $count = FALSE, $count_query = NULL){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -163,6 +180,12 @@
     $dblink = null ;
   }
 
+ /**
+ *
+ * @access private
+ *
+ */
+  
   public function dm_insert($table, $fields){
 
     //Use configuration from bootstrap
@@ -190,6 +213,12 @@
     $dblink = null ;
   }
 
+ /**
+ *
+ * @access private
+ *
+ */
+  
   public function dm_remove($table, $record_key){
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -203,6 +232,12 @@
     mysql_close($dblink);
     $dblink = null ;
   }
+
+ /**
+ *
+ * @access private
+ *
+ */
 
   public function dm_update($table, $update_rule, $fields){
     //Use configuration from bootstrap
@@ -233,6 +268,12 @@
     $dblink = null ;
   }
 
+ /**
+ *
+ * @access private
+ *
+ */
+
     public function dm_random($alpha = false, $length = 6){
       if($alpha){
         $random_key = substr(md5(rand().rand()), 0, $length);
@@ -241,6 +282,12 @@
       }
       return $random_key;
     }
+
+ /**
+ *
+ * @access private
+ *
+ */
 
 	public function dm_custom_query($query, $return_object=false, $return_id=false){
 		//Use configuration from bootstrap
@@ -272,6 +319,12 @@
 		mysql_close($dblink);
 		$dblink = null ;
 	}
+
+ /**
+ *
+ * @access private
+ *
+ */
 
 	public function dm_check_module($module){
 		//Use configuration from bootstrap
@@ -320,6 +373,12 @@
 		}*/
 	}
 
+ /**
+ *
+ * @access private
+ *
+ */
+
   public function dm_custom_insert($query){
 
     //Use configuration from bootstrap
@@ -336,6 +395,13 @@
     mysql_close($dblink);
     $dblink = null ;
   }
+  
+ /**
+ *
+ * @access private
+ *
+ */
+
   public function dm_custom_update($query){
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
