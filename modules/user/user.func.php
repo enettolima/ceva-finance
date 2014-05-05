@@ -306,19 +306,4 @@ function user_delete_form_submit($data) {
   }
 }
 
-
-
-/**
- * Create new admin users
- * TODO: DELETE THIS - JUST A FIELSET TEST
- */
-function admin_new_user() {
-    $user = new User();
-    $customer = new Customer();
-    $frm = new DbForm();
-    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level'], FALSE);
-}
-
-
-
 ?>
