@@ -2,8 +2,6 @@
 
 
 require_once('bootstrap.php');
-require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
-require_once(NATURAL_CLASSES_PATH.'customer.class.php');
 
 session_start();
 $_SESSION['selected_customer_id']=$_GET['customer_id'];

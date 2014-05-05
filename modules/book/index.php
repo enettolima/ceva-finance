@@ -7,8 +7,6 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once(NATURAL_LIB_PATH . 'util.php');
-require_once('book.model.php');
 require_once('book.view.php');
 require_once('book.controller.php');
 

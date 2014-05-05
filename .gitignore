@@ -1,10 +1,13 @@
 # Igreno Mac OS files
 .DS_Store
 
-# Ignore Netbeans paths 
+#Ignore VagrantFile
+Vagrantfile
+
+#Ignore Netbeans paths 
 nbprojects/
 
-# Ignore default Natural files
+#Ignore default Natural files
 bootstrap.dev.php
 compilation_cache/
 files/
@@ -12,3 +15,6 @@ files/
 #Ignore komodo files
 Natural
 Natural.komodoproject
+
+#Ignore libs installed with composer
+vendor/

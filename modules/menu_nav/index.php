@@ -2,15 +2,6 @@
 
 session_start();
 require_once('../../bootstrap.php');
-require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
-require_once(NATURAL_CLASSES_PATH . 'forms.class.php');
-require_once(NATURAL_CLASSES_PATH . 'user.class.php');
-require_once(NATURAL_CLASSES_PATH . 'main_menu.class.php');
-require_once(NATURAL_CLASSES_PATH . 'sub_menu.class.php');
-require_once(NATURAL_CLASSES_PATH . 'side_menu.class.php');
-require_once(NATURAL_CLASSES_PATH . 'listview.class.php');
-require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
-require_once(NATURAL_LIB_PATH . 'util.php');
 require_once('menu_nav.func.php');
 
 if (!$_SESSION['logged']) {

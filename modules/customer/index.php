@@ -7,11 +7,6 @@
 
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
-  require_once(NATURAL_CLASSES_PATH.'contact.class.php');
-  require_once(NATURAL_CLASSES_PATH.'listview.class.php');
-  require_once(NATURAL_LIB_PATH.'util.php');
-  require_once(NATURAL_LIB_PATH.'errorcodes.lib.php');
   //require_once('../dashboard/dashboard_widgets.inc');
   //require_once('../dashboard/dashboard.func.php');
   require_once('customer.func.php');

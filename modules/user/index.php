@@ -7,16 +7,6 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
-require_once(NATURAL_CLASSES_PATH . 'forms.class.php');
-require_once(NATURAL_CLASSES_PATH . 'user.class.php');
-require_once(NATURAL_CLASSES_PATH . 'customer.class.php');
-require_once(NATURAL_CLASSES_PATH . 'group.class.php');
-require_once(NATURAL_CLASSES_PATH . 'acl_levels.class.php');
-require_once(NATURAL_CLASSES_PATH . 'listview.class.php');
-require_once(NATURAL_CLASSES_PATH . 'contact.class.php');
-require_once(NATURAL_LIB_PATH . 'util.php');
-require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
 require_once('user.func.php');
 
 if (!$_SESSION['logged']) {
