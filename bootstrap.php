@@ -70,6 +70,9 @@
   //SET NATURAL CURRENT VERSION
   define('NATURAL_VERSION', 'Natural 4.0');
 
+    //SET HIVE CURRENT VERSION
+    define('NATURAL_VERSION', 'Clean Project 1.0');
+
   //SET DEFAULT ICONS
   define('NATURAL_EDIT_ICON', 'fa fa-pencil');
   define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');

@@ -13,22 +13,22 @@
     <link href="{{ path_to_theme }}css/font-awesome.min.css" rel="stylesheet" type="text/css" />
     <!-- Ionicons -->
     <link href="{{ path_to_theme }}css/ionicons.min.css" rel="stylesheet" type="text/css" />
-    <!-- Main CSS -->
-    <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
     <!-- Loading -->
     <link href="{{ path_to_theme }}css/bootural-loading.css" media="all" rel="stylesheet" type="text/css">
     <!-- Notifications -->
     <link href="{{ path_to_theme }}css/bootural-notifications.css" media="all" rel="stylesheet" type="text/css">
-    <!-- Colors/Skins CSS -->
-    <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
     <!-- Morris Charts -->
     <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css" media="all" rel="stylesheet" type="text/css">
     <!-- Chosen -->
-    
+    <link rel="stylesheet" href="http://harvesthq.github.io/chosen/chosen.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Main CSS -->
+    <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Colors/Skins CSS -->
+    <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
     {% endblock %}
   </head>
 
-  <body class="skin-gray fixed {{ page }}">
+  <body class="skin-gray {{ page }}">
 
     <header class="header">
       {% block header %}
@@ -92,6 +92,8 @@
     <script type="text/javascript" src="lib/js/jquery.history.js"></script>
     <!-- ajaxupload.js -->
     <script type="text/javascript" src="lib/js/ajaxupload.js"></script>
+    <!-- natural uplader - depends on ajaxupload.js -->
+    <script type="text/javascript" src="lib/js/uploader.js"></script>
     <!-- Bootstrap v3.1.1 (http://getbootstrap.com) -->
     <script type="text/javascript" src="{{ path_to_theme }}js/bootstrap.min.js"></script>
     <!-- Notifications -->

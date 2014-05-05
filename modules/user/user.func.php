@@ -168,6 +168,8 @@ function user_edit_form($user_id) {
 		$user->user_race = array('caucasian', 'asian', 'indian');
 		// Testing radio buttons
 		//$user->user_race = 'asian';
+		// Testing uploader - avatar field with fids
+		$user->avatar = array(13, 14);
     $frm->build('user_edit_form', $user, $_SESSION['log_access_level']);
   }
   else {
@@ -302,6 +304,19 @@ function user_delete_form_submit($data) {
 		natural_set_message('Problems removing user ' . $user->first_name . ' ' . $user->last_name . '!', 'error');
     return FALSE;
   }
+}
+
+
+
+/**
+ * Create new admin users
+ * TODO: DELETE THIS - JUST A FIELSET TEST
+ */
+function admin_new_user() {
+    $user = new User();
+    $customer = new Customer();
+    $frm = new DbForm();
+    return $frm->build('admin_user_new', $user, $_SESSION['log_access_level'], FALSE);
 }
 
 

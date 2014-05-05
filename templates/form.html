@@ -77,7 +77,9 @@
                          <option value="{{ option.value }}" {{ option.status }}>{{ option.label }}</option>
                       {% endfor %}
                     </select>
-                    <i></i>
+                    {% if field.html_options != 'multiple' %}
+                      <i></i>
+                    {% endif %}
                   {% endif %}
 
                   {# checkbox #}
@@ -107,8 +109,8 @@
                   {# uploader #}
                   {% if field.html_type == 'uploader' %}
                     <div class="uploader form-uploader">
-                      <ol id="uploaded-files-{{ field.id }}" class="uploaded-files"></ol>
-                      <textarea id="files-{{ field.id }}" name="{{ field.field_name }}" class="hide"></textarea>
+                      <ol id="uploaded-files-{{ field.id }}" class="uploaded-files">{{ field.file_items|raw }}</ol>
+                      <textarea id="files-{{ field.id }}" name="{{ field.field_name }}" class="hide">{{ field.fids|raw }}</textarea>
                     </div>
                     <button data-id="{{ field.id }}" id="uploader-button-{{ field.id }}" type="button" class="btn btn-default btn-sm uploader-button {{ field.css_class }}">
                       Upload <i class="fa fa-download"></i>
