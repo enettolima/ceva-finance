@@ -2,12 +2,6 @@
 
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
-  require_once(NATURAL_CLASSES_PATH.'forms.class.php');
-  require_once(NATURAL_CLASSES_PATH.'user.class.php');
-  require_once(NATURAL_CLASSES_PATH.'acl_levels.class.php');
-  require_once(NATURAL_CLASSES_PATH.'contact.class.php');
-  require_once('acl.class.php');
   require_once('acl.func.php');
 
   if(!$_SESSION['logged'])
@@ -16,7 +10,7 @@
     exit(0);
   }
 
-  $acl = new Acl_levels();
+  $acl = new AclLevels();
   $acltb = new Acl_levelsTable();
   $fn = $_GET['fn'];
 
