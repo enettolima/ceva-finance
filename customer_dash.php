@@ -2,9 +2,6 @@
 
   session_start();
   require_once('bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
-  require_once(NATURAL_LIB_PATH.'util.php');
-	require_once('modules/acl/acl.class.php');
   require_once('modules/acl/acl.func.php');
 
 	// In order to get the functions used for billing

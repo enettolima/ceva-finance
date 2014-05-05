@@ -1,21 +1,5 @@
 <?
   require_once('bootstrap.php');
-  require_once(NATURAL_CLASSES_PATH.'datamanager.class.php');
-  require_once(NATURAL_CLASSES_PATH.'forms.class.php');
-  require_once(NATURAL_CLASSES_PATH.'tool.class.php');
-  require_once(NATURAL_CLASSES_PATH.'user.class.php');
-  require_once(NATURAL_CLASSES_PATH.'customer.class.php');
-  require_once(NATURAL_CLASSES_PATH.'customer_item.class.php');
-  require_once(NATURAL_CLASSES_PATH.'group.class.php');
-  require_once(NATURAL_CLASSES_PATH.'partner.class.php');
-  require_once(NATURAL_CLASSES_PATH.'acl_levels.class.php');
-  require_once(NATURAL_CLASSES_PATH.'mailbox.class.php');
-  require_once(NATURAL_CLASSES_PATH.'listview.class.php');
-  require_once(NATURAL_CLASSES_PATH.'contact.class.php');
-  require_once(NATURAL_CLASSES_PATH.'extension.class.php');
-  require_once(NATURAL_CLASSES_PATH.'location.class.php');
-  require_once(NATURAL_CLASSES_PATH.'conference.class.php');
-  require_once(NATURAL_LIB_PATH.'errorcodes.lib.php');
 
   $customer = new Customer();
   $dm       = new DataManager();

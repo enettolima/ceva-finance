@@ -4,90 +4,86 @@
     require(NATURAL_ROOT_PATH . '/bootstrap.dev.php');
   }
   else {
-    /* Define system defaults and main configuration */
+  /* Define system defaults and main configuration */
 
-    //SET HIVE INTO DEVELOPMENT MODE
-    //CHANGE TO FALSE WHEN RUNNING
-    //IN PRODUCTION ENVIRONMENT
-    define('NATURAL_DEV_MODE', FALSE);
-    define('ENABLE_COLOR_CHANGE', FALSE);
+  //SET NATURAL INTO DEVELOPMENT MODE
+  //CHANGE TO FALSE WHEN RUNNING
+  //IN PRODUCTION ENVIRONMENT
+  define('NATURAL_DEV_MODE', FALSE);
+  define('ENABLE_COLOR_CHANGE', FALSE);
 
-    //SET APPLICATION PATHS
-    define('NATURAL_WEB_ROOT', './');
-    define('TITLE', 'Clean Project');
-    define('NATURAL_ROOT_PATH', dirname(__FILE__));
-    define('NATURAL_LIB_PATH', NATURAL_ROOT_PATH . '/lib/');
-    define('NATURAL_CLASSES_PATH', NATURAL_ROOT_PATH . '/lib/classes/');
-    define('NATURAL_IMAGE_PATH', NATURAL_ROOT_PATH . '/media/images/');
-    define('NATURAL_911WSDL_PATH', NATURAL_ROOT_PATH . '/lib/wsdl/');
-    define('NATURAL_TEMPLATE_PATH', NATURAL_ROOT_PATH . '/themes/moonlight/');
-    define('TEMPLATE', 'themes/moonlight/');
-    define('PAGER_LIMIT', 25);
+  //SET APPLICATION PATHS
+  define('NATURAL_WEB_ROOT'       , './');
+  define('TITLE'                  , 'NATURAL');
+  //define('NATURAL_ROOT_PATH'    , dirname(__FILE__));
+  define('NATURAL_LIB_PATH'       , NATURAL_ROOT_PATH . '/lib/');
+  define('NATURAL_CLASSES_PATH'   , NATURAL_ROOT_PATH . '/lib/classes/');
+  define('NATURAL_IMAGE_PATH'     , NATURAL_ROOT_PATH.'/media/images/');
+  define('NATURAL_911WSDL_PATH'   , NATURAL_ROOT_PATH.'/lib/wsdl/');
+  define('NATURAL_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/themes/bootural/');
+  define('THEME_PATH'             , 'themes/bootural/');
+  define('PAGER_LIMIT'            , 25);
 
-    //Auloaders
-    require_once('classloader.php');
+  //SET FORMS/MENUS TABLES
+  define('FORM_TABLE', 'form_parameters');
+  define('FIELD_TABLE', 'field_templates');
+  define('FIELDSET_TABLE','fieldsets');
+  define('MAIN_MENU_TABLE','main_menu');
+  define('SUB_MENU_TABLE', 'sub_menu');
+  define('SIDE_MENU_TABLE', 'side_menu');
+  define('MODULES_TABLE', 'module');
+  
+  require_once(NATURAL_LIB_PATH.'util.php');
+  require_once(NATURAL_LIB_PATH.'errorcodes.lib.php');
+  
+  //Autoloaders
+  
+  require_once( NATURAL_ROOT_PATH . '/vendor/autoload.php');
 
-    //SET FORMS/MENUS TABLES
-    define('FORM_TABLE', 'form_parameters');
-    define('FIELD_TABLE', 'field_templates');
-    define('FIELDSET_TABLE', 'fieldsets');
-    define('MAIN_MENU_TABLE', 'main_menu');
-    define('SUB_MENU_TABLE', 'sub_menu');
-    define('SIDE_MENU_TABLE', 'side_menu');
-    define('MODULES_TABLE', 'module');
+  //E-MAIL SENDER
+  define('NATURAL_EMAIL_SENDER', 'noreply@natural.com');
 
-    //E-MAIL SENDER
-    define('NATURAL_EMAIL_SENDER', 'noreply@natural.net');
+  //WEBSITE DOMAIN
+  define('NATURAL_DOMAIN', 'http://localhost:8888');
 
-    //WEBSITE DOMAIN
-    define('NATURAL_DOMAIN', 'https://www.natural.net');
+  //COMPANY NAME
+  define('NATURAL_COMPANY', 'Open Source Mind LLC');
 
-    //COMPANY NAME
-    define('NATURAL_COMPANY', 'Open Source Mind LLC');
+  //PLATFORM NAME
+  define('NATURAL_PLATFORM', 'Bootural');
 
-    //PLATFORM NAME
-    define('NATURAL_PLATFORM', 'Clean Project');
+  //LOAD ERROR MESSAGE LIBRARY
+  //require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
+  //require_once(NATURAL_LIB_PATH . 'util.php');
 
-    //LOAD ERROR MESSAGE LIBRARY
-    require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
-    require_once(NATURAL_LIB_PATH . 'util.func.php');
+  //Define primary Database Name
+  define('NATURAL_DBNAME', 'natural_framework');
 
-    //Define primary Database Name
-    define('NATURAL_DBNAME', 'clean_repo');
+  //SET PRODUCTION DATABASE INFORMATION
+  define('NATURAL_DBHOST', 'localhost');
+  define('NATURAL_DBUSER', 'root');
+  define('NATURAL_DBPASS', '123456');
 
-    //SET PRODUCTION DATABASE INFORMATION
-    define('NATURAL_DBHOST', '65.99.233.14');
-    define('NATURAL_DBUSER', 'hiveadmin');
-    define('NATURAL_DBPASS', '090909');
+  //SET MAGIC KEY
+  define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
 
-    //SET MAGIC KEY
-    define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
-
-    //SET API KEY
-    define('NATURAL_API_KEY', 'b1076550323b21a1652922e64dfad6d7');
-
-    //SET HIVE REVISION FROM SVN
-    $svnid = substr('$Rev: 12 $', 6);
-    $svnid = intval(substr($svnid, 0, strlen($svnid) - 2));
-    define('NATURAL_REVISION', $svnid);
+  //SET NATURAL CURRENT VERSION
+  define('NATURAL_VERSION', 'Natural 4.0');
 
     //SET HIVE CURRENT VERSION
     define('NATURAL_VERSION', 'Clean Project 1.0');
 
-    //SET DEFAULT ICONS
-    define('NATURAL_EDIT_ICON', 'fa fa-pencil');
-    define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
+  //SET DEFAULT ICONS
+  define('NATURAL_EDIT_ICON', 'fa fa-pencil');
+  define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
 
-    // Twig Template Engine.
-    require_once NATURAL_ROOT_PATH . '/lib/Twig/Autoloader.php';
-    Twig_Autoloader::register();
-
-    $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');
-    $twig = new Twig_Environment($loader, array(
-      'debug' => TRUE,
-      'cache' => NATURAL_ROOT_PATH . '/compilation_cache',
-      'auto_reload' => TRUE,
-    ));
-    $twig->addExtension(new Twig_Extension_Debug());
+  // Twig Template Engine.
+  $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');
+  $twig = new Twig_Environment($loader, array(
+    'debug' => TRUE,
+    'cache' => NATURAL_ROOT_PATH . '/compilation_cache',
+    'auto_reload' => TRUE,
+  ));
+  $twig->addExtension(new Twig_Extension_Debug());
   }
 ?>

@@ -7,11 +7,6 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
-require_once(NATURAL_CLASSES_PATH . 'forms.class.php');
-require_once(NATURAL_CLASSES_PATH . 'customer.class.php');
-require_once(NATURAL_CLASSES_PATH . 'panel.class.php');
-require_once(NATURAL_LIB_PATH . 'util.php');
 require_once('store.func.php');
 
 if (!$_SESSION['logged']) {
