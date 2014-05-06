@@ -20,7 +20,7 @@ a:hover, a:active, a:focus {
  * Layouts
  */
 .wrapper {
-  min-height: 100%;
+  min-height: 900px;
 }
 .wrapper:before,
 .wrapper:after {
@@ -49,7 +49,6 @@ body > .header {
 .left-side {
   position: absolute;
   width: 220px;
-  min-height: 600px;
   top: 0;
 }
 @media screen and (min-width: 992px) {
