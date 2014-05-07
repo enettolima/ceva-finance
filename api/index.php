@@ -16,7 +16,7 @@ Resources::$useFormatAsExtension = false;
 
 use Luracast\Restler\Restler;
 
-$r = new Restler(true);
+$r = new Restler(true, true);
 $r->addAPIClass('Luracast\\Restler\\Resources'); 
 $r->setSupportedFormats('JsonFormat');
 $r->addAPIClass('User');

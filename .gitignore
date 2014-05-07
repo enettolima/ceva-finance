@@ -18,3 +18,4 @@ Natural.komodoproject
 
 #Ignore libs installed with composer
 vendor/
+composer.lock

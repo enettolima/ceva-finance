@@ -1,4 +1,10 @@
 <?php
+/** 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
+*/
+
 	/**
 	 *  This functions build the output for the panel in order to standardize 
 	 */

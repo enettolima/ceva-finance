@@ -1,13 +1,13 @@
 <?
-/**
- * HIVE - Copyleft Open Source Mind, GP
- * Last Modified: Date: 07-29-2009 14:03:48 -0500 (Jul-Wed-2009) $ @ Revision: $Rev: 11 $
- * @package Hive
- */
+/** 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
+*/
 
-/**
- * Files
- */
+/** 
+* Important to manage media files on the database
+*/ 
 class Files Extends DataManager {
 
     public function load_single($search_str) {

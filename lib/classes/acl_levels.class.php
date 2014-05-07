@@ -1,11 +1,12 @@
 <?
- /** 
-* HIVE - Copyleft Open Source Mind, GP 
-* Last Modified: Date: 12-29-2009 15:35:21 -0500 (Dec-Tue-2009) $ @ Revision: $Rev: 11 $ 
-* @package Hive 
-*/
 /** 
-* <insert your class documentation here> 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
+*/
+
+/** 
+* ACL(Access control level) responsible to provide USER level for the application
 */ 
 
 class AclLevels Extends DataManager{

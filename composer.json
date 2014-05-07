@@ -8,8 +8,7 @@
         "classmap": ["lib/classes",
 					 "modules/user",
 					 "modules/acl",
-					 "modules/customer",
-					 "modules/store",
+           "modules/menu",
 					 "modules/uploader"]
     }
 }
