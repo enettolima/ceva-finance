@@ -1,13 +1,13 @@
 <?
- /** 
-* HIVE - Copyleft Open Source Mind, GP 
-* Last Modified: Date: 05-18-2011 11:05:25 -0500 (May-Wed-2011) $ @ Revision: $Rev: 11 $ 
-* @package Hive 
+/** 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
 */
 
 /** 
-* <insert your class documentation here> 
-*/ 
+* Language manager, this class will interact with languages table on database
+*/
 
 	class Language Extends DataManager{
 		public function load_single($search_str){

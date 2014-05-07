@@ -7,7 +7,7 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once('user.func.php');
+require_once('user.controller.php');
 
 if (!$_SESSION['logged']) {
   echo "LOGOUT";

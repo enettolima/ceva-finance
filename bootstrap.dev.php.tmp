@@ -1,15 +1,14 @@
 <?php
   define('NATURAL_ROOT_PATH', dirname(__FILE__));
-  if (file_exists(NATURAL_ROOT_PATH . '/bootstrap.dev.php')) {
-    require(NATURAL_ROOT_PATH . '/bootstrap.dev.php');
-  }
-  else {
   /* Define system defaults and main configuration */
+  //SET ERROR LOGGING TO HIGH LEVEL
+  error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+  ini_set('display_errors', '1');
 
   //SET NATURAL INTO DEVELOPMENT MODE
   //CHANGE TO FALSE WHEN RUNNING
   //IN PRODUCTION ENVIRONMENT
-  define('NATURAL_DEV_MODE', FALSE);
+  define('NATURAL_DEV_MODE', TRUE);
   define('ENABLE_COLOR_CHANGE', FALSE);
 
   //SET APPLICATION PATHS
@@ -51,9 +50,9 @@
   define('NATURAL_DBNAME', 'natural_framework');
 
   //SET PRODUCTION DATABASE INFORMATION
-  define('NATURAL_DBHOST', 'localhost');
+  define('NATURAL_DBHOST', 'dev.opensourcemind.us');
   define('NATURAL_DBUSER', 'root');
-  define('NATURAL_DBPASS', '123456');
+  define('NATURAL_DBPASS', '@ppD3v');
 
   //SET MAGIC KEY
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
@@ -76,5 +75,4 @@
     'auto_reload' => TRUE,
   ));
   $twig->addExtension(new Twig_Extension_Debug());
-  }
 ?>
