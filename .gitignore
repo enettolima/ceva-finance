@@ -13,7 +13,6 @@ compilation_cache/
 files/
 
 #Ignore komodo files
-Natural
 Natural.komodoproject
 
 #Ignore libs installed with composer
