@@ -32,6 +32,7 @@ if ($_SESSION['log_username']) {
 		'version' => $version,
 		'page' => 'dashboard',
 		'menu' => $menu,
+    'avatar' => $avatar,
 		'user_full_name' => $user_full_name,
 		'username' => $username,
 		'actual_date' => date('F jS, Y'),
