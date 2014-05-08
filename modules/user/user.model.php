@@ -23,10 +23,10 @@ class User Extends DataManager{
 	  parent::dm_load_single(NATURAL_DBNAME . ".user","username='{$username}'");
 		if($this->affected > 0) {
 				$res = array (	'id' => $this->id,
-									'firstName' => $this->first_name,
-									'lastName' => $this->last_name,
-									'status' => $this->status
-								);
+					'firstName' => $this->first_name,
+					'lastName' => $this->last_name,
+					'status' => $this->status
+				);
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
@@ -39,7 +39,9 @@ class User Extends DataManager{
 	*/
 	public function load_single($search_str){
 		$NATURAL_key = NATURAL_MAGIC_KEY;
-		parent::dm_custom_query("SELECT id, partner_id, customer_id, group_id, first_name, last_name, contact_id, username, pin, AES_DECRYPT(password,'{$NATURAL_key}') as password, access_level, status, time_zone, interface, dashboard_1, dashboard_2, preferred_language FROM ".NATURAL_DBNAME.".user WHERE ".$search_str, true);
+		parent::dm_custom_query("SELECT id, file_id, first_name, last_name, username, AES_DECRYPT(password,'{$NATURAL_key}') as password,
+			email, access_level, status, language, dashboard_1, dashboard_2
+			FROM ".NATURAL_DBNAME.".user WHERE ".$search_str, true);
 		$this->dashboard_1 = unserialize($this->dashboard_1);
 		$this->dashboard_2 = unserialize($this->dashboard_2);
     }
@@ -63,19 +65,15 @@ class User Extends DataManager{
 				$temp_password = $this->password;
 			}
 			$NATURAL_key = NATURAL_MAGIC_KEY;
-			parent::dm_custom_insert("INSERT INTO ".NATURAL_DBNAME.".user SET group_id='{$this->group_id}',
-      partner_id='{$this->partner_id}',
-      customer_id='{$this->customer_id}',
+			parent::dm_custom_insert("INSERT INTO ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
 			first_name='{$this->first_name}',
 			last_name='{$this->last_name}',
-			contact_id='{$this->contact_id}',
 			username='{$this->username}',
 			password=AES_ENCRYPT('{$temp_password}','{$NATURAL_key}'),
+			email='{$this->email}',
 			access_level='{$this->access_level}',
 			status='{$this->status}',
-			time_zone='{$this->time_zone}',
-			interface='{$this->interface}',
-			preferred_language='{$this->preferred_language}',
+			language='{$this->preferred_language}',
       dashboard_1='".serialize($this->dashboard_1)."',
       dashboard_2='".serialize($this->dashboard_2)."'");
       $this->id = $this->dbid;
@@ -90,18 +88,15 @@ class User Extends DataManager{
 	*/
 	public function update($upd_rule){
 			$NATURAL_key = NATURAL_MAGIC_KEY;
-			parent::dm_custom_update("UPDATE ".NATURAL_DBNAME.".user SET group_id='{$this->group_id}',
-      id='{$this->id}',
+			parent::dm_custom_update("UPDATE ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
 			first_name='{$this->first_name}',
 			last_name='{$this->last_name}',
-			contact_id='{$this->contact_id}',
 			username='{$this->username}',
 			password=AES_ENCRYPT('{$this->password}','{$NATURAL_key}'),
+			email='{$this->email}',
 			access_level='{$this->access_level}',
 			status='{$this->status}',
-			time_zone='{$this->time_zone}',
-			interface='{$this->interface}',
-			preferred_language='{$this->preferred_language}',
+			language='{$this->preferred_language}',
       dashboard_1='".serialize($this->dashboard_1)."',
       dashboard_2='".serialize($this->dashboard_2)."' WHERE ".$upd_rule);
       //$this->id = $this->dbid;
@@ -130,5 +125,5 @@ class User Extends DataManager{
 	public function update_user_status($status,$customerid){
 		parent::dm_custom_query("UPDATE ".NATURAL_DBNAME.".user SET status='{$status}' WHERE customer_id='{$customerid}'");
 	}
-  }
+}
 ?>

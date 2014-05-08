@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c7cc33a6d18be024aa8f333e6540fe5d",
+    "hash": "0d30cf398eccffbb250605171d5aaf65",
     "packages": [
         {
             "name": "luracast/restler",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Luracast/Restler.git",
-                "reference": "cdff356f472165c21575b23255a0a1827f9e7ded"
+                "reference": "bc5ead945682e7eac73521b188c11128b54b0664"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Luracast/Restler/zipball/cdff356f472165c21575b23255a0a1827f9e7ded",
-                "reference": "cdff356f472165c21575b23255a0a1827f9e7ded",
+                "url": "https://api.github.com/repos/Luracast/Restler/zipball/bc5ead945682e7eac73521b188c11128b54b0664",
+                "reference": "bc5ead945682e7eac73521b188c11128b54b0664",
                 "shasum": ""
             },
             "require": {
@@ -82,7 +82,7 @@
                 "rest",
                 "server"
             ],
-            "time": "2014-04-29 11:40:31"
+            "time": "2014-05-02 05:08:58"
         },
         {
             "name": "twig/twig",

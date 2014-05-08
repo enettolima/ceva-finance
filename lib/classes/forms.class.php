@@ -1,4 +1,13 @@
 <?php
+/** 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
+*/
+
+/** 
+* Database form management
+*/
 
 class DbForm {
 
@@ -130,14 +139,14 @@ class DbForm {
 
     $level = ($level == NULL && isset($_SESSION['log_access_level'])) ? $_SESSION['log_access_level'] : $level;
 
-    $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_reference='" . $form_name . "' ORDER BY form_field_order ASC");
-    if (!$form_fields->affected) {
-      $error_message = 'Form ' . $form_name . ' not found!';
-    }
-
     $form_param->dm_load_single(NATURAL_DBNAME . "." . FORM_TABLE, "form_id='" . $form_name . "' LIMIT 1");
     if (!$form_param->affected) {
       $error_message = 'Parameters for the form ' . $form_name . ' not found!';
+    }
+    
+    $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
+    if (!$form_fields->affected) {
+      $error_message = 'Form ' . $form_name . ' not found!';
     }
 
     // Overriding values from action

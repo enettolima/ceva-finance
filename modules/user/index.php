@@ -7,7 +7,7 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once('user.func.php');
+require_once('user.controller.php');
 
 if (!$_SESSION['logged']) {
   echo "LOGOUT";
@@ -50,46 +50,5 @@ switch ($_GET['fn']) {
   case 'user_create_form_submit':
     print user_create_form_submit($_GET);
     break;
-
-    // TODO: REVIEW
-    case 'admin_list_users':
-        admin_list_users();
-        break;
-    case 'new_user':
-        new_user();
-        break;
-    case 'save_new_user':
-        insert_user($_GET);
-        break;
-    case 'admin_new_user':
-        print admin_new_user();
-        break;
-    case 'save_new_admin_user':
-        insert_user($_GET);
-        break;
-    case 'reset_user_password':
-        reset_user_password($user_id);
-        break;
-    case 'remove_user':
-        print remove_user($user_id);
-        break;
-    case 'edit_user':
-        print edit_user($user_id);
-        break;
-    case 'edit_logged_user':
-        print edit_user_form($_SESSION['log_id']);
-        break;
-    case 'edit_admin_user':
-        print edit_admin_user($user_id);
-        break;
-    case 'save_edit_admin_user':
-        save_edit_user($_GET);
-        break;
-    case 'change_my_pass':
-        print change_my_pass();
-        break;
-    case 'change_my_password':
-        print change_my_password($_GET);
-        break;
 }
 ?>

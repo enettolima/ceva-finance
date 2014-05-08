@@ -1,12 +1,12 @@
 <?
  /** 
-* HIVE - Copyleft Open Source Mind, GP 
-* Last Modified: Date: 01-08-2011 14:52:48 -0500 (Jan-Sat-2011) $ @ Revision: $Rev: 11 $ 
-* @package Hive 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
 */
 
 /** 
-* <insert your class documentation here> 
+* Dashboard widgets class
 */ 
 
 	class DashboardWidgets Extends DataManager{

@@ -20,24 +20,19 @@
   define('NATURAL_CLASSES_PATH'   , NATURAL_ROOT_PATH . '/lib/classes/');
   define('NATURAL_IMAGE_PATH'     , NATURAL_ROOT_PATH.'/media/images/');
   define('NATURAL_911WSDL_PATH'   , NATURAL_ROOT_PATH.'/lib/wsdl/');
-  define('NATURAL_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/themes/bootural/');
-  define('THEME_PATH'             , 'themes/bootural/');
+  define('NATURAL_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/themes/natural/');
+  define('THEME_PATH'             , 'themes/natural/');
   define('PAGER_LIMIT'            , 25);
 
   //SET FORMS/MENUS TABLES
-  define('FORM_TABLE', 'form_parameters');
+  define('FORM_TABLE', 'form_templates');
   define('FIELD_TABLE', 'field_templates');
   define('FIELDSET_TABLE','fieldsets');
-  define('MAIN_MENU_TABLE','main_menu');
-  define('SUB_MENU_TABLE', 'sub_menu');
-  define('SIDE_MENU_TABLE', 'side_menu');
-  define('MODULES_TABLE', 'module');
   
+  //SET UTIL
   require_once(NATURAL_LIB_PATH.'util.php');
-  require_once(NATURAL_LIB_PATH.'errorcodes.lib.php');
   
   //Autoloaders
-  
   require_once( NATURAL_ROOT_PATH . '/vendor/autoload.php');
 
   //E-MAIL SENDER
@@ -50,11 +45,7 @@
   define('NATURAL_COMPANY', 'Open Source Mind LLC');
 
   //PLATFORM NAME
-  define('NATURAL_PLATFORM', 'Bootural');
-
-  //LOAD ERROR MESSAGE LIBRARY
-  //require_once(NATURAL_LIB_PATH . 'errorcodes.lib.php');
-  //require_once(NATURAL_LIB_PATH . 'util.php');
+  define('NATURAL_PLATFORM', 'Natural');
 
   //Define primary Database Name
   define('NATURAL_DBNAME', 'natural_framework');
@@ -70,8 +61,8 @@
   //SET NATURAL CURRENT VERSION
   define('NATURAL_VERSION', 'Natural 4.0');
 
-    //SET HIVE CURRENT VERSION
-    define('NATURAL_VERSION', 'Clean Project 1.0');
+  //SET HIVE CURRENT VERSION
+  define('NATURAL_VERSION', 'Clean Project 1.0');
 
   //SET DEFAULT ICONS
   define('NATURAL_EDIT_ICON', 'fa fa-pencil');

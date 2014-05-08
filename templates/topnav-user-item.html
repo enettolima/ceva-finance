@@ -7,15 +7,16 @@
     <!-- User image -->
     <li class="user-header bg-blue">
       <p>
+        {% if avatar %}
+          <img width="60" height="60" src="{{ avatar }}" class="img-circle" /><br/>
+        {% endif %}
         {{ user_full_name }} - {{ username }}
-        <br/><br/>
-        <small>{{ project_title }}</small>
-        <small>{{ version }}</small>
+        <small>{{ project_title }} - {{ version }}</small>
         <small>{{ actual_date }}</small>
       </p>
     </li>
     <!-- Menu Body -->
-    <li class="user-body">
+    <!--<li class="user-body">
       <div class="col-xs-4 text-center">
         <a href="#">Colors</a>
       </div>
@@ -25,7 +26,7 @@
       <div class="col-xs-4 text-center">
         <a href="#">Item</a>
       </div>
-    </li>
+    </li>-->
     <!-- Menu Footer-->
     <li class="user-footer">
       <div class="pull-left">

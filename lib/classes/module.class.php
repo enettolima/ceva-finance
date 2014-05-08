@@ -1,12 +1,12 @@
 <?
  /** 
-* HIVE - Copyleft Open Source Mind, GP 
-* Last Modified: Date: 12-09-2010 15:58:15 -0500 (Dec-Thu-2010) $ @ Revision: $Rev: 11 $ 
-* @package Hive 
+* NATURAL - Copyright Open Source Mind, LLC 
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
+* @package Natural Framework 
 */
 
 /** 
-* <insert your class documentation here> 
+* Manage Modules on database
 */ 
 
 	class Module Extends DataManager{
