@@ -15,6 +15,7 @@ class ACL {
             $_SESSION['logged'] = true;
             $_SESSION['log_id'] = $user->id;
             $_SESSION['log_email'] = $user->email;
+            $_SESSION['log_file_id'] = $user->file_id;
             $_SESSION['log_first_name'] = $user->first_name;
             $_SESSION['log_last_name'] = $user->last_name;
             $_SESSION['log_username'] = $user->username;

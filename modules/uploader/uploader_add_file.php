@@ -114,7 +114,7 @@
         'filename'=> $file->filename,
         'preview' => ($field_preview == 'true') ? TRUE : FALSE,
         'preview_uri' => $field_dir . '/' . $_FILES['myfile']['name'],
-        'fid' => $file->fid,
+        'id' => $file->id,
         'field_id' => $field_id,
       );
       // File item
@@ -125,7 +125,7 @@
       $response = array(
         'file_item' => htmlentities($file_item),
         'limit' => $field_limit,
-        'fid' => $file->fid,
+        'id' => $file->id,
       );
       print json_encode($response);
       return;

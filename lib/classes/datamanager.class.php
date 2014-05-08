@@ -31,7 +31,7 @@
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
 		 
-     $query_result = mysql_query($query,$dblink);
+		 $query_result = mysql_query($query,$dblink);
 
      if($query_result)
        $this->affected = mysql_affected_rows();

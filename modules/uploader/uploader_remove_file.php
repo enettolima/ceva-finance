@@ -12,9 +12,9 @@
 
 
   // Load file infomartion
-  $fid = $_GET['fid'];
+  $id = $_GET['id'];
   $file = new Files();
-  $file->load_single('fid = ' . $fid);
+  $file->load_single('id = ' . $id);
   $filename = $file->filename;
   $uri = $file->uri;
   if (!$file->affected > 0) {
@@ -23,7 +23,7 @@
   }
 
   // Remove file
-  $file->remove('fid = ' . $fid);
+  $file->remove('id = ' . $id);
   if ($file->affected > 0) {
     unlink(NATURAL_ROOT_PATH . '/' . $uri);
     natural_set_message('File "' . $filename . '" was removed successfully.', 'success');

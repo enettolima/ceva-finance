@@ -15,7 +15,7 @@ if ($_SESSION['log_username']) {
 
 	$menu = new Menu();
 	// Twig Menu
-	$menu = $twig->render(
+	$menu_html = $twig->render(
 		'menu.html',
 		array(
 			'links' => $menu->byLevel('main', $_SESSION['log_access_level']),
@@ -23,6 +23,14 @@ if ($_SESSION['log_username']) {
 		)
 	);
 
+	//Loading avatar picture
+	$file = new Files();
+	$file->load_single('id=' . $_SESSION['log_file_id']);
+	//print_r($file);
+	if($file->affected>0){
+		$avatar = $file->uri;
+	}
+	
 	// Twig Base
 	$template = $twig->loadTemplate('base.html');
 	$template->display(array(
@@ -31,7 +39,7 @@ if ($_SESSION['log_username']) {
 		'company' => NATURAL_COMPANY,
 		'version' => $version,
 		'page' => 'dashboard',
-		'menu' => $menu,
+		'menu' => $menu_html,
     'avatar' => $avatar,
 		'user_full_name' => $user_full_name,
 		'username' => $username,

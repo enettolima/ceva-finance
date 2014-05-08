@@ -23,8 +23,8 @@ class Menu Extends DataManager{
 	 * @return mixed 
 	 */
   
-  public function byLevel($level) {
-    parent::dm_load_list(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "main" ORDER BY position');
+  public function byLevel($menu_name = 'main', $level) {
+    parent::dm_load_list(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
     if ($this->affected) {
       $links = array();
       foreach ($this->data as $key => $item) {
