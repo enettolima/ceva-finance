@@ -20,7 +20,7 @@ class Files Extends DataManager {
 
     public function insert() {
         parent::dm_insert(NATURAL_DBNAME . ".files", $this);
-        $this->fid = $this->dbid;
+        $this->id = $this->dbid;
     }
 
     public function update($upd_rule) {
