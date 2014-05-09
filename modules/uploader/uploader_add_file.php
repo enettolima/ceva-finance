@@ -116,6 +116,7 @@
         'preview_uri' => $field_dir . '/' . $_FILES['myfile']['name'],
         'id' => $file->id,
         'field_id' => $field_id,
+        'field_name' => $field->field_name,
       );
       // File item
       $file_item = $twig->render('uploader-file-item.html', $render);

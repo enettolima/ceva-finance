@@ -1,11 +1,11 @@
 <?php
-/** 
-* NATURAL - Copyright Open Source Mind, LLC 
-* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
-* @package Natural Framework 
+/**
+* NATURAL - Copyright Open Source Mind, LLC
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $
+* @package Natural Framework
 */
 
-/** 
+/**
 * Database form management
 */
 
@@ -143,7 +143,7 @@ class DbForm {
     if (!$form_param->affected) {
       $error_message = 'Parameters for the form ' . $form_name . ' not found!';
     }
-    
+
     $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
     if (!$form_fields->affected) {
       $error_message = 'Form ' . $form_name . ' not found!';
@@ -231,23 +231,37 @@ class DbForm {
           break;
         case 'uploader':
           $form_fields->data[$f]['file_items'] = '';
-          $form_fields->data[$f]['fids'] = '';
-          //natural_set_message(print_r($form_fields->data[$f]['def_val'], TRUE), 'error');
           if (!empty($form_fields->data[$f]['def_val']) && is_array($form_fields->data[$f]['def_val'])) {
             $files = new DataManager;
-            $files->dm_load_custom_list('SELECT * FROM files WHERE fid IN (' . implode(',', $form_fields->data[$f]['def_val']) . ') ORDER BY fid', 'ASSOC');
+            $files->dm_load_custom_list('SELECT * FROM files WHERE id IN (' . implode(',', $form_fields->data[$f]['def_val']) . ') ORDER BY id', 'ASSOC');
             if ($files->affected > 0) {
               foreach ($files->data as $file) {
                 $render = array(
                   'filename'=> $file['filename'],
                   'preview' => (strpos($form_fields->data[$f]['field_values'], 'preview=true') !== false) ? TRUE : FALSE,
                   'preview_uri' => $file['uri'],
-                  'fid' => $file['fid'],
+                  'id' => $file['id'],
                   'field_id' => $form_fields->data[$f]['id'],
+                  'field_name'=> $form_fields->data[$f]['field_name'],
                 );
                 // File item
                 $form_fields->data[$f]['file_items'] .= $twig->render('uploader-file-item.html', $render);
-                $form_fields->data[$f]['fids'] .= $file['fid'] . "\n";
+              }
+              // Field  attributes
+              $field_limit = 0;
+              if (!empty($form_fields->data[$f]['field_values'])) {
+                $field_values = explode('|', $form_fields->data[$f]['field_values']);
+                foreach ($field_values as $value) {
+                  $option = explode('=', $value);
+                  switch ($option[0]) {
+                    case 'limit':
+                      $field_limit = $option[1];
+                      break;
+                  }
+                }
+              }
+              if ($field_limit >= $files->affected) {
+                $form_fields->data[$f]['css_class'] .= 'hide';
               }
             }
           }
