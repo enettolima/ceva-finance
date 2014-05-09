@@ -7,20 +7,27 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once('natural.func.php');
+require_once('natural.controller.php');
 
 if (!$_SESSION['logged']) {
     echo "LOGOUT";
     exit(0);
 }
 
+//Getting function
 $fn = $_GET['fn'];
-
-/*
- * Declare objects here
- */
-$frm = new DbForm();
 switch ($fn) {
+    
+    case 'natural_form_example':
+        echo natural_form_example();
+        break;
+    case 'natural_form_example_submit':
+        echo natural_form_example_submit($_GET);
+        break;
+    
+    /*
+     *Old Functions 
+     */
     case "list_forms":
         echo list_forms($_GET);
         break;

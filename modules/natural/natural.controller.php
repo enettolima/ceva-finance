@@ -1,5 +1,50 @@
 <?
 
+
+function natural_form_example(){
+		$frm = new DbForm();
+		
+		$frm->first_name = "System";
+		$frm->last_name = "Administrator";
+		$frm->username = "admin";
+		$frm->password = null;
+		
+		//Select the properly levels to show an example of the listbox
+		$access_levels = new DataManager();
+		$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+		if ($access_levels->affected) {
+			$items = array();
+			foreach ($access_levels->data as $access_level) {
+				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+			}
+			$frm->access_level_options = implode(';', $items);
+		}
+		
+		//Select the hobbies to show one example of multiple select
+		$access_levels = new DataManager();
+		$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+		if ($access_levels->affected) {
+			$items = array();
+			foreach ($access_levels->data as $access_level) {
+				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+			}
+			$frm->access_level_options = implode(';', $items);
+		}
+		
+		/*$user = new User();
+		$user->load_single('username="admin"');
+		$user->password = null;
+		$user->access_level_options = implode(';', $items);*/
+		$frm->build('natural_example_form', $frm, $_SESSION['log_access_level'], FALSE);
+}
+
+function natural_form_example_submit($data){
+		echo 'Data from the form is:<br>';
+		print_debug($data);
+		
+		return natural_set_message('Form has been submitted!', 'success');
+}
+
 function list_forms($data) {
     $ft = new DataManager();
     if ($data['fn'] == "proccess_search") {
