@@ -133,7 +133,7 @@ function user_create_form_submit($data) {
 		$user->language 		= "en";
 		$user->file_id 			= $data["avatar"][0];
 		$user->status 			= 1;
-		
+
 		if($data['password']){
 			$user->password 	= $data['password'];
 			$user->insert(false,false);
@@ -172,7 +172,7 @@ function user_edit_form($user_id) {
 		// Testing radio buttons
 		//$user->user_race = 'asian';
 		// Testing uploader - avatar field with fids
-		$user->avatar = array(13, 14);
+		$user->avatar = array($user->file_id);
     $frm->build('user_edit_form', $user, $_SESSION['log_access_level']);
   }
   else {
