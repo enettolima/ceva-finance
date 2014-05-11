@@ -29,7 +29,7 @@
             {% if field.html_type == 'hidden' %}
               <input type="hidden" data-id="{{ field.id }}" name="{{ field.field_id }}" id="{{ field.field_id }}" class="form-control form-hidden" value="{{ field.def_val }}" {{ field.html_options }}>
             {% else %}
-              <div class="form-group field-type-{{ field.html_type }}">
+              <div class="form-group field-type-{{ field.html_type }}" {% if field.condition %} data-condition="{{ field.condition }}" {% endif %}>
 
                 {% if field.def_label %}
                   <label class="col-sm-3 control-label">{% if field.required == true %}<span class="field-required">*</span>{% endif %} {{ field.def_label }}</label>
@@ -60,7 +60,7 @@
 
                   {# password #}
                   {% if field.html_type == 'password' %}
-                    <input type="password" data-id="{{ field.id }}" name="{{ field.field_name }}" id="{{ field.field_id }}" class="form-control form-password {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} onClick="{{ field.click }}" onChange="{{ field.onchange }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}" {% if field.condition %} data-condition="{{ field.condition }}" {% endif %} {% if field.tooltip %} data-toggle="tooltip" data-placement="bottom" title="{{ field.tooltip }}" {% endif %}>
+                    <input type="password" data-id="{{ field.id }}" name="{{ field.field_name }}" id="{{ field.field_id }}" class="form-control form-password {{ field.css_class }}" value="{{ field.def_val }}" {{ field.html_options }} onClick="{{ field.click }}" onChange="{{ field.onchange }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}" {% if field.tooltip %} data-toggle="tooltip" data-placement="bottom" title="{{ field.tooltip }}" {% endif %}>
                   {% endif %}
 
                   {# textarea #}
