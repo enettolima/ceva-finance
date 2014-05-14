@@ -11,7 +11,7 @@
 
 class DbForm {
 
-  function _get_session_var($data) {
+  function _getSessionVar($data) {
     $data = " " . $data;
     $ini = strpos($data, "s{");
     if ($ini == 0)
@@ -21,7 +21,7 @@ class DbForm {
     return substr($data, $ini, $len);
   }
 
-  function _get_var($data) {
+  function _getVar($data) {
     $data = " " . $data;
     $ini = strpos($data, "v{");
     if ($ini == 0)
@@ -31,18 +31,18 @@ class DbForm {
     return substr($data, $ini, $len);
   }
 
-  function _get_field_options($field) {
+  function _getFieldOptions($field) {
     $options = array();
     if ($field['data_table'] != '') {
       $query_field_name = '';
       while (strpos($field['data_query'], "s{") > 0) {
-        $query_field_name = $this->_get_session_var($field['data_query']);
+        $query_field_name = $this->_getSessionVar($field['data_query']);
         $field['data_query'] = str_replace("s{{$query_field_name}}", "{$_SESSION[$query_field_name]}", $field['data_query']);
       }
       $dm = new DataManager;
       $query_select = ($field['data_value'] == $field['data_label']) ? $field['data_value'] : "{$field['data_value']},{$field['data_label']}";
       $query = "SELECT {$query_select} FROM {$field['data_table']} WHERE {$field['data_query']} ORDER BY {$field['data_sort']}";
-      $dm->dm_load_custom_list($query, 'ASSOC');
+      $dm->dmLoadCustomList($query, 'ASSOC');
 
       $data_value = explode(',', $field['data_value']);
       $data_label = explode(',', $field['data_label']);
@@ -139,12 +139,12 @@ class DbForm {
 
     $level = ($level == NULL && isset($_SESSION['log_access_level'])) ? $_SESSION['log_access_level'] : $level;
 
-    $form_param->dm_load_single(NATURAL_DBNAME . "." . FORM_TABLE, "form_id='" . $form_name . "' LIMIT 1");
+    $form_param->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, "form_id='" . $form_name . "' LIMIT 1");
     if (!$form_param->affected) {
       $error_message = 'Parameters for the form ' . $form_name . ' not found!';
     }
 
-    $form_fields->dm_load_list(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
+    $form_fields->dmLoadList(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
     if (!$form_fields->affected) {
       $error_message = 'Form ' . $form_name . ' not found!';
     }
@@ -214,14 +214,14 @@ class DbForm {
         case 'checkbox':
         case 'radio':
         case 'list':
-          $options = $this->_get_field_options($form_fields->data[$f]);
+          $options = $this->_getFieldOptions($form_fields->data[$f]);
           $form_fields->data[$f]['options'] = $options;
           break;
         case 'readonly':
           if ($form_fields->data[$f]['data_table'] != '') {
             $dm = new DataManager;
             $query = "SELECT {$form_fields->data[$f]['data_label']} FROM {$form_fields->data[$f]['data_table']} WHERE {$form_fields->data[$f]['data_value']} = '{$form_fields->data[$f]['def_val']}' AND {$form_fields->data[$f]['data_query']}  ORDER BY {$form_fields->data[$f]['data_sort']} LIMIT 1";
-            $dm->dm_custom_query($query, true);
+            $dm->dmCustomQuery($query, true);
             $data_label = $form_fields->data[$f]['data_label'];
             if (!$dm->$data_label) {
               $dm->$data_label = '-';
@@ -233,7 +233,7 @@ class DbForm {
           $form_fields->data[$f]['file_items'] = '';
           if (!empty($form_fields->data[$f]['def_val']) && is_array($form_fields->data[$f]['def_val'])) {
             $files = new DataManager;
-            $files->dm_load_custom_list('SELECT * FROM files WHERE id IN (' . implode(',', $form_fields->data[$f]['def_val']) . ') ORDER BY id', 'ASSOC');
+            $files->dmLoadCustomList('SELECT * FROM files WHERE id IN (' . implode(',', $form_fields->data[$f]['def_val']) . ') ORDER BY id', 'ASSOC');
             if ($files->affected > 0) {
               foreach ($files->data as $file) {
                 $render = array(
@@ -287,7 +287,7 @@ class DbForm {
     }
 
     $fs = new DataManager();
-    $fs->dm_load_list("" . NATURAL_DBNAME . "." . FIELDSET_TABLE . "", "ASSOC", "name IN (" . implode(', ', $fieldset_clause) .  ") ORDER BY position");
+    $fs->dmLoadList("" . NATURAL_DBNAME . "." . FIELDSET_TABLE . "", "ASSOC", "name IN (" . implode(', ', $fieldset_clause) .  ") ORDER BY position");
     for ($z = 0; $z < $fs->affected; $z++) {
       $fieldsets[$fs->data[$z]['name']]['id'] = $fs->data[$z]['id'];
       $fieldsets[$fs->data[$z]['name']]['name'] = $fs->data[$z]['name'];
