@@ -53,6 +53,18 @@
               break;
           }
           break;
+        case 'max_height':
+          $field_max_height = $option[1];
+          break;
+        case 'max_width':
+          $field_max_width = $option[1];
+          break;
+        case 'min_height':
+          $field_min_height = $option[1];
+          break;
+        case 'min_width':
+          $field_min_width = $option[1];
+          break;
         case 'dir':
           $field_dir = $option[1];
           break;
@@ -97,6 +109,31 @@
   }
 
   if (move_uploaded_file($_FILES['myfile']['tmp_name'], $upload_file)) {
+    // Test Image dimensions according to the fields attributes.
+    if (isset($field_max_height) || isset($field_min_height) || isset($field_max_width) || isset($field_min_width)) {
+      $file_dimensions = TRUE;
+      list($file_width, $file_height) = getimagesize($upload_file);
+      if (!empty($file_height) && !empty($field_max_height) && $file_height > $field_max_height) {
+        natural_set_message('File height is larger than "' . $field_max_height . '" pixels.', 'error');
+        $file_dimensions = FALSE;
+      }
+      if (!empty($file_height) && !empty($field_min_height) && $file_height < $field_min_height) {
+        natural_set_message('File height is smaller than "' . $field_min_height . '" pixels.', 'error');
+        $file_dimensions = FALSE;
+      }
+      if (!empty($file_width) && !empty($field_max_width) && $file_width > $field_max_width) {
+        natural_set_message('File width is larger than "' . $field_max_width . '" pixels.', 'error');
+        $file_dimensions = FALSE;
+      }
+      if (!empty($file_width) && !empty($field_min_width) && $file_width < $field_min_width) {
+        natural_set_message('File width is smaller than "' . $field_min_width . '" pixels.', 'error');
+        $file_dimensions = FALSE;
+      }
+      if ($file_dimensions == FALSE) {
+        unlink($upload_file);
+        return FALSE;
+      }
+    }
     // Add the file to the files table.
     $file = new Files();
     $file->uid = $_SESSION['log_id'];
