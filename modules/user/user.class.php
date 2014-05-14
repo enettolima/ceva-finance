@@ -20,7 +20,7 @@ class User Extends DataManager{
 	 */
 
 	public function byUsername($username) {		
-	  parent::dm_load_single(NATURAL_DBNAME . ".user","username='{$username}'");
+	  parent::dmLoadSingle(NATURAL_DBNAME . ".user","username='{$username}'");
 		if($this->affected > 0) {
 				$res = array (	'id' => $this->id,
 					'firstName' => $this->first_name,
@@ -37,9 +37,9 @@ class User Extends DataManager{
 	* @smart-auto-routing false
 	* @access private
 	*/
-	public function load_single($search_str){
+	public function loadSingle($search_str){
 		$NATURAL_key = NATURAL_MAGIC_KEY;
-		parent::dm_custom_query("SELECT id, file_id, first_name, last_name, username, AES_DECRYPT(password,'{$NATURAL_key}') as password,
+		parent::dmCustomQuery("SELECT id, file_id, first_name, last_name, username, AES_DECRYPT(password,'{$NATURAL_key}') as password,
 			email, access_level, status, language, dashboard_1, dashboard_2
 			FROM ".NATURAL_DBNAME.".user WHERE ".$search_str, true);
 		$this->dashboard_1 = unserialize($this->dashboard_1);
@@ -50,9 +50,9 @@ class User Extends DataManager{
 	* @smart-auto-routing false
 	* @access private
 	*/
-    public function load_list($output, $search_str, $insert_log = false){
-      parent::dm_load_list(NATURAL_DBNAME . ".user", $output, $search_str);
-    }
+	public function loadList($output, $search_str, $insert_log = false){
+		parent::dmLoadList(NATURAL_DBNAME . ".user", $output, $search_str);
+	}
 	
 	/**
 	* @smart-auto-routing false
@@ -60,12 +60,12 @@ class User Extends DataManager{
 	*/
 	public function insert($show_password=false, $auto_gen_pass=true){
 			if($auto_gen_pass){
-				$temp_password = parent::dm_random(true, 6);
+				$temp_password = parent::dmRandom(true, 6);
 			}else{
 				$temp_password = $this->password;
 			}
 			$NATURAL_key = NATURAL_MAGIC_KEY;
-			parent::dm_custom_insert("INSERT INTO ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
+			parent::dmCustomInsert("INSERT INTO ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
 			first_name='{$this->first_name}',
 			last_name='{$this->last_name}',
 			username='{$this->username}',
@@ -88,7 +88,7 @@ class User Extends DataManager{
 	*/
 	public function update($upd_rule){
 			$NATURAL_key = NATURAL_MAGIC_KEY;
-			parent::dm_custom_update("UPDATE ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
+			parent::dmCustomUpdate("UPDATE ".NATURAL_DBNAME.".user SET file_id='{$this->file_id}',
 			first_name='{$this->first_name}',
 			last_name='{$this->last_name}',
 			username='{$this->username}',
@@ -106,24 +106,24 @@ class User Extends DataManager{
 	* @smart-auto-routing false
 	* @access private
 	*/
-    public function remove($rec_key){
-      parent::dm_remove(NATURAL_DBNAME . ".user", $rec_key);
-    }
+	public function remove($rec_key){
+		parent::dmRemove(NATURAL_DBNAME . ".user", $rec_key);
+	}
 	
 	/**
 	* @smart-auto-routing false
 	* @access private
 	*/
 	public function random() {
-       return parent::dm_random(true, 6);
-		}
+		return parent::dmRandom(true, 6);
+	}
 	
 	/**
 	* @smart-auto-routing false
 	* @access private
 	*/
-	public function update_user_status($status,$customerid){
-		parent::dm_custom_query("UPDATE ".NATURAL_DBNAME.".user SET status='{$status}' WHERE customer_id='{$customerid}'");
+	public function updateUserStatus($status,$customerid){
+		parent::dmCustomQuery("UPDATE ".NATURAL_DBNAME.".user SET status='{$status}' WHERE customer_id='{$customerid}'");
 	}
 }
 ?>

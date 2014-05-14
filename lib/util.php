@@ -55,7 +55,7 @@ function sec2hms($sec) {
 function translate($string, $lang = 'en') {
     require_once(NATURAL_CLASSES_PATH . 'language.class.php');
     $lg = new Language();
-    $lg->load_single("original='{$string}' AND lang='{$lang}'");
+    $lg->loadSingle("original='{$string}' AND lang='{$lang}'");
     if ($lg->affected > 0) {
         return $lg->translate;
     } else {

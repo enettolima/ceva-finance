@@ -1,6 +1,8 @@
 <?
 
-
+/*
+ * Just to show the form example
+ */
 function natural_form_example(){
 		$frm = new DbForm();
 		
@@ -11,7 +13,7 @@ function natural_form_example(){
 		
 		//Select the properly levels to show an example of the listbox
 		$access_levels = new DataManager();
-		$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+		$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
 		if ($access_levels->affected) {
 			$items = array();
 			foreach ($access_levels->data as $access_level) {
@@ -22,7 +24,7 @@ function natural_form_example(){
 		
 		//Select the hobbies to show one example of multiple select
 		$access_levels = new DataManager();
-		$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+		$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
 		if ($access_levels->affected) {
 			$items = array();
 			foreach ($access_levels->data as $access_level) {
@@ -44,6 +46,346 @@ function natural_form_example_submit($data){
 		
 		return natural_set_message('Form has been submitted!', 'success');
 }
+/*
+ * Functions for module management
+ */
+function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+		$module = 'natural';
+		$function = 'module_list'; 
+	  $view = new ListView();
+		
+		// Row Id for update only row
+		if (!empty($row_id)) {
+			$row_id = 'm.id = ' . $row_id;
+		}
+		else {
+			$row_id = 'm.id != 0';
+		}
+	
+		// Search
+		if (!empty($search)) {
+			$search_fields = array('m.module', 'm.label', 'm.id');
+			$exceptions = array();
+			$search_query = build_search_query($search, $search_fields, $exceptions);
+		}
+		else {
+			$search_query = '';
+		}
+	
+		// Sort
+		if (empty($sort)) {
+			$sort = 'm.label ASC';
+		}
+		
+		$limit = PAGER_LIMIT; // PAGER_LIMIT
+		$start = ($page * $limit) - $limit;
+    // Module Object
+    $modules = new DataManager();
+    $modules->dmLoadCustomList("SELECT m.*
+		FROM " . NATURAL_DBNAME . ".module m
+		WHERE $row_id $search_query
+		ORDER BY  $sort
+		LIMIT  $start, $limit", 'ASSOC', TRUE);
+		
+    if ($modules->affected > 0) {
+        // Building the header with sorter
+				$headers[] = array('display' => 'Id', 'field' => 'm.id');
+				$headers[] = array('display' => 'Module', 'field' => 'm.module');
+				$headers[] = array('display' => 'Label', 'field' => 'm.label');
+				$headers[] = array('display' => 'Delete', 'field' => NULL);
+				$headers = build_sort_header('module_list', 'module', $headers, $sort);
+		
+        $total = 0;
+        for ($i = 0; $i < $modules->affected; $i++) {
+            $j = $i + 1;
+            $rows[$j]['id'] = $modules->data[$i]['id'];
+            $rows[$j]['module'] = $modules->data[$i]['module'];
+            $rows[$j]['label'] = $modules->data[$i]['label'];
+						$rows[$j]['delete'] = theme_link_process_information('', 'module_delete_form', 'module_delete_form', 'natural', array('extra_value' => 'module_id|' . $module->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+				}
+    }
+
+    $options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Module List'),
+		'page_subtitle' => translate('Manage Module'),
+		'empty_message' => translate('No module found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Module'), 'module_create_form', 'module_create_form', 'natural', array('response_type' => 'modal')),
+		'pager_items' => build_pager($function, $module, $module->total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => $function,
+		'module' => $module,
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+  $listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+function module_create_form() {
+    //Checking if license is expired
+    $frm = new DbForm();
+    $module = new Module();
+    $query = "SHOW TABLES FROM " . NATURAL_DBNAME . " ";
+    $module_opt = new DataManager();
+    $module_opt->dmLoadCustomList($query, 'ASSOC');
+    $items = array();
+    //$items[] = 'Skipp table selection=0';
+    if ($module_opt->affected) {
+        foreach ($module_opt->data as $k => $v) {
+            foreach ($v as $key => $value) {
+                $items[] = $value . '=' . $value;
+            }
+        }
+        $module->table_list = implode(';', $items);
+    }
+
+    //return $dbform->build('module_new', $module);
+		$frm->build('module_create_form', $module, $_SESSION['log_access_level']);
+}
+
+function module_create_form_submit($data) {
+    $data['project_path'] = $_SESSION['project_path'];
+    $data['project_name'] = $_SESSION['project_name'];
+    $data['field_1'] = 'b.name';
+    $data['field_label_1'] = 'Name';
+    $data['field_2'] = 'b.author';
+    $data['field_label_2'] = 'Author';
+    if (is_numeric($data['table_name'])) {
+        $class_name = str_replace("_", " ", $data['module']);
+        $data['module_name'] = $data['module'];
+        $data['module'] = str_replace(" ", "_", strtolower($data['module']));
+    } else {
+        $class_name = str_replace("_", " ", $data['table_name']);
+        $data['module_name'] = $data['table_name'];
+        $data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
+
+        $query = "DESCRIBE " . $_SESSION['project_db'] . "." . $data['table_name'] . "";
+
+        $fields = new DataManager();
+        $fields->dm_load_custom_list($query, 'ASSOC');
+        if ($fields->affected > 0) {
+            for ($i = 1; $i < 3; $i++) {
+                $key = 'field_' . $i;
+                $keylabel = 'field_label_' . $i;
+                //$data[key] = 'b.name';
+                $data[$key] = $fields->data[$i]['Field'];
+                //$data[$keylabel] = 'Name';
+                $data[$keylabel] = ucwords(str_replace("_", " ", strtolower($fields->data[$i]['Field'])));
+            }
+        }
+    }
+    $class_name = ucwords($class_name);
+    $data['class_name'] = str_replace(" ", "", $class_name);
+    $data['path'] = $data['project_path'] . "modules/" . $data['module'] . "/";
+    /*
+     * Validating information n the Database
+     */
+    $info = validate_module_info($data);
+    if ($info) {
+        return $info . '<br><br>';
+        exit(0);
+    }
+    //Creating directory for the module
+    create_module_structure($data);
+    if ($data['create_api'] == 1) {
+        create_module_api($data);
+    }
+    if ($data['create_forms'] == 1) {
+        //calling function on natural module module/natural/natural.func.php
+        create_form($data['module_name']);
+    }
+    if ($data['create_class']) {
+        //create_module_class($data);
+    }
+    if ($data['create_menu'] == 1) {
+        create_module_menu($data);
+    }
+
+    //Saving information to the Natural Database
+    $module = new DataManager();
+    //$module = new Module();
+    $module->version = 1;
+    $module->module = strtolower(str_replace(" ", "_", $data['module']));
+    $module->label = $data['label'];
+    $module->description = $data['label'];
+    $module->license_quantity = 0;
+    $module->last_update = date("Y-m-d H:i:s");
+    $module->status = 1;
+    //$module->insert();
+    $module->dm_insert($_SESSION['project_db'] . "." . MODULES_TABLE, $module);
+    return "Module Saved Successfully!" . module_list();
+}
+
+/*
+ * Creating Module menu
+ */
+
+function create_module_menu($data) {
+    //Building array of data to pass to the main menu creation
+    $data['element_name'] = $data['module'] . "_main";
+    $data['label'] = $data['class_name'];
+    $data['title'] = $data['class_name'];
+    $data['func'] = $data['module'] . "_list";
+    $data['module'] = $data['module'];
+    $data['allow'] = "all";
+    $data['allow_value'] = 0;
+    $data['status'] = 1;
+    $data['initial'] = 0;
+    //Adding main menu from modules/menu_nav/menu_nav.func.php
+    save_main_menu($data);
+    //Getting id of the main menu
+    $menu = new MainMenu();
+    $menu->load_single("element_name='" . $data['element_name'] . "'");
+    $data['main_menu_id'] = $menu->id;
+    $data['element_name'] = $data['module'] . "_sub";
+    $data['label'] = "List";
+    $data['title'] = "List";
+    save_new_submenu($data);
+    //Adding submenu Add for the object
+    $data['func'] = $data['module'] . "_add_form";
+    $data['element_name'] = $data['module'] . "_add_sub";
+    $data['label'] = "Add New";
+    $data['title'] = "Add New";
+    save_new_submenu($data);
+}
+
+/*
+ * Creating module structure
+ */
+
+function create_module_structure($data) {
+    //Creating folder for the new module
+    mkdir($data['path'], 0777);
+    $files = array('index.php', 'view.php', 'model.php', 'controller.php');
+    //Creating files
+    create_module_file($files, $data);
+}
+
+/*
+ * Creating module files
+ */
+
+function create_module_file($files, $data) {
+    if (is_numeric($data['table_name'])) {
+        $name = $data['module'];
+    } else {
+        $name = $data['table_name'];
+    }
+    foreach ($files as $k => $v) {
+        if ($v == "index.php") {
+            $file = file_get_contents("../../data/module_template/index.php");
+        } else {
+            $file = file_get_contents("../../data/module_template/book." . $v);
+        }
+        // Do tag replacements or whatever you want
+        $file = str_replace("book", $name, $file);
+        $file = str_replace("Book", $data['class_name'], $file);
+        $file = str_replace("name", $data['field_1'], $file);
+        $file = str_replace("Name", $data['field_label_1'], $file);
+        $file = str_replace("author", $data['field_2'], $file);
+        $file = str_replace("Author", $data['field_label_2'], $file);
+        //save it back:
+        if ($v == "index.php") {
+            file_put_contents($data['path'] . "index.php", $file);
+        } else {
+            file_put_contents($data['path'] . $name . "." . $v, $file);
+        }
+    }
+}
+
+/*
+ * Validating module information
+ */
+
+function validate_module_info($data, $edit = false) {
+    if (!$data['module']) {
+        return 'ERROR||Invalid Module Name, this field is required!';
+        exit(0);
+    }
+    if (!$data['label']) {
+        return 'ERROR||Invalid Label, this field is required!';
+        exit(0);
+    }
+    if (file_exists($data['path'])) {
+        return 'ERROR||The directory <i>' . $data['module'] . '</i> already exists!<br>Please try a different name or remove the current module!';
+    }
+    if ($data['create_forms'] == 1) {
+        $query = "SELECT * FROM " . $_SESSION['project_db'] . ".form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
+            OR form_id = '" . $data['table_name'] . "_edit' 
+            OR form_id = '" . $data['table_name'] . "_view'";
+        $form = new DataManager();
+        $form->dm_load_custom_list($query, 'ASSOC');
+        if ($form->affected > 0) {
+            return 'ERROR||The form for the module <i>' . $data['module'] . '</i> already exists!';
+        }
+    }
+    if ($data['create_menu'] == 1) {
+        $query = "SELECT * FROM " . $_SESSION['project_db'] . ".main_menu WHERE element_name = '" . $data['module'] . "_main'";
+        $form = new DataManager();
+        $form->dm_load_custom_list($query, 'ASSOC');
+        if ($form->affected > 0) {
+            return 'ERROR||Menu for the module <i>' . $data['module'] . '</i> already exists!';
+        }
+    }
+}
+
+/*
+ * Create API reference on api/index.php inside of the project
+ */
+
+function create_module_api($data) {
+    //Creating strings to add to the api/index.php inside 
+    $new_api = "require_once('SimpleAuth.php');\nrequire_once('../modules/" . $data['module_name'] . "/" . $data['module_name'] . ".model.php');";
+    $set_api = "\$r = new Restler();\n\$r->addAPIClass('" . $data['class_name'] . "');";
+    $file = file_get_contents($data['project_path'] . "api/index.php");
+    if (!strpos(file_get_contents($data['project_path'] . "api/index.php"), "\$r->addAPIClass('" . $data['class_name'] . "');") !== false) {
+        //If string of the API not found, include t the api/index.php
+        // Do tag replacements or whatever you want
+        $file = str_replace("require_once('SimpleAuth.php');", $new_api, $file);
+        $file = str_replace('$r = new Restler();', $set_api, $file);
+        //save it back
+        file_put_contents($data['project_path'] . "api/index.php", $file);
+    }
+}
+
+/**
+ * Module Remove
+ */
+function module_remove($data) {
+    $module = new DataManager();
+    $module->dm_load_single($_SESSION['project_db'] . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    //$module->dm_load_single($table, $search_str)
+    $name = $module->name;
+    if (!$module->affected) {
+        return "ERROR|19109|Module Not Found, Please contact your system administrator!";
+        exit(0);
+    }
+    $module->dm_remove($_SESSION['project_db'] . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    if ($module->affected) {
+        return "Module {$name} was removed successfully!<br>NOTE: Database and module structure was not removed!";
+    } else {
+        return "We could not remove the Module {$name} at this time, please try again!<br>If the problem persists, contact your system administrator!";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 function list_forms($data) {
     $ft = new DataManager();

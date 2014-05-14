@@ -26,6 +26,28 @@ switch ($fn) {
         break;
     
     /*
+     *For module management
+     */
+    case "module_list":
+        echo module_list();
+        break;
+    case 'module_list_pager':
+        print module_list(NULL, $_GET['search_query'], $_GET['sort'], $_GET['pager_current']);
+        break;
+    case 'module_list_sort':
+        print module_list(NULL, $_GET['search_query'], $_GET['sort'], 1);
+        break;
+    case 'module_list_search':
+        print module_list(NULL, $_GET['search_query']);
+        break;
+    case 'module_create_form':
+        echo module_create_form();
+        break;
+    case 'module_create_form_submit':
+        echo module_create_form_submit($_GET);
+        break;
+    
+    /*
      *Old Functions 
      */
     case "list_forms":

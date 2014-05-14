@@ -14,7 +14,7 @@
 
   // Based on the element id $_GET['field_id'] we can perform validations.
   $field = new FieldTemplates();
-  $field->load_single('id = ' . $field_id);
+  $field->loadSingle('id = ' . $field_id);
   if (!$field->affected > 0) {
     // DataManager should output the error.
     return FALSE;

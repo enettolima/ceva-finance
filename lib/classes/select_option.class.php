@@ -10,25 +10,25 @@
 */ 
 
 	class SelectOption Extends DataManager{
-		public function load_single($search_str, $insert_log = false){
-      parent::dm_load_single(NATURAL_DBNAME . ".select_option",$search_str);
+		public function loadSingle($search_str, $insert_log = false){
+      parent::dmLoadSingle(NATURAL_DBNAME . ".select_option",$search_str);
     }
      
-    public function load_list($output, $search_str, $insert_log = false){
-      parent::dm_load_list(NATURAL_DBNAME . ".select_option", $output, $search_str);
+    public function loadList($output, $search_str, $insert_log = false){
+      parent::dmLoadList(NATURAL_DBNAME . ".select_option", $output, $search_str);
     }
 
     public function insert(){
-      parent::dm_insert(NATURAL_DBNAME . ".select_option", $this);
+      parent::dmInsert(NATURAL_DBNAME . ".select_option", $this);
       $this->id = $this->dbid;
     }
 
     public function update($upd_rule){
-      parent::dm_update(NATURAL_DBNAME . ".select_option", $upd_rule, $this);
+      parent::dmUpdate(NATURAL_DBNAME . ".select_option", $upd_rule, $this);
     }
 
     public function remove($rec_key){
-      parent::dm_remove(NATURAL_DBNAME . ".select_option", $rec_key);
+      parent::dmRemove(NATURAL_DBNAME . ".select_option", $rec_key);
     }
   }
   

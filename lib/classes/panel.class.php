@@ -9,7 +9,7 @@
 	 *  This functions build the output for the panel in order to standardize 
 	 */
 	class Panel {
-		function build_panel($left = '', $right = '', $msg = ''){
+		function buildPanel($left = '', $right = '', $msg = ''){
 			$output  = '<div id="panel-wrapper">';
 			$output .= '<div id="panel-msg">'.$msg.'</div>';
 			if ($left != '') {

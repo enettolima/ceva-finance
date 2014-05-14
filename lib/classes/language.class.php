@@ -10,25 +10,25 @@
 */
 
 	class Language Extends DataManager{
-		public function load_single($search_str){
-      parent::dm_load_single(NATURAL_DBNAME . ".language",$search_str);
+		public function loadSingle($search_str){
+      parent::dmLoadSingle(NATURAL_DBNAME . ".language",$search_str);
 		}
      
-    public function load_list($output, $search_str){
-      parent::dm_load_list(NATURAL_DBNAME . ".language", $output, $search_str);
+    public function loadList($output, $search_str){
+      parent::dmLoadList(NATURAL_DBNAME . ".language", $output, $search_str);
     }
 
     public function insert(){
-      parent::dm_insert(NATURAL_DBNAME . ".language", $this);
+      parent::dmInsert(NATURAL_DBNAME . ".language", $this);
       $this->id = $this->dbid;
     }
 
     public function update($upd_rule){
-      parent::dm_update(NATURAL_DBNAME . ".language", $upd_rule, $this);
+      parent::dmUpdate(NATURAL_DBNAME . ".language", $upd_rule, $this);
     }
 
     public function remove($rec_key){
-      parent::dm_remove(NATURAL_DBNAME . ".language", $rec_key);
+      parent::dmRemove(NATURAL_DBNAME . ".language", $rec_key);
     }
   }
   
