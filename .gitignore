@@ -1,9 +1,6 @@
 # Igreno Mac OS files
 .DS_Store
 
-#Ignore VagrantFile
-Vagrantfile
-
 #Ignore Netbeans paths 
 nbprojects/
 
