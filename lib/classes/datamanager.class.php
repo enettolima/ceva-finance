@@ -25,7 +25,7 @@
  * @access private
  *
  */
-  public function dm_load_single($table, $search_str) {
+  public function dmLoadSingle($table, $search_str) {
      //Use configuration from bootstrap
 	 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -65,7 +65,7 @@
  * @access private
  *
  */
-  public function dm_load_list($table, $output, $search_str, $count = FALSE, $count_query = NULL){
+  public function dmLoadList($table, $output, $search_str, $count = FALSE, $count_query = NULL){
      //Use configuration from bootstrap
 		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -132,7 +132,7 @@
  *
  */
   
-  public function dm_load_custom_list($query, $output, $count = FALSE, $count_query = NULL){
+  public function dmLoadCustomList($query, $output, $count = FALSE, $count_query = NULL){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -194,7 +194,7 @@
  *
  */
   
-  public function dm_insert($table, $fields){
+  public function dmInsert($table, $fields){
 
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -227,7 +227,7 @@
  *
  */
   
-  public function dm_remove($table, $record_key){
+  public function dmRemove($table, $record_key){
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
 		$query = "DELETE FROM {$table} WHERE {$record_key}";
@@ -247,7 +247,7 @@
  *
  */
 
-  public function dm_update($table, $update_rule, $fields){
+  public function dmUpdate($table, $update_rule, $fields){
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -282,14 +282,14 @@
  *
  */
 
-    public function dm_random($alpha = false, $length = 6){
-      if($alpha){
-        $random_key = substr(md5(rand().rand()), 0, $length);
-      }else{
-        $random_key = substr(mt_rand(), 0, $length);
-      }
-      return $random_key;
-    }
+	public function dmRandom($alpha = false, $length = 6){
+		if($alpha){
+			$random_key = substr(md5(rand().rand()), 0, $length);
+		}else{
+			$random_key = substr(mt_rand(), 0, $length);
+		}
+		return $random_key;
+	}
 
  /**
  *
@@ -297,7 +297,7 @@
  *
  */
 
-	public function dm_custom_query($query, $return_object=false, $return_id=false){
+	public function dmCustomQuery($query, $return_object=false, $return_id=false){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -334,7 +334,7 @@
  *
  */
 
-	public function dm_check_module($module){
+	public function dmCheckModule($module){
 		//Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 		mysql_select_db(NATURAL_DBNAME);
@@ -387,7 +387,7 @@
  *
  */
 
-  public function dm_custom_insert($query){
+  public function dmCustomInsert($query){
 
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -410,7 +410,7 @@
  *
  */
 
-  public function dm_custom_update($query){
+  public function dmCustomUpdate($query){
     //Use configuration from bootstrap
 		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 

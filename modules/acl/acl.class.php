@@ -9,7 +9,7 @@ class ACL {
     public function login() {
         $user = new User();
         $NATURAL_key = NATURAL_MAGIC_KEY;
-        $user->load_single("username='{$this->username}' AND password=AES_ENCRYPT('{$this->password}','{$NATURAL_key}') AND status>'0' LIMIT 1");
+        $user->loadSingle("username='{$this->username}' AND password=AES_ENCRYPT('{$this->password}','{$NATURAL_key}') AND status>'0' LIMIT 1");
         if ($user->affected) {
             $_SESSION['affected'] = $user->affected;
             $_SESSION['logged'] = true;
@@ -32,7 +32,6 @@ class ACL {
 
     public function logout() {
         session_start();
-        $this->log_activity($_SESSION['username'], "LOGOUT SUCCESSFUL - SESSION CLEARED");
         if (isset($_SESSION)) {
             session_destroy();
         }
