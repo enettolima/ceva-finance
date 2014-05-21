@@ -88,7 +88,7 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
     'parent',
     'el',
     'proc_message',
-    'timer'
+    'timer',
   );
 
   $render_options = '';
@@ -114,7 +114,7 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
   }
 
   $href = "javascript:process_information('" . $formname . "', '" . $func . "', '" . $module . "', " .  implode(', ', $render_options) . ")";
-  return '<a href="' . $href . '">' . $text . '</a>';
+  return '<a class="' . $options['class'] . '" href="' . $href . '">' . $text . '</a>';
 }
 
 function print_debug($val) {
