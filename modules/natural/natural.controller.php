@@ -50,16 +50,14 @@ function natural_form_example_submit($data){
  * Functions for module management
  */
 function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
-		$module = 'natural';
-		$function = 'module_list'; 
-	  $view = new ListView();
+		$view = new ListView();
 		
 		// Row Id for update only row
 		if (!empty($row_id)) {
 			$row_id = 'm.id = ' . $row_id;
 		}
 		else {
-			$row_id = 'm.id != 0';
+			$row_id = 'm.id != 0'; 
 		}
 	
 		// Search
@@ -111,13 +109,13 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'page_subtitle' => translate('Manage Module'),
 		'empty_message' => translate('No module found!'),
 		'table_prefix' => theme_link_process_information(translate('Create New Module'), 'module_create_form', 'module_create_form', 'natural', array('response_type' => 'modal')),
-		'pager_items' => build_pager($function, $module, $module->total_records, $limit, $page),
+		'pager_items' => build_pager('form_list', 'natural', $module->total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
 		'show_search' => TRUE,
-		'function' => $function,
-		'module' => $module,
+		'function' => 'form_list',
+		'module' => 'natural',
 		'update_row_id' => '',
 	  'table_form_id' => '',
 		'table_form_process' => '',
@@ -151,8 +149,8 @@ function module_create_form() {
 }
 
 function module_create_form_submit($data) {
-    $data['project_path'] = $_SESSION['project_path'];
-    $data['project_name'] = $_SESSION['project_name'];
+    $data['project_path'] = NATURAL_WEB_ROOT;
+    $data['project_name'] = NATURAL_PLATFORM;
     $data['field_1'] = 'b.name';
     $data['field_label_1'] = 'Name';
     $data['field_2'] = 'b.author';
@@ -166,10 +164,10 @@ function module_create_form_submit($data) {
         $data['module_name'] = $data['table_name'];
         $data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
 
-        $query = "DESCRIBE " . $_SESSION['project_db'] . "." . $data['table_name'] . "";
+        $query = "DESCRIBE " . NATURAL_DBNAME . "." . $data['table_name'] . "";
 
         $fields = new DataManager();
-        $fields->dm_load_custom_list($query, 'ASSOC');
+        $fields->dmLoadCustomList($query, 'ASSOC');
         if ($fields->affected > 0) {
             for ($i = 1; $i < 3; $i++) {
                 $key = 'field_' . $i;
@@ -321,7 +319,7 @@ function validate_module_info($data, $edit = false) {
             OR form_id = '" . $data['table_name'] . "_edit' 
             OR form_id = '" . $data['table_name'] . "_view'";
         $form = new DataManager();
-        $form->dm_load_custom_list($query, 'ASSOC');
+        $form->dmLoadCustomList($query, 'ASSOC');
         if ($form->affected > 0) {
             return 'ERROR||The form for the module <i>' . $data['module'] . '</i> already exists!';
         }
@@ -329,7 +327,7 @@ function validate_module_info($data, $edit = false) {
     if ($data['create_menu'] == 1) {
         $query = "SELECT * FROM " . $_SESSION['project_db'] . ".main_menu WHERE element_name = '" . $data['module'] . "_main'";
         $form = new DataManager();
-        $form->dm_load_custom_list($query, 'ASSOC');
+        $form->dmLoadCustomList($query, 'ASSOC');
         if ($form->affected > 0) {
             return 'ERROR||Menu for the module <i>' . $data['module'] . '</i> already exists!';
         }
@@ -385,63 +383,473 @@ function module_remove($data) {
 
 
 
+/*
+ * START OF THE FORM MANAGEMENT
+ */
 
-
-function list_forms($data) {
-    $ft = new DataManager();
-    if ($data['fn'] == "proccess_search") {
-        $ft->dm_load_list("ben.form_parameters", "ASSOC", "form_name LIKE '%{$data['form_name']}%' ORDER BY form_name");
-    } else {
-        $ft->dm_load_list("ben.form_parameters", "ASSOC", "id!='' ORDER BY form_name");
-    }
-
-    $line[0][0] = "Id";
-    $line[0][1] = "Name";
-    $line[0][2] = "Edit Fields";
-    $line[0][3] = "Edit Parameters";
-    $line[0][4] = "Delete";
-
-    if ($ft->affected) {
-        for ($i = 0; $i < $ft->affected; $i++) {
-            if ($i % 2) {
-                $trclass = "hive-even";
-            } else {
-                $trclass = "hive-odd";
-            }
-
-            if ($ft->data[$i]['form_name'] == "form_new" || $ft->data[$i]['form_name'] == "form_edit" || $ft->data[$i]['form_name'] == "add_new_field" || $ft->data[$i]['form_name'] == "edit_form_field") {
-                $rm_bt = '<a class="delete-icon disabled-icon">Delete</a>';
-            } else {
-                $rm_bt = "<a class='delete-icon pointer' onclick=\"proccess_information('listforms', 'delete_form', 'natural', 'Are you sure you want to delete this form? By doing this the system will delete its fields as well!','formid|{$ft->data[$i]['id']}');\">Delete</a>";
-            }
+function form_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+		$view = new ListView();
+		
+		// Row Id for update only row
+		if (!empty($row_id)) {
+			$row_id = 'f.id = ' . $row_id;
+		}
+		else {
+			$row_id = 'f.id != 0'; 
+		}
+	
+		// Search
+		if (!empty($search)) {
+			$search_fields = array('f.form_name', 'f.form_title', 'f.id');
+			$exceptions = array();
+			$search_query = build_search_query($search, $search_fields, $exceptions);
+		}
+		else {
+			$search_query = '';
+		}
+	
+		// Sort
+		if (empty($sort)) {
+			$sort = 'f.form_name ASC';
+		}
+		
+		$limit = PAGER_LIMIT; // PAGER_LIMIT
+		$start = ($page * $limit) - $limit;
+    // Module Object
+    $forms = new DataManager();
+    $forms->dmLoadCustomList("SELECT f.*
+		FROM " . NATURAL_DBNAME . ".form_templates f
+		WHERE $row_id $search_query
+		ORDER BY  $sort
+		LIMIT  $start, $limit", 'ASSOC', TRUE);
+		
+    if ($forms->affected > 0) {
+        // Building the header with sorter
+				$headers[] = array('display' => 'Id', 'field' => 'f.id');
+				$headers[] = array('display' => 'Name', 'field' => 'f.form_name');
+				$headers[] = array('display' => 'Title', 'field' => 'f.form_title');
+				$headers[] = array('display' => 'Edit', 'field' => NULL);
+				$headers[] = array('display' => 'Delete', 'field' => NULL);
+				$headers = build_sort_header('form_list', 'natural', $headers, $sort);
+		
+        $total = 0;
+        for ($i = 0; $i < $forms->affected; $i++) {
             $j = $i + 1;
-            $line[$j][0] = $ft->data[$i]['id'];
-            $line[$j][1] = $ft->data[$i]['form_name'];
-            $line[$j][2] = "<a class='edit-icon pointer' onclick=\"proccess_information('listforms', 'edit_form_fields', 'natural', '', 'formid|{$ft->data[$i]['id']}');\">Edit</a>";
-            $line[$j][3] = "<a class='edit-icon pointer' onclick=\"proccess_information('listforms', 'edit_form_param', 'natural', '', 'formid|{$ft->data[$i]['id']}');\">Edit</a>";
-            $line[$j][4] = "{$rm_bt}<input type='hidden' id='id_{$i}' value='{$ft->data[$i]['id']}' name='id_{$i}'>";
-        }
-
-        $listview = ListView::build("cellspacing='0' cellpadding='0' border='0' width='100%'", $line);
-
-        $main_list = "<p><h1>Natural Form Management</h1></p>\n
-    <div class='hive-table'>
-		<form id='listforms' name='listforms'>
-		 {$listview}
-      <table cellspacing='0' cellpadding='0' border='0' width='100%'>
-        <tbody>
-          <tr class='hive-even'>
-            <td colspan='5'><input type='button' value='Add New Form' onclick=\"proccess_information('listforms', 'add_new_form', 'natural', '');\"></td>
-          </tr>
-        </tbody>
-      </table> 
-    
-      </div>";
-    } else {
-        $main_list = "ERROR|9890|Form not found, please try a different name!";
+						//This is important for the row update
+            $rows[$j]['row_id'] = $forms->data[$i]['id'];
+            //////////////////////////////////////
+						
+						if($forms->data[$i]['system']){
+								
+						}
+            $rows[$j]['id'] = $forms->data[$i]['id'];
+            $rows[$j]['form_name'] = $forms->data[$i]['form_name'];
+						$rows[$j]['form_title'] = $forms->data[$i]['form_title'];
+						$rows[$j]['edit']   = theme_link_process_information('', 'form_edit_form', 'form_edit_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+            $rows[$j]['delete'] = theme_link_process_information('', 'form_delete_form', 'form_delete_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+				}
     }
-    return $main_list;
+
+    $options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Form List'),
+		'page_subtitle' => translate('Manage Forms'),
+		'empty_message' => translate('No form found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Form'), 'form_create_form', 'form_create_form', 'natural', array('response_type' => 'modal')),
+		'pager_items' => build_pager('module_list', 'natural', $forms->total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'module_list',
+		'module' => 'natural',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+  $listview = $view->build($rows, $headers, $options);
+
+  return $listview;
 }
+
+function form_create_form() {
+    $frm = new DbForm();
+    return $frm->build("form_create_form");
+}
+
+function form_create_form_submit($data) {
+    $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+    foreach ($data as $key => $value) {
+        if ($key != "fn") {
+            $query_fields .= ", {$key}='" . mysql_real_escape_string($value) . "'";
+        }
+    }
+    //Try to find another Database with the same name.
+    $check_query = "SELECT * FROM " . NATURAL_DBNAME . "." . FORM_TABLE . " WHERE form_name='{$data['form_name']}'";
+    $query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $check_query);
+    if (mysql_affected_rows()) {
+				natural_set_message('Sorry but this form name already exist, please try again with different name!', 'error');
+        return false;
+        exit(0);
+    }
+
+    $query_fields = substr($query_fields, 1);
+
+    $query = "INSERT INTO " . NATURAL_DBNAME . "." . FORM_TABLE . " SET {$query_fields}";
+    $query_result = mysql_query($query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $query . "<br>" . $query_fields);
+    $affected = mysql_affected_rows();
+		//print_debug($query_result);
+		if($affected>0){
+				natural_set_message('Form '.$data['form_name'].' saved successfully!', 'success');
+				return form_list($book->id);
+		}else{
+				natural_set_message('Form '.$data['form_name'].' could not be saved!', 'error');
+				return false;
+		}
+}
+
+function form_edit_form($data){
+		//print_debug($data);
+		$form = new DataManager();
+		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		$frm = new DbForm();
+    return $frm->build("form_edit_form", $form, $_SESSION['log_access_level']);
+}
+
+function form_edit_form_submit($data){
+		$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+    foreach ($data as $key => $value) {
+        if ($key=="fn" || $key=="id") {
+						//skip for the query
+				}else{
+            $query_fields .= ", {$key}='" . mysql_real_escape_string($value) . "'";
+        }
+    }
+		
+    $query_fields = substr($query_fields, 1);
+		//Updating form parameters.
+    $check_query = "UPDATE " . NATURAL_DBNAME . "." . FORM_TABLE . " SET {$query_fields} WHERE id='{$data['id']}'";
+		$query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error());
+    if (mysql_affected_rows()) {
+        natural_set_message('Form '.$data['form_name'].' saved successfully!', 'success');
+				return form_list($data['id']);
+    }
+}
+
+function form_delete_form($data){
+		$form = new DataManager();
+    $form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+    if($form->affected>0){
+        $frm = new DbForm();
+        $frm->build('form_delete_form', $form, $_SESSION['log_access_level']);
+    }else{
+        natural_set_message('Problems loading Form ' . $data['id'], 'error');
+        return FALSE;   
+    }
+}
+
+function form_delete_form_submit($data){
+		$form = new DataManager();
+		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		$name = $form->form_title;
+		$form->dmRemove(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		
+		$fields = new DataManager();
+		$fields->dmRemove(NATURAL_DBNAME . "." . FIELD_TABLE, 'form_template_id='.$data['id']);
+		if($form->affected>0){
+				natural_set_message('Form '.$name.' has been removed successfully!', 'success');
+				return $data['id'];
+		}else{
+				natural_set_message('Could not remove the form '.$name.'!', 'error');
+				return FALSE;
+		}
+}
+
+/*
+ * FIELD MANAGEMENT
+ */
+function field_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+		$view = new ListView();
+		
+		// Row Id for update only row
+		if (!empty($row_id)) {
+			$row_id = 'f.id = ' . $row_id;
+		}
+		else {
+			$row_id = 'f.id != 0'; 
+		}
+	
+		// Search
+		if (!empty($search)) {
+			$search_fields = array('f.form_reference', 'f.field_name', 'f.html_type', 'f.id', 'f.def_label');
+			$exceptions = array();
+			$search_query = build_search_query($search, $search_fields, $exceptions);
+		}
+		else {
+			$search_query = '';
+		}
+	
+		// Sort
+		if (empty($sort)) {
+			$sort = 'f.form_reference ASC';
+		}
+		
+		$limit = PAGER_LIMIT; // PAGER_LIMIT
+		$start = ($page * $limit) - $limit;
+    // Module Object
+    $field = new DataManager();
+    $field->dmLoadCustomList("SELECT f.*
+		FROM " . NATURAL_DBNAME . ".field_templates f
+		WHERE $row_id $search_query
+		ORDER BY  $sort
+		LIMIT  $start, $limit", 'ASSOC', TRUE);
+		
+    if ($field->affected > 0) {
+        // Building the header with sorter
+				$headers[] = array('display' => 'Id', 'field' => 'f.id');
+				$headers[] = array('display' => 'Form Reference', 'field' => 'f.form_reference');
+				$headers[] = array('display' => 'Position', 'field' => 'f.form_field_order');
+				$headers[] = array('display' => 'Name', 'field' => 'f.field_name');
+				$headers[] = array('display' => 'HTML Type', 'field' => 'f.html_type');
+				$headers[] = array('display' => 'Label', 'field' => 'f.def_label');
+				$headers[] = array('display' => 'Edit', 'field' => NULL);
+				$headers[] = array('display' => 'Delete', 'field' => NULL);
+				$headers = build_sort_header('field_list', 'natural', $headers, $sort);
+		
+        $total = 0;
+        for ($i = 0; $i < $field->affected; $i++) {
+            $j = $i + 1;
+						//This is important for the row update
+            $rows[$j]['row_id'] = $field->data[$i]['id'];
+            //////////////////////////////////////
+						$rows[$j]['id'] = $field->data[$i]['id'];
+            $rows[$j]['form_reference'] = $field->data[$i]['form_reference'];
+						$rows[$j]['form_field_order'] = $field->data[$i]['form_field_order'];
+						$rows[$j]['field_name'] = $field->data[$i]['field_name'];
+						$rows[$j]['html_type'] = $field->data[$i]['html_type'];
+						$rows[$j]['def_label'] = $field->data[$i]['def_label'];
+						$rows[$j]['edit']   = theme_link_process_information('', 'field_edit_form', 'field_edit_form', 'natural', array('extra_value' => 'id|' . $field->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+            $rows[$j]['delete'] = theme_link_process_information('', 'field_delete_form', 'field_delete_form', 'natural', array('extra_value' => 'id|' . $field->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+				}
+    }
+
+    $options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Field List'),
+		'page_subtitle' => translate('Manage Fields'),
+		'empty_message' => translate('No field found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Field'), 'field_create_form', 'field_create_form', 'natural', array('response_type' => 'modal')),
+		'pager_items' => build_pager('field_list', 'natural', $field->total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'field_list',
+		'module' => 'natural',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+  $listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+function field_create_form(){
+		$frm = new DbForm();
+    $frm->build('field_create_form', $ref, $_SESSION['log_access_level']);
+}
+
+function field_create_form_submit($data){
+		$fields = new FieldTemplates();
+		$fields->loadList('ASSOC','form_template_id='.$data['form_reference']);
+		$affected = $fields->affected;
+		
+		$field = new FieldTemplates();
+		foreach ($data as $key => $value) {
+        if ($key != "fn") {
+            if ($key == "form_field_order") {
+                $field->$key = $affected;
+            } else {
+                $field->$key = mysql_real_escape_string($value);
+            }
+        }
+    }
+		
+		$form = new DataManager();
+		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['form_reference']);
+		$field->form_reference = $form->form_name;
+		$field->form_template_id = $data['form_reference'];
+
+    $field->insert();
+		if($field->affected > 0){
+				natural_set_message('Field saved successfully!', 'success');
+				return field_list($field->id);
+		}else{
+				natural_set_message('Field could not be saved!', 'error');
+				return false;
+		}
+}
+
+function field_edit_form($data){
+		$ff = new FieldTemplates();
+    $ff->loadSingle("id='{$data['id']}'");
+		$ff->form_reference = $ff->form_template_id;
+    $form = new DbForm();
+    $form->build("field_edit_form", $ff, $_SESSION['log_access_level']);
+}
+
+function field_edit_form_submit($data){
+		$ff = new FieldTemplates();
+    $ff->loadSingle("id='{$data['id']}'");
+		foreach ($data as $key => $value) {
+        //if ($key == "fn" || $key == "id") {
+				if ($key != 'affected' && $key != 'errorcode' && $key != 'data' && $key != 'dbid' && $key != 'id' && $key != 'fn') {
+						$ff->$key = mysql_real_escape_string($value);
+        }
+    }
+		
+		$form = new DataManager();
+		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['form_reference']);
+		$ff->form_reference = $form->form_name;
+		$ff->form_template_id = $data['form_reference'];
+		
+		$ff->update("id='{$data['id']}'");
+		if($ff->affected > 0){
+				natural_set_message('Field saved successfully!', 'success');
+				return field_list($ff->id);
+		}else{
+				natural_set_message('Field could not be saved!', 'error');
+				return false;
+		}
+}
+
+function field_delete_form($data){
+		$field = new FieldTemplates();
+		$field->loadSingle('id='.$data['id']);
+		$frm = new DbForm();
+    $frm->build('field_delete_form', $field, $_SESSION['log_access_level']);
+}
+
+function field_delete_form_submit($data){
+		$field = new FieldTemplates();
+		$field->loadSingle('id='.$data['id']);
+		if($field->affected>0){
+				$name = $field->name;
+				$field->remove('id='.$data['id']);
+				natural_set_message('Field '.$name.' has been removed successfully!', 'success');
+        return $data['id'];
+    }else{
+        natural_set_message('Problems loading field ' . $data['id'], 'error');
+        return FALSE;   
+    }
+}
+
+function class_form_creator_form(){
+		$frm = new DbForm();
+		$query = "SHOW TABLES FROM " . NATURAL_DBNAME . "";
+		$dm = new DataManager();
+		$dm->dmLoadCustomList($query, 'ASSOC');
+		if ($dm->affected) {
+        foreach ($dm->data as $k => $v) {
+            foreach ($v as $key => $value) {
+                $items[] = $value . '=' . $value;
+            }
+        }
+        $dm->table_options = implode(';', $items);
+    }
+		$dm->type = array('class', 'form');
+    $frm->build('class_form_create_form', $dm, $_SESSION['log_access_level']);
+}
+
+function class_form_creator_form_submit($data){
+		$ft = new DataManager;
+    $table = NATURAL_DBNAME . "." . FIELD_TABLE;
+    $table_name = trim($table_name);
+    $class_ar = explode("_", $table_name);
+    if (is_array($class_ar)) {
+        for ($i = 0; $i < count($class_ar); $i++) {
+            $class_name .= ucfirst($class_ar[$i]);
+        }
+    }
+    $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+
+    if (!$dblink) {
+        die('Could not connect: ' . mysql_error());
+    }
+    $today = date("m-d-Y H:i:s");
+    $now = date("M-D-Y");
+    $query = "SHOW COLUMNS FROM " . NATURAL_DBNAME . ".{$table_name}";
+    $query_result = mysql_query($query, $dblink);
+    $counter = 0;
+    if ($query_result) {
+        $myFile = "{$table_name}.class.php";
+        $fp = fopen($myFile, 'w') or die("can't open file");
+        fwrite($fp, "<?\n");
+        $doc = " /** 
+* NATURAL - Created by Open Source Mind, LLC
+* Last Modified: Date: {$today} -0500 ({$now}) \$ @ Revision: \$Rev: 11 $ 
+* @package Hive 
+*/
+
+/** 
+* <insert your class documentation here> 
+*/ \n\n";
+
+        fwrite($fp, $doc);
+
+        $upper_table = ucfirst($table_name);
+        $top_class = "\tclass {$class_name} Extends DataManager{\n";
+        fwrite($fp, $top_class);
+
+
+        $dec_var = "";
+        $form_ar_edit = "";
+
+        //Creating Insert Form
+        $i = 0;
+        $c = 0;
+
+        $funcs1 = "\t\tpublic function load_single(\$search_str){
+      parent::dm_load_single(".NATURAL_DBNAME." . \"$table_name\",\$search_str);
+		}
+     
+    public function load_list(\$output, \$search_str){
+      parent::dm_load_list(".NATURAL_DBNAME." . \".$table_name\", \$output, \$search_str);
+    }
+
+    public function insert(){
+      parent::dm_insert(".NATURAL_DBNAME." . \".$table_name\", \$this);
+      \$this->id = \$this->dbid;
+    }
+
+    public function update(\$upd_rule){
+      parent::dm_update(".NATURAL_DBNAME." . \".$table_name\", \$upd_rule, \$this);
+    }
+
+    public function remove(\$rec_key){
+      parent::dm_remove(".NATURAL_DBNAME." . \".$table_name\", \$rec_key);
+    }
+  }
+  
+?>";
+
+        fwrite($fp, $funcs1);
+
+        fclose($fp);
+        return "Class for table {$table_name} built successfully!<br>";
+    } else {
+        echo "We could not find any data with this search criteria " . mysql_error();
+    }
+}
+/*
+ * END OF THE FORM MANAGEMENT
+ */
+
+
+
 
 function save_new_form($data) {
     foreach ($data as $key => $value) {

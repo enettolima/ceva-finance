@@ -8,6 +8,7 @@
         "classmap": ["lib/classes",
 					 "modules/user",
            "modules/natural",
+           "modules/book",
 					 "modules/acl",
            "modules/menu",
 					 "modules/uploader"]

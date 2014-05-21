@@ -32,13 +32,13 @@ switch ($fn) {
         echo module_list();
         break;
     case 'module_list_pager':
-        print module_list(NULL, $_GET['search_query'], $_GET['sort'], $_GET['pager_current']);
+        print module_list(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
         break;
     case 'module_list_sort':
-        print module_list(NULL, $_GET['search_query'], $_GET['sort'], 1);
+        print module_list(NULL, $_GET['search'], $_GET['sort'], 1);
         break;
     case 'module_list_search':
-        print module_list(NULL, $_GET['search_query']);
+        print module_list(NULL, $_GET['search']);
         break;
     case 'module_create_form':
         echo module_create_form();
@@ -48,11 +48,81 @@ switch ($fn) {
         break;
     
     /*
+     * Form management
+     */
+    case "form_list":
+        echo form_list();
+        break;
+    case 'form_list_pager':
+        print form_list(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+        break;
+    case 'form_list_sort':
+        print form_list(NULL, $_GET['search'], $_GET['sort'], 1);
+        break;
+    case 'form_list_search':
+        print form_list(NULL, $_GET['search']);
+        break;
+    case 'form_create_form':
+        print form_create_form();
+        break;
+    case 'form_create_form_submit':
+        print form_create_form_submit($_GET);
+        break;
+    case 'form_edit_form':
+        print form_edit_form($_GET);
+        break;
+    case 'form_edit_form_submit':
+        print form_edit_form_submit($_GET);
+        break;
+    case 'form_delete_form':
+        print form_delete_form($_GET);
+        break;
+    case 'form_delete_form_submit':
+        print form_delete_form_submit($_GET);
+        break;
+    /*
+     * Field management
+     */
+    case "field_list":
+        echo field_list();
+        break;
+    case 'field_list_pager':
+        print field_list(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+        break;
+    case 'field_list_sort':
+        print field_list(NULL, $_GET['search'], $_GET['sort'], 1);
+        break;
+    case 'field_list_search':
+        print field_list(NULL, $_GET['search']);
+        break;
+    case 'field_create_form':
+        print field_create_form();
+        break;
+    case 'field_create_form_submit':
+        print field_create_form_submit($_GET);
+        break;
+    case 'field_edit_form':
+        print field_edit_form($_GET);
+        break;
+    case 'field_edit_form_submit':
+        print field_edit_form_submit($_GET);
+        break;
+    case 'field_delete_form':
+        print field_delete_form($_GET);
+        break;
+    case 'field_delete_form_submit':
+        print field_delete_form_submit($_GET);
+        break;
+    case 'class_form_creator_form':
+        print class_form_creator_form();
+        break;
+    case 'class_form_creator_form_submit':
+        print class_form_creator_form_submit();
+        break;
+    
+    /*
      *Old Functions 
      */
-    case "list_forms":
-        echo list_forms($_GET);
-        break;
     case "add_new_form":
         echo $frm->build("form_new");
         break;

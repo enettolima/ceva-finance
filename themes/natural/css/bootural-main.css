@@ -618,7 +618,7 @@ label {
 }
 .field-type-list i:before {
   border-top: 4px solid #404040;
-  top: 0;
+  top: 4px;
 }
 .field-type-list i:after,
 .field-type-list i:before {

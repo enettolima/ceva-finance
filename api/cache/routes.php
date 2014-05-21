@@ -286,6 +286,544 @@ $o['v1']['resources/verifyaccess'] = array (
     ),
 );
 
+//==== v1 book/create ====
+
+$o['v1']['book/create'] = array (
+    'POST' => 
+    array (
+        'url' => 'book/create',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'create',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to create a new book',
+            'longDescription' => 'Add a new book',
+            'url' => 'POST create',
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request_data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 book/byID/{n0} ====
+
+$o['v1']['book/byID/{n0}'] = array (
+    'GET' => 
+    array (
+        'url' => 'book/byID/{id}',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'byID',
+        'arguments' => 
+        array (
+            'id' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth Book Record by ID',
+            'longDescription' => 'Fech a record for a specific book by ID',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'User not found for requested id',
+                ),
+            ),
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'type' => 'int',
+                    'name' => 'id',
+                    'description' => 'Book to be fetched',
+                    'label' => 'Id',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'properties' => 
+                    array (
+                        'from' => 'path',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 book/byID ====
+
+$o['v1']['book/byID'] = array (
+    'POST' => 
+    array (
+        'url' => 'book/byID',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'byID',
+        'arguments' => 
+        array (
+            'id' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth Book Record by ID',
+            'longDescription' => 'Fech a record for a specific book by ID',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'User not found for requested id',
+                ),
+            ),
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'type' => 'int',
+                    'name' => 'id',
+                    'description' => 'Book to be fetched',
+                    'label' => 'Id',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 book/loadAll ====
+
+$o['v1']['book/loadAll'] = array (
+    'GET' => 
+    array (
+        'url' => 'book/loadAll',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'loadAll',
+        'arguments' => 
+        array (
+        ),
+        'defaults' => 
+        array (
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth All Books',
+            'longDescription' => 'Fech all records from the database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'book/loadAll',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'loadAll',
+        'arguments' => 
+        array (
+        ),
+        'defaults' => 
+        array (
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth All Books',
+            'longDescription' => 'Fech all records from the database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 book/put ====
+
+$o['v1']['book/put'] = array (
+    'GET' => 
+    array (
+        'url' => 'book/put',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'put',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to Update book information',
+            'longDescription' => 'Update book on database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request_data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'book/put',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'put',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to Update book information',
+            'longDescription' => 'Update book on database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request_data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 book/delete ====
+
+$o['v1']['book/delete'] = array (
+    'GET' => 
+    array (
+        'url' => 'book/delete',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'delete',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to delete a book',
+            'longDescription' => 'Delete book from database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request_data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'book/delete',
+        'className' => 'Book',
+        'path' => 'book',
+        'methodName' => 'delete',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to delete a book',
+            'longDescription' => 'Delete book from database',
+            'url' => 0,
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'Book not found',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'book/',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request_data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
 //==== v1 user/byUsername/{s0} ====
 
 $o['v1']['user/byUsername/{s0}'] = array (
@@ -418,6 +956,59 @@ $o['v1']['user/byUsername'] = array (
     ),
 );
 
+//==== v1 simpleauth/key ====
+
+$o['v1']['simpleauth/key'] = array (
+    'GET' => 
+    array (
+        'url' => 'simpleauth/key',
+        'className' => 'SimpleAuth',
+        'path' => 'simpleauth',
+        'methodName' => 'key',
+        'arguments' => 
+        array (
+        ),
+        'defaults' => 
+        array (
+        ),
+        'metadata' => 
+        array (
+            'description' => 'API Key to allow method to be visible',
+            'longDescription' => '',
+            'access' => 'protected',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => 404,
+                    'reason' => 'User not found for requested id',
+                ),
+            ),
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'type' => 'int',
+                    'name' => 'id',
+                    'description' => 'Book to be fetched',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+                'iAuthenticate' => 'Luracast\\Restler\\iAuthenticate',
+            ),
+            'resourcePath' => 'simpleauth/',
+        ),
+        'accessLevel' => 2,
+    ),
+);
+
 //==================== apiVersionMap ====================
 
 $o['apiVersionMap'] = array();
@@ -428,9 +1019,21 @@ $o['apiVersionMap']['Luracast\Restler\Resources'] = array (
     1 => 'Luracast\\Restler\\Resources',
 );
 
+//==== apiVersionMap Book ====
+
+$o['apiVersionMap']['Book'] = array (
+    1 => 'Book',
+);
+
 //==== apiVersionMap User ====
 
 $o['apiVersionMap']['User'] = array (
     1 => 'User',
+);
+
+//==== apiVersionMap SimpleAuth ====
+
+$o['apiVersionMap']['SimpleAuth'] = array (
+    1 => 'SimpleAuth',
 );
 return $o;
