@@ -14,7 +14,7 @@
   // Load file infomartion
   $id = $_GET['id'];
   $file = new Files();
-  $file->load_single('id = ' . $id);
+  $file->loadSingle('id = ' . $id);
   $filename = $file->filename;
   $uri = $file->uri;
   if (!$file->affected > 0) {

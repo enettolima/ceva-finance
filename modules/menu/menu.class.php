@@ -24,16 +24,16 @@ class Menu Extends DataManager{
 	 */
   
   public function byLevel($menu_name = 'main', $level) {
-    parent::dm_load_list(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
+    parent::dmLoadList(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
     if ($this->affected) {
       $links = array();
       foreach ($this->data as $key => $item) {
         // Test permission.
-        if ($this->menu_permission($item, $level)) {
+        if ($this->menuPermission($item, $level)) {
           $links[$item['id']] = $item;
         }
       }
-      $tree = $this->menu_build_tree($links);
+      $tree = $this->menuBuildTree($links);
       return $tree;
     }
   }
@@ -42,9 +42,9 @@ class Menu Extends DataManager{
 	* @smart-auto-routing false
 	* @access private
 	*/
-  public function load_list($level){
+  public function loadList($level){
     $menu = new DataManager();
-    $menu->dm_load_list(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "main" ORDER BY position');
+    $menu->dmLoadList(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "main" ORDER BY position');
     return $menu;
   }
   
@@ -58,11 +58,11 @@ class Menu Extends DataManager{
   * @param $parent_id
   *   The parent_id (pid) of the menu item
   */
-  public function menu_build_tree(array &$links, $parent_id = 0) {
+  public function menuBuildTree(array &$links, $parent_id = 0) {
     $branch = array();
     foreach ($links as $link) {
       if ($link['pid'] == $parent_id) {
-        $children = $this->menu_build_tree($links, $link['id']);
+        $children = $this->menuBuildTree($links, $link['id']);
         if ($children) {
           $link['children'] = $children;
         }
@@ -78,7 +78,7 @@ class Menu Extends DataManager{
 	* @smart-auto-routing false
 	* @access private
 	*/
-  public function menu_permission($menu_item, $level) {
+  public function menuPermission($menu_item, $level) {
     $build = TRUE;
     switch ($menu_item['allow']) {
       case 'all':

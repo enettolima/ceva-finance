@@ -35,7 +35,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 	// Dial List Table Object
 	$user = new DataManager();
-	$user->dm_load_custom_list("SELECT u.*
+	$user->dmLoadCustomList("SELECT u.*
 		FROM " . NATURAL_DBNAME . ".user u
 		WHERE $row_id $search_query
 		ORDER BY  $sort
@@ -93,7 +93,7 @@ function user_create_form() {
 	$frm = new DbForm();
   // Select the properly levels
 	$access_levels = new DataManager();
-	$access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+	$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
 	if ($access_levels->affected) {
 		$items = array();
 		foreach ($access_levels->data as $access_level) {
@@ -119,7 +119,7 @@ function user_create_form_submit($data) {
   }
 	else {
 		// Verify Username
-		$user->load_single('username = "' . $data['username'] . '"');
+		$user->loadSingle('username = "' . $data['username'] . '"');
     if ($user->affected) {
 		  natural_set_message('Username "' . $data['username'] . '" already taken.', 'error');
       return FALSE;
@@ -154,12 +154,12 @@ function user_create_form_submit($data) {
  */
 function user_edit_form($user_id) {
   $user = new User();
-  $user->load_single('id = ' . $user_id);
+  $user->loadSingle('id = ' . $user_id);
   if ($user->affected > 0) {
     $frm = new DbForm();
     // Select the properly levels
     $access_levels = new DataManager();
-    $access_levels->dm_load_custom_list('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
+    $access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
     if ($access_levels->affected) {
       $items = array();
       foreach ($access_levels->data as $access_level) {
@@ -186,7 +186,7 @@ function user_edit_form($user_id) {
  */
 function user_edit_form_submit($data) {
   $user = new User();
-  $user->load_single('id = ' . $data['id']);
+  $user->loadSingle('id = ' . $data['id']);
   $contact = new Contact();
   $contact->load_single('id = ' . $data['contact_id']);
   // Validate User Fields
@@ -247,7 +247,7 @@ function user_validate_fields($fields) {
  */
 function user_delete_form($user_id) {
   $user = new User();
-  $user->load_single('id = ' . $user_id);
+  $user->loadSingle('id = ' . $user_id);
   if ($user->affected > 0) {
     $frm = new DbForm();
 		$user->first_last_name = $user->first_name . ' ' . $user->last_name;
@@ -264,7 +264,7 @@ function user_delete_form($user_id) {
  */
 function user_delete_form_submit($data) {
   $user = new User();
-  $user->load_single('id = ' . $data['id']);
+  $user->loadSingle('id = ' . $data['id']);
   if ($user->affected > 0) {
     // Remove user
     //$user->remove('id = ' . $data['id']);
