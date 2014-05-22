@@ -58,7 +58,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			$rows[$j]['first_name'] = $user->data[$i]['first_name'];
 			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
 			$rows[$j]['username'] = $user->data[$i]['username'];
-			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => 'disabled'));
 			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
