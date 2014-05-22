@@ -117,7 +117,7 @@ switch ($fn) {
         print class_form_creator_form();
         break;
     case 'class_form_creator_form_submit':
-        print class_form_creator_form_submit();
+        print class_form_creator_form_submit($_GET);
         break;
     
     /*
