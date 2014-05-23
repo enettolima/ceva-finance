@@ -769,20 +769,15 @@ function class_form_creator_form_submit($data){
 				natural_set_message('Please select at least one type and try again!', 'error');
 				exit(0);
 		}
-		print_debug($data);
 		
 		foreach($data['type'] as $k => $v){
 				if($v=='class'){
-						//$table = $data['table_name'];
 						class_creator($data['table_name']);
-						natural_set_message('Done creating the class for the table '.$data['table_name'].'!', 'success');		
 				}
 				if($v=='form'){
-						natural_set_message('Done creating the form for the table '.$data['table_name'].'!', 'success');
+						create_form($data['table_name']);
 				}
 		}
-		
-		return 'hello';
 }
 
 function class_creator($table_name){
@@ -792,14 +787,24 @@ function class_creator($table_name){
     $data['field_label_1'] = 'Name';
     $data['field_2'] = 'b.author';
     $data['field_label_2'] = 'Author';
-		if (is_numeric($table_name)) {
-        $name = $data['module'];
-				$class_name = str_replace("_", " ", $data['module']);
-    } else {
-				$name = $data['table_name'];
-				$class_name = str_replace("_", " ", $data['table_name']);
-    }
+
+		$query = "DESCRIBE " . NATURAL_DBNAME . "." . $table_name . "";
+		$fields = new DataManager();
+		$fields->dmLoadCustomList($query, 'ASSOC');
+		if ($fields->affected > 0) {
+				for ($i = 1; $i < 3; $i++) {
+						$key = 'field_' . $i;
+						$keylabel = 'field_label_' . $i;
+						//$data[key] = 'b.name';
+						$data[$key] = $fields->data[$i]['Field'];
+						//$data[$keylabel] = 'Name';
+						$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($fields->data[$i]['Field'])));
+				}
+		}
 		
+		$name = $table_name;
+		$class_name = str_replace("_", " ", $table_name);
+    
 		$class_name = ucwords($class_name);
     $data['class_name'] = str_replace(" ", "", $class_name);
 		$data['path'] = NATURAL_WEB_ROOT . "modules/natural/";
@@ -813,86 +818,8 @@ function class_creator($table_name){
 		$file = str_replace("author", $data['field_2'], $file);
 		$file = str_replace("Author", $data['field_label_2'], $file);
 		//save it back:
-		file_put_contents($data['path'] . $name . ".class.php", $file);
-    
-		/*$ft = new DataManager;
-    //$table = NATURAL_DBNAME . "." . FIELD_TABLE;
-    $table_name = trim($table_name);
-    $class_ar = explode("_", $table_name);
-    if (is_array($class_ar)) {
-        for ($i = 0; $i < count($class_ar); $i++) {
-            $class_name .= ucfirst($class_ar[$i]);
-        }
-    }
-    $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-
-    if (!$dblink) {
-        die('Could not connect: ' . mysql_error());
-    }
-    $today = date("m-d-Y H:i:s");
-    $now = date("M-D-Y");
-    $query = "SHOW COLUMNS FROM " . NATURAL_DBNAME . ".{$table_name}";
-    $query_result = mysql_query($query, $dblink);
-    $counter = 0;
-    if ($query_result) {
-        $myFile = "{$table_name}.class.php";
-        $fp = fopen($myFile, 'w') or die("can't open file");
-        fwrite($fp, "<?\n");
-        $doc = " /** 
-* NATURAL - Created by Open Source Mind, LLC
-* Last Modified: Date: {$today} -0500 ({$now}) \$ @ Revision: \$Rev: 11 $ 
-* @package Hive 
-*/
-
-/** 
-* <insert your class documentation here> 
-*/ /* \n\n";
-
-        fwrite($fp, $doc);
-
-        $upper_table = ucfirst($table_name);
-        $top_class = "\tclass {$class_name} Extends DataManager{\n";
-        fwrite($fp, $top_class);
-
-
-        $dec_var = "";
-        $form_ar_edit = "";
-
-        //Creating Insert Form
-        $i = 0;
-        $c = 0;
-
-        $funcs1 = "\t\tpublic function load_single(\$search_str){
-      parent::dm_load_single(NATURAL_DBNAME . \"$table_name\",\$search_str);
-		}
-     
-    public function load_list(\$output, \$search_str){
-      parent::dm_load_list(NATURAL_DBNAME . \".$table_name\", \$output, \$search_str);
-    }
-
-    public function insert(){
-      parent::dm_insert(NATURAL_DBNAME . \".$table_name\", \$this);
-      \$this->id = \$this->dbid;
-    }
-
-    public function update(\$upd_rule){
-      parent::dm_update(NATURAL_DBNAME . \".$table_name\", \$upd_rule, \$this);
-    }
-
-    public function remove(\$rec_key){
-      parent::dm_remove(NATURAL_DBNAME . \".$table_name\", \$rec_key);
-    }
-  }
-  
-?>";
-        fwrite($fp, $funcs1);
-        fclose($fp);
-				natural_set_message('Class for table '.$table_name.' built successfully!', 'success');
-        //return "Class for table {$table_name} built successfully!<br>";
-    } else {
-				natural_set_message('Table '.$table_name.' not found!', 'error');
-        //return "We could not find any data with this search criteria " . mysql_error();
-    }*/
+		$write = file_put_contents($name . ".class.php", $file);
+		natural_set_message('Done creating the class for the table '.$data['table_name'].'!', 'success');		
 }
 
 function create_form($table_name) {
@@ -902,42 +829,44 @@ function create_form($table_name) {
     $fnm = "";
 
     $param['form_method'] = "POST";
-
-    //Saving form parameters for new table
-    $param['form_id'] = "{$table_name}_new";
-    $param['form_name'] = "{$table_name}_new";
-    $param['form_title'] = "Add New {$table_name}";
-    $param['form_action'] = "javascript:proccess_information(\'" . $table_name . "_new\', \'" . $table_name . "_add\', \'" . $table_name . "\', \'\')\;";
-    $ft->dm_insert($_SESSION['project_db'] . "." . FORM_TABLE, $param);
-    $fnm['name'] = "{$table_name}_new";
-
-    //Saving form parameters for edit table
-    $param['form_id'] = "{$table_name}_edit";
-    $param['form_name'] = "{$table_name}_edit";
-    $param['form_title'] = "Edit {$table_name}";
-    $param['form_action'] = "javascript:proccess_information(\'{$table_name}_edit\', \'{$table_name}_edit\', \'{$table_name}\', \'\', \'\', \'panel-msg\', \'panel-wrapper\',\'update_row\')\;";
-    $ft->dm_insert($_SESSION['project_db'] . "." . FORM_TABLE, $param);
-    $fnm['name'] = "{$table_name}_edit";
-
-    //Saving form parameters for view table
-    $param['form_id'] = "{$table_name}_view";
-    $param['form_name'] = "{$table_name}_view";
-    $param['form_title'] = "View {$table_name}";
-    $param['form_action'] = "javascript:proccess_information(\'{$table_name}_view\', \'\', \'{$table_name}\', \'\')\;";
-    $ft->dm_insert($_SESSION['project_db'] . "." . FORM_TABLE, $param);
-    $fnm['name'] = "{$table_name}_view";
-
-    echo "<br>Form " . $table_name . " has been created!<br>";
-//  $ft->dm_load_list(NATURAL_DB_NAME.".".$table_name, "SHOW COLUMNS ");
+		$form_add 		= $table_name.'_create_form';
+		$form_edit 		= $table_name.'_edit_form';
+		$form_delete 	= $table_name.'_delete_form';
+		
+    //Saving form parameters for the create form
+    $param['form_id'] 		= $form_add;
+    $param['form_name'] 	= $form_add;
+    $param['form_title'] 	= 'Add New '.$table_name;
+    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
+    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+		print_debug($ft);
+		$form_add_id = $ft->id;
+    
+    //Saving form parameters for edit form
+    $param['form_id'] 		= $form_edit;
+    $param['form_name'] 	= $form_edit;
+    $param['form_title'] 	= 'Edit '.$table_name;
+    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
+    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+		$form_edit_id = $ft->id;
+    
+    //Saving form parameters for delete form
+    $param['form_id'] 		= $form_delete;
+    $param['form_name'] 	= $form_delete;
+    $param['form_title'] 	= 'Delete '.$table_name;
+    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
+    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+		$form_delete_id = $ft->id;
 
     $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
     if (!$dblink) {
-        die('Could not connect: ' . mysql_error());
+        //die('Could not connect: ' . mysql_error());
+				natural_set_message('Failed to connect with the database '.NATURAL_DBNAME.'!', 'error');		
     }
     $today = date("m-d-Y H:i:s");
     $now = date("M-D-Y");
-    $query = "SHOW COLUMNS FROM " . $_SESSION['project_db'] . ".{$table_name}";
+    $query = 'SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.'.$table_name;
     $query_result = mysql_query($query, $dblink);
     $i = 0;
     if ($query_result) {
@@ -955,7 +884,8 @@ function create_form($table_name) {
             } else {
                 $label = ucfirst($row['Field']);
             }
-            $field['form_reference'] = "{$table_name}_new";
+            $field['form_reference'] = $form_add;
+						$field['form_template_id'] = $form_add_id;
             $field['field_id'] = $row['Field'];
             $field['field_name'] = $row['Field'];
             $field['form_field_order'] = $i;
@@ -968,33 +898,67 @@ function create_form($table_name) {
             $field['def_label'] = $label;
 
             //Insert template new
-            $ff->dm_insert($_SESSION['project_db'] . "." . FIELD_TABLE, $field);
+            $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
 
             //Insert template edit
-            $field['form_reference'] = "{$table_name}_edit";
+            $field['form_reference'] = $form_edit;
+						$field['form_template_id'] = $form_edit_id;
             $field['def_val'] = "{$row['Field']}";
-            $ff->dm_insert($_SESSION['project_db'] . "." . FIELD_TABLE, $field);
+            $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
 
-            //Insert template view
-            $field['form_reference'] = "{$table_name}_view";
-            $field['def_val'] = "{$row['Field']}";
-            $field['html_type'] = "readonly";
-            $ff->dm_insert($_SESSION['project_db'] . "." . FIELD_TABLE, $field);
+						if($row['Field']=='id'){
+								//Insert delete id
+								$field['form_reference'] 	= $form_delete;
+								$field['form_template_id']= $form_delete_id;
+								$field['def_val'] 				= "{$row['Field']}";
+								$field['html_type'] 			= "hidden";
+								$field['def_label'] 			= 'ID';
+								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);		
+						}
+						if($i==1){
+								//Insert delete message
+								$field['form_reference'] 	= $form_delete;
+								$field['form_template_id']= $form_delete_id;
+								$field['field_id'] 				= 'message';
+								$field['field_name'] 			= 'message';
+				        $field['form_field_order']= $i;
+								$field['def_label'] 			= '';
+								$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
+								$field['html_type'] 			= 'message';
+								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+								
+								//Insert delete object
+								$field['form_reference'] 	= $form_delete;
+								$field['form_template_id']= $form_delete_id;
+								$field['field_id'] 				= "{$row['Field']}";
+								$field['field_name'] 			= "{$row['Field']}";
+				        $field['form_field_order']= $i + 1;
+								$field['def_label'] 			= '';
+								$field['def_val'] 				= "{$row['Field']}";
+								$field['html_type'] 			= 'message';
+								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);		
+						}
             $i++;
         }
 
-        $field['form_reference'] = "{$table_name}_new";
-        $field['field_id'] = "sub";
-        $field['field_name'] = "sub";
-        $field['form_field_order'] = $i;
-        $field['html_type'] = "submit";
-        $field['def_label'] = "Save";
-
-        $ff->dm_insert($_SESSION['project_db'] . "." . FIELD_TABLE, $field);
-
-        $field['form_reference'] = "{$table_name}_edit";
-        $ff->dm_insert($_SESSION['project_db'] . "." . FIELD_TABLE, $field);
+        $field['form_reference'] 	= $form_add;
+				$field['form_template_id']= $form_add_id;
+        $field['field_id'] 				= "sub";
+        $field['field_name'] 			= "sub";
+        $field['form_field_order']= $i;
+				$field['def_label'] 			= '';
+        $field['html_type'] 			= "submit";
+        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+				
+				$field['form_reference'] 	= $form_edit;
+				$field['form_template_id']= $form_edit_id;
+        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+				
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
     }
+		natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');		
 }
 
 
