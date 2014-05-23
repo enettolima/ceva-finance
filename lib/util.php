@@ -114,6 +114,11 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
   }
 
   $href = "javascript:process_information('" . $formname . "', '" . $func . "', '" . $module . "', " .  implode(', ', $render_options) . ")";
+
+  if ($options['class'] == 'disabled') {
+    $href = '#';
+  }
+  
   return '<a class="' . $options['class'] . '" href="' . $href . '">' . $text . '</a>';
 }
 
