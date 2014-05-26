@@ -31,7 +31,8 @@ if ($_SESSION['log_username']) {
 	}
 	
 	//Testing dashboard widgets
-	$dash_containers = '';
+	$dash = new DashboardWidgets();
+	//$dash_containers = '';
 
 	// Twig Base
 	$template = $twig->loadTemplate('base.html');
@@ -49,8 +50,8 @@ if ($_SESSION['log_username']) {
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
-		'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
-		//'content' => $dash_containers
+		//'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
+		'content' => $dash->loadFullDashboard()
 	));
 }
 else {
