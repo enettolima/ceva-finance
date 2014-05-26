@@ -91,15 +91,18 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 				$headers[] = array('display' => 'Module', 'field' => 'm.module');
 				$headers[] = array('display' => 'Label', 'field' => 'm.label');
 				$headers[] = array('display' => 'Delete', 'field' => NULL);
-				$headers = build_sort_header('module_list', 'module', $headers, $sort);
+				$headers = build_sort_header('module_list', 'natural', $headers, $sort);
 		
         $total = 0;
         for ($i = 0; $i < $modules->affected; $i++) {
             $j = $i + 1;
+						//This is important for the row update/delete
+            $rows[$j]['row_id'] = $modules->data[$i]['id'];
+            /////////////////////////////////////////////
             $rows[$j]['id'] = $modules->data[$i]['id'];
             $rows[$j]['module'] = $modules->data[$i]['module'];
             $rows[$j]['label'] = $modules->data[$i]['label'];
-						$rows[$j]['delete'] = theme_link_process_information('', 'module_delete_form', 'module_delete_form', 'natural', array('extra_value' => 'module_id|' . $module->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+						$rows[$j]['delete'] = theme_link_process_information('', 'module_delete_form', 'module_delete_form', 'natural', array('extra_value' => 'id|' . $modules->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 				}
     }
 
@@ -109,12 +112,12 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'page_subtitle' => translate('Manage Module'),
 		'empty_message' => translate('No module found!'),
 		'table_prefix' => theme_link_process_information(translate('Create New Module'), 'module_create_form', 'module_create_form', 'natural', array('response_type' => 'modal')),
-		'pager_items' => build_pager('form_list', 'natural', $module->total_records, $limit, $page),
+		'pager_items' => build_pager('module_list', 'natural', $module->total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
 		'show_search' => TRUE,
-		'function' => 'form_list',
+		'function' => 'module_list',
 		'module' => 'natural',
 		'update_row_id' => '',
 	  'table_form_id' => '',
@@ -143,18 +146,17 @@ function module_create_form() {
         }
         $module->table_list = implode(';', $items);
     }
-
-    //return $dbform->build('module_new', $module);
 		$frm->build('module_create_form', $module, $_SESSION['log_access_level']);
 }
 
 function module_create_form_submit($data) {
-    $data['project_path'] = NATURAL_WEB_ROOT;
-    $data['project_name'] = NATURAL_PLATFORM;
-    $data['field_1'] = 'b.name';
-    $data['field_label_1'] = 'Name';
-    $data['field_2'] = 'b.author';
-    $data['field_label_2'] = 'Author';
+    $data['project_path'] 	= NATURAL_WEB_ROOT;
+    $data['project_name'] 	= NATURAL_PLATFORM;
+    $data['field_1'] 				= 'b.name';
+    $data['field_label_1'] 	= 'Name';
+    $data['field_2'] 				= 'b.author';
+    $data['field_label_2'] 	= 'Author';
+		$data['module'] 				= $data['label'];
     if (is_numeric($data['table_name'])) {
         $class_name = str_replace("_", " ", $data['module']);
         $data['module_name'] = $data['module'];
@@ -181,16 +183,18 @@ function module_create_form_submit($data) {
     }
     $class_name = ucwords($class_name);
     $data['class_name'] = str_replace(" ", "", $class_name);
-    $data['path'] = $data['project_path'] . "modules/" . $data['module'] . "/";
-    /*
-     * Validating information n the Database
+    //$data['path'] = NATURAL_WEB_ROOT . "modules/" . $data['module'] . "/";
+    $data['path'] = '../'.$data['module'].'/';
+		/*
+     * Validating information on the Database
      */
-    $info = validate_module_info($data);
-    if ($info) {
-        return $info . '<br><br>';
-        exit(0);
-    }
-    //Creating directory for the module
+		$error = validate_module_info($data);
+		if ($error) {
+				natural_set_message($error, 'error');
+        return FALSE;
+				exit(0);
+		}
+		//Creating directory for the module
     create_module_structure($data);
     if ($data['create_api'] == 1) {
         create_module_api($data);
@@ -207,18 +211,47 @@ function module_create_form_submit($data) {
     }
 
     //Saving information to the Natural Database
-    $module = new DataManager();
-    //$module = new Module();
-    $module->version = 1;
-    $module->module = strtolower(str_replace(" ", "_", $data['module']));
-    $module->label = $data['label'];
-    $module->description = $data['label'];
+    $module 									= new Module();
+    $module->version 					= 1;
+    $module->module 					= strtolower(str_replace(" ", "_", $data['module']));
+    $module->label 						= ucwords($data['label']);
+    $module->description 			= ucwords($data['label']);
     $module->license_quantity = 0;
-    $module->last_update = date("Y-m-d H:i:s");
-    $module->status = 1;
-    //$module->insert();
-    $module->dm_insert($_SESSION['project_db'] . "." . MODULES_TABLE, $module);
-    return "Module Saved Successfully!" . module_list();
+    $module->last_update 			= date("Y-m-d H:i:s");
+    $module->status 					= 1;
+    $module->insert();
+		if($module->affected){
+				natural_set_message('Module '.$data['module'].' created successfully!', 'success');	
+				return module_list($module->id);
+		}else{
+				natural_set_message('Could not save this Module at this time', 'error');
+        return false;
+		}
+}
+
+function module_delete_form($data){
+		$module = new Module();
+    $module->loadSingle('id='.$data['id']);
+		if($module->affected>0){
+        $frm = new DbForm();
+        $frm->build('module_delete_form', $module, $_SESSION['log_access_level']);
+    }else{
+        natural_set_message('Problems loading module ' . $data['id'], 'error');
+        return FALSE;   
+    }
+}
+
+function module_delete_form_submit($data){
+		$module = new Module();
+    $module->loadSingle('id='.$data['id']);
+    if ($module->affected > 0) {
+        $module->remove('id='.$data['id']);
+        natural_set_message('Module has been removed successfully!', 'success');
+        return $data['id'];
+    } else {
+        natural_set_message('Problems loading user ' . $data['id'], 'error');
+        return FALSE;
+    }
 }
 
 /*
@@ -226,32 +259,30 @@ function module_create_form_submit($data) {
  */
 
 function create_module_menu($data) {
-    //Building array of data to pass to the main menu creation
-    $data['element_name'] = $data['module'] . "_main";
-    $data['label'] = $data['class_name'];
-    $data['title'] = $data['class_name'];
-    $data['func'] = $data['module'] . "_list";
-    $data['module'] = $data['module'];
-    $data['allow'] = "all";
-    $data['allow_value'] = 0;
-    $data['status'] = 1;
-    $data['initial'] = 0;
-    //Adding main menu from modules/menu_nav/menu_nav.func.php
-    save_main_menu($data);
-    //Getting id of the main menu
-    $menu = new MainMenu();
-    $menu->load_single("element_name='" . $data['element_name'] . "'");
-    $data['main_menu_id'] = $menu->id;
-    $data['element_name'] = $data['module'] . "_sub";
-    $data['label'] = "List";
-    $data['title'] = "List";
-    save_new_submenu($data);
-    //Adding submenu Add for the object
-    $data['func'] = $data['module'] . "_add_form";
-    $data['element_name'] = $data['module'] . "_add_sub";
-    $data['label'] = "Add New";
-    $data['title'] = "Add New";
-    save_new_submenu($data);
+    //Building array of data to pass to the table
+		$mn = new Menu();
+		$mn->loadSingle('id>0 ORDER BY position DESC LIMIT 1');
+		
+		if (is_numeric($data['table_name'])) {
+        $name = $data['module'];
+    } else {
+        $name = $data['table_name'];
+    }
+		
+		$menu = new Menu();
+		$menu->pid 					= '';
+		$menu->menu_name 		= 'main';
+		$menu->position  		= $mn->position + 1;
+		$menu->element_name = $data['module'];
+		$menu->label 				= ucwords($data['module']);
+		$menu->title 				= ucwords($data['module']);
+		$menu->func 				= strtolower(str_replace(" ", "_", $name.'_list'));
+		$menu->module 			= $data['module'];
+		$menu->allow 				= 'all';
+		$menu->allow_value 	= '0';
+		$menu->status 			= '1';
+		$menu->icon_class 	= 'fa fa-edit';
+		$menu->insert();
 }
 
 /*
@@ -261,7 +292,7 @@ function create_module_menu($data) {
 function create_module_structure($data) {
     //Creating folder for the new module
     mkdir($data['path'], 0777);
-    $files = array('index.php', 'view.php', 'model.php', 'controller.php');
+    $files = array('index.php', 'class.php', 'controller.php');
     //Creating files
     create_module_file($files, $data);
 }
@@ -276,13 +307,14 @@ function create_module_file($files, $data) {
     } else {
         $name = $data['table_name'];
     }
-    foreach ($files as $k => $v) {
+		$data['mod_name'] = $name;
+		foreach ($files as $k => $v) {
         if ($v == "index.php") {
-            $file = file_get_contents("../../data/module_template/index.php");
+            $file = file_get_contents("template/index.php");
         } else {
-            $file = file_get_contents("../../data/module_template/book." . $v);
+            $file = file_get_contents("template/book." . $v);
         }
-        // Do tag replacements or whatever you want
+				// Do tag replacements or whatever you want
         $file = str_replace("book", $name, $file);
         $file = str_replace("Book", $data['class_name'], $file);
         $file = str_replace("name", $data['field_1'], $file);
@@ -296,42 +328,59 @@ function create_module_file($files, $data) {
             file_put_contents($data['path'] . $name . "." . $v, $file);
         }
     }
+		update_composer_dependencies($data);
 }
 
+/*
+ *Adding module to the composer dependencies
+ */
+function update_composer_dependencies($data){
+		$file = '../../composer.json';
+		$json = json_decode(file_get_contents($file), true);
+		
+		array_push($json['autoload']['classmap'], 'modules/'.$data['mod_name']);
+
+		file_put_contents($file, json_encode($json));
+		
+		//Create the application and run it with the commands
+		//Try to execute the composer update automatically
+		
+}
 /*
  * Validating module information
  */
 
 function validate_module_info($data, $edit = false) {
-    if (!$data['module']) {
-        return 'ERROR||Invalid Module Name, this field is required!';
-        exit(0);
-    }
-    if (!$data['label']) {
-        return 'ERROR||Invalid Label, this field is required!';
-        exit(0);
-    }
+		if ($data['label']=='') {
+        return 'Field Label is required!';
+		}
     if (file_exists($data['path'])) {
-        return 'ERROR||The directory <i>' . $data['module'] . '</i> already exists!<br>Please try a different name or remove the current module!';
-    }
+        return 'The directory <i>' . $data['module'] . '</i> already exists!<br>Please try a different name or remove the current module!';
+		}
+		$module = new Module();
+		$module->loadSingle('module="'.$data['module'].'" LIMIT 1');
+		if($module->affected>0){
+				return 'Module <i>' . $data['module'] . '</i> already exists!';
+		}
     if ($data['create_forms'] == 1) {
-        $query = "SELECT * FROM " . $_SESSION['project_db'] . ".form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
+        $query = "SELECT * FROM " . NATURAL_DBNAME . ".form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
             OR form_id = '" . $data['table_name'] . "_edit' 
             OR form_id = '" . $data['table_name'] . "_view'";
         $form = new DataManager();
         $form->dmLoadCustomList($query, 'ASSOC');
         if ($form->affected > 0) {
-            return 'ERROR||The form for the module <i>' . $data['module'] . '</i> already exists!';
-        }
+						return 'The form for the module <i>' . $data['module'] . '</i> already exists!';
+		    }
     }
     if ($data['create_menu'] == 1) {
-        $query = "SELECT * FROM " . $_SESSION['project_db'] . ".main_menu WHERE element_name = '" . $data['module'] . "_main'";
+        $query = "SELECT * FROM " . NATURAL_DBNAME . ".menu WHERE element_name = '" . $data['module'] . "_main'";
         $form = new DataManager();
         $form->dmLoadCustomList($query, 'ASSOC');
         if ($form->affected > 0) {
-            return 'ERROR||Menu for the module <i>' . $data['module'] . '</i> already exists!';
-        }
+            return 'Menu for the module <i>' . $data['module'] . '</i> already exists!';
+		    }
     }
+		return false;
 }
 
 /*
@@ -340,16 +389,16 @@ function validate_module_info($data, $edit = false) {
 
 function create_module_api($data) {
     //Creating strings to add to the api/index.php inside 
-    $new_api = "require_once('SimpleAuth.php');\nrequire_once('../modules/" . $data['module_name'] . "/" . $data['module_name'] . ".model.php');";
-    $set_api = "\$r = new Restler();\n\$r->addAPIClass('" . $data['class_name'] . "');";
-    $file = file_get_contents($data['project_path'] . "api/index.php");
-    if (!strpos(file_get_contents($data['project_path'] . "api/index.php"), "\$r->addAPIClass('" . $data['class_name'] . "');") !== false) {
+    //$new_api = "require_once('SimpleAuth.php');\nrequire_once('../modules/" . $data['module_name'] . "/" . $data['module_name'] . ".model.php');";
+    $set_api = "\$r->addAPIClass('" . $data['class_name'] . "');\n\$r->handle();";
+    $file = file_get_contents('../../api/index.php');
+    if (!strpos(file_get_contents('../../api/index.php'), "\$r->addAPIClass('" . $data['class_name'] . "');") !== false) {
         //If string of the API not found, include t the api/index.php
         // Do tag replacements or whatever you want
-        $file = str_replace("require_once('SimpleAuth.php');", $new_api, $file);
-        $file = str_replace('$r = new Restler();', $set_api, $file);
+        //$file = str_replace("require_once('SimpleAuth.php');", $new_api, $file);
+        $file = str_replace('$r->handle();', $set_api, $file);
         //save it back
-        file_put_contents($data['project_path'] . "api/index.php", $file);
+        file_put_contents('../../api/index.php', $file);
     }
 }
 
@@ -358,14 +407,14 @@ function create_module_api($data) {
  */
 function module_remove($data) {
     $module = new DataManager();
-    $module->dm_load_single($_SESSION['project_db'] . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    $module->dm_load_single(NATURAL_DBNAME . "." . MODULES_TABLE,"id='{$data['module_id']}'");
     //$module->dm_load_single($table, $search_str)
     $name = $module->name;
     if (!$module->affected) {
         return "ERROR|19109|Module Not Found, Please contact your system administrator!";
         exit(0);
     }
-    $module->dm_remove($_SESSION['project_db'] . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    $module->dm_remove(NATURAL_DBNAME . "." . MODULES_TABLE,"id='{$data['module_id']}'");
     if ($module->affected) {
         return "Module {$name} was removed successfully!<br>NOTE: Database and module structure was not removed!";
     } else {
@@ -438,15 +487,17 @@ function form_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 						//This is important for the row update
             $rows[$j]['row_id'] = $forms->data[$i]['id'];
             //////////////////////////////////////
-						
-						if($forms->data[$i]['system']){
-								
-						}
-            $rows[$j]['id'] = $forms->data[$i]['id'];
+						$rows[$j]['id'] = $forms->data[$i]['id'];
             $rows[$j]['form_name'] = $forms->data[$i]['form_name'];
 						$rows[$j]['form_title'] = $forms->data[$i]['form_title'];
-						$rows[$j]['edit']   = theme_link_process_information('', 'form_edit_form', 'form_edit_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-            $rows[$j]['delete'] = theme_link_process_information('', 'form_delete_form', 'form_delete_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+						
+						if($forms->data[$i]['system']==1){
+								$disabled = 'disabled';
+						}else{
+								$disabled = '';
+						}
+						$rows[$j]['edit']   = theme_link_process_information('', 'form_edit_form', 'form_edit_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
+						$rows[$j]['delete'] = theme_link_process_information('', 'form_delete_form', 'form_delete_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
 				}
     }
 
@@ -514,7 +565,7 @@ function form_edit_form($data){
 		$form = new DataManager();
 		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
 		$frm = new DbForm();
-    return $frm->build("form_edit_form", $form, $_SESSION['log_access_level']);
+    $frm->build("form_edit_form", $form, $_SESSION['log_access_level']);
 }
 
 function form_edit_form_submit($data){
@@ -673,7 +724,9 @@ function field_create_form_submit($data){
             if ($key == "form_field_order") {
                 $field->$key = $affected;
             } else {
-                $field->$key = mysql_real_escape_string($value);
+								if($key!="fieldset_name"){
+										$field->$key = mysql_real_escape_string($value);		
+								}
             }
         }
     }
@@ -706,7 +759,7 @@ function field_edit_form_submit($data){
     $ff->loadSingle("id='{$data['id']}'");
 		foreach ($data as $key => $value) {
         //if ($key == "fn" || $key == "id") {
-				if ($key != 'affected' && $key != 'errorcode' && $key != 'data' && $key != 'dbid' && $key != 'id' && $key != 'fn') {
+				if ($key != 'affected' && $key != 'errorcode' && $key != 'data' && $key != 'dbid' && $key != 'id' && $key != 'fn' && $key!='fieldset_name') {
 						$ff->$key = mysql_real_escape_string($value);
         }
     }
@@ -836,27 +889,26 @@ function create_form($table_name) {
     //Saving form parameters for the create form
     $param['form_id'] 		= $form_add;
     $param['form_name'] 	= $form_add;
-    $param['form_title'] 	= 'Add New '.$table_name;
+    $param['form_title'] 	= 'Add New '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
     $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
-		print_debug($ft);
-		$form_add_id = $ft->id;
+		$form_add_id = $ft->dbid;
     
     //Saving form parameters for edit form
     $param['form_id'] 		= $form_edit;
     $param['form_name'] 	= $form_edit;
-    $param['form_title'] 	= 'Edit '.$table_name;
+    $param['form_title'] 	= 'Edit '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
     $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
-		$form_edit_id = $ft->id;
+		$form_edit_id = $ft->dbid;
     
     //Saving form parameters for delete form
     $param['form_id'] 		= $form_delete;
     $param['form_name'] 	= $form_delete;
-    $param['form_title'] 	= 'Delete '.$table_name;
+    $param['form_title'] 	= 'Delete '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
     $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
-		$form_delete_id = $ft->id;
+		$form_delete_id = $ft->dbid;
 
     $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
@@ -947,7 +999,8 @@ function create_form($table_name) {
         $field['field_name'] 			= "sub";
         $field['form_field_order']= $i;
 				$field['def_label'] 			= '';
-        $field['html_type'] 			= "submit";
+				$field['def_val'] 				= '';
+        $field['html_type'] 			= 'submit';
         $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
 				
 				$field['form_reference'] 	= $form_edit;

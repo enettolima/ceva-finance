@@ -24,7 +24,7 @@ $fn = $_GET['fn'];
  */
 switch ($fn) {
     case 'book_list':
-        print book_list($_GET['row_id']);
+        echo book_list($_GET['row_id']);
         break;
     case 'book_list_pager':
         print book_list(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);

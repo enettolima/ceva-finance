@@ -16,6 +16,12 @@ a:hover, a:active, a:focus {
   cursor: pointer;
 }
 
+a.disabled {
+  cursor:not-allowed;
+  pointer-events:none;
+  opacity:.55
+}
+
 /**
  * Layouts
  */

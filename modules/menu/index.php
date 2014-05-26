@@ -1,91 +1,57 @@
-<?
-
+<?php
+/**
+ * NATURAL - Copyright Open Source Mind, LLC
+ * Last Modified: Date: 05-21-2013 19:15:01 -0500
+ * @package Natural Framework
+ */
 session_start();
 require_once('../../bootstrap.php');
-require_once('menu_nav.model.php');
+//require_once('menu.view.php');
+require_once('menu.controller.php');
 
 if (!$_SESSION['logged']) {
-    echo 'LOGOUT';
+    //Checing session to force logout
+    //Processed by process_information on lib/js/controller.js
+    echo "LOGOUT";
     exit(0);
 }
 
+//Getting function from the jquery call
 $fn = $_GET['fn'];
 
+/*
+ * Sending calls to the view
+ */
 switch ($fn) {
-    case 'update_menu':
-        echo update_menu($_GET);
+    case 'menu_list':
+        echo menu_list($_GET['row_id']);
         break;
-    case 'list_main_menus':
-        echo list_main_menu();
+    case 'menu_list_pager':
+        print menu_list(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
         break;
-    case 'update_main_menu':
-        echo update_main_menu($_GET);
+    case 'menu_list_sort':
+        print menu_list(NULL, $_GET['search'], $_GET['sort'], 1);
         break;
-    case 'edit_main_menu':
-        echo edit_main_menu($_GET);
+    case 'menu_list_search':
+        print menu_list(NULL, $_GET['search']);
         break;
-    case 'add_new_mainmenu':
-        echo add_new_mainmenu();
+    case 'menu_create_form':
+        print menu_create_form();
         break;
-    case 'delete_main_menu':
-        echo delete_main_menu($_GET);
+    case 'menu_create_form_submit':
+        print menu_create_form_submit($_GET);
         break;
-    case 'save_main_menu':
-        echo save_main_menu($_GET);
+    case 'menu_edit_form':
+        print menu_edit_form($_GET);
         break;
-    case 'save_main_menu_config':
-        echo save_main_menu_config($_GET);
+    case 'menu_edit_form_submit':
+        print menu_edit_form_submit($_GET);
         break;
-    case 'show_subupstream_options':
-        echo select_upstream_submenu();
+    case 'menu_delete_form':
+        print menu_delete_form($_GET);
         break;
-    case 'list_submenus':
-        echo list_submenus($_GET);
-        break;
-    case 'add_new_submenu':
-        echo add_new_submenu($_GET);
-        break;
-    case 'save_new_submenu':
-        echo save_new_submenu($_GET);
-        break;
-    case 'edit_sub_menu':
-        echo edit_sub_menu($_GET);
-        break;
-    case 'save_sub_menu_config':
-        echo save_sub_menu_config($_GET);
-        break;
-    case 'delete_sub_menu':
-        echo delete_sub_menu($_GET);
-        break;
-    case 'update_sub_menu':
-        echo update_sub_menu($_GET);
-        break;
-    case 'show_sideupstream_options':
-        echo select_upstream_sidemenu();
-        break;
-    case 'list_sidemenus':
-        echo list_sidemenus($_GET);
-        break;
-    case 'add_new_sidemenu':
-        echo add_new_sidemenu($_GET);
-        break;
-    case 'save_new_sidemenu':
-        echo save_new_sidemenu($_GET);
-        break;
-    case 'edit_side_menu':
-        echo edit_side_menu($_GET);
-        break;
-    case 'save_side_menu_config':
-        echo save_side_menu_config($_GET);
-        break;
-    case 'delete_side_menu':
-        echo delete_side_menu($_GET);
-        break;
-    case 'update_side_menu':
-        echo update_side_menu($_GET);
-        break;
-    case 'build_dash_fullscreen_menu':
-        echo build_dash_fullscreen_menu($_GET);
+    case 'menu_delete_form_submit':
+        print menu_delete_form_submit($_GET);
         break;
 }
 ?>

@@ -11,8 +11,8 @@ use Luracast\Restler\Restler;
 $r = new Restler(true, true);
 $r->addAPIClass('Luracast\\Restler\\Resources'); 
 $r->setSupportedFormats('JsonFormat');
+$r->addAuthenticationClass('SimpleAuth');
 $r->addAPIClass('Book');
 $r->addAPIClass('User');
-$r->addAuthenticationClass('SimpleAuth');
 $r->handle();
 ?>

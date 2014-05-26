@@ -15,3 +15,9 @@ Natural.komodoproject
 #Ignore libs installed with composer
 vendor/
 composer.lock
+
+#Ignore RESTLER cache Files
+api/cache/
+
+#Ignore vagrant auto-generated files
+.vagrant/machines

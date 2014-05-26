@@ -53,7 +53,6 @@ function sec2hms($sec) {
  * Convert all strings to a different language
  */
 function translate($string, $lang = 'en') {
-    require_once(NATURAL_CLASSES_PATH . 'language.class.php');
     $lg = new Language();
     $lg->loadSingle("original='{$string}' AND lang='{$lang}'");
     if ($lg->affected > 0) {
@@ -88,7 +87,7 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
     'parent',
     'el',
     'proc_message',
-    'timer'
+    'timer',
   );
 
   $render_options = '';
@@ -114,7 +113,12 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
   }
 
   $href = "javascript:process_information('" . $formname . "', '" . $func . "', '" . $module . "', " .  implode(', ', $render_options) . ")";
-  return '<a href="' . $href . '">' . $text . '</a>';
+
+  if ($options['class'] == 'disabled') {
+    $href = '#';
+  }
+  
+  return '<a class="' . $options['class'] . '" href="' . $href . '">' . $text . '</a>';
 }
 
 function print_debug($val) {

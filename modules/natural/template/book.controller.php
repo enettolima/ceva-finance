@@ -54,8 +54,8 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
             $rows[$j]['id']     = $book->data[$i]['id'];
             $rows[$j]['name']   = $book->data[$i]['name'];
             $rows[$j]['author'] = $book->data[$i]['author'];
-            $rows[$j]['edit']   = theme_link_process_information('', 'book_edit_form', 'book_edit_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-            $rows[$j]['delete'] = theme_link_process_information('', 'book_delete_form', 'book_delete_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+            $rows[$j]['edit']   = theme_link_process_information('', 'book_edit_form', 'book_edit_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
+            $rows[$j]['delete'] = theme_link_process_information('', 'book_delete_form', 'book_delete_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
         }
     }
     
@@ -87,7 +87,6 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 function book_create_form() {
     $frm = new DbForm();
     return $frm->build("book_create_form");
-    //print $form;
 }
 
 /*
