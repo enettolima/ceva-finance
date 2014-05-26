@@ -30,6 +30,9 @@ if ($_SESSION['log_username']) {
 		$avatar = $file->uri;
 	}
 	
+	//Testing dashboard widgets
+	$dash_containers = '';
+
 	// Twig Base
 	$template = $twig->loadTemplate('base.html');
 	$template->display(array(
@@ -47,6 +50,7 @@ if ($_SESSION['log_username']) {
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
 		'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
+		//'content' => $dash_containers
 	));
 }
 else {

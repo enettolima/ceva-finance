@@ -4,7 +4,7 @@
  */
 html,
 body {
-  overflow-x: hidden!important;
+  /*overflow-x: hidden!important; showing only half of the profile popup when there is nothing on the content*/
   font-family: 'Source Sans Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100%;
