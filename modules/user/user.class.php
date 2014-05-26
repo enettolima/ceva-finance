@@ -1,6 +1,5 @@
 <?php
 
-
 class User Extends DataManager{
 	
 	/**

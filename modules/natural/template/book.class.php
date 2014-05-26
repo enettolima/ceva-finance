@@ -1,101 +1,71 @@
 <?php
-
-/*
- * Before function name:
- * Use protected to make the API verify the API key
- * Use private to block the method
- * NATURAL_API_KEY is stored on bootstrap.php and/or bootstrap.dev.php
- */
-
 /**
+ * All methods in this class are protected
  * @access protected
  */
 class Book Extends DataManager {
-    /*
-     * Database access
-     */
-
-    function load_single($search_str) {
-        parent::dm_load_single(NATURAL_DBNAME . ".book", $search_str);
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
+    function loadSingle($search_str) {
+        parent::dmLoadSingle(NATURAL_DBNAME . ".book", $search_str);
     }
-
-    function load_list($output, $search_str) {
-        parent::dm_load_list(NATURAL_DBNAME . ".book", $output, $search_str);
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
+    function loadList($output, $search_str) {
+        parent::dmLoadList(NATURAL_DBNAME . ".book", $output, $search_str);
         return $this;
     }
-
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
     function insert() {
-        parent::dm_insert(NATURAL_DBNAME . ".book", $this);
+        parent::dmInsert(NATURAL_DBNAME . ".book", $this);
         $this->id = $this->dbid;
     }
-
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
     function update($upd_rule) {
-        parent::dm_update(NATURAL_DBNAME . ".book", $upd_rule, $this);
+        parent::dmUpdate(NATURAL_DBNAME . ".book", $upd_rule, $this);
     }
-
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
     function remove($rec_key) {
-        parent::dm_remove(NATURAL_DBNAME . ".book", $rec_key);
+        parent::dmRemove(NATURAL_DBNAME . ".book", $rec_key);
     }
-
-    function load_custom_list($query, $output, $count) {
-        parent::dm_load_custom_list($query, $output, $count);
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
+    function loadCustomList($query, $output, $count) {
+        parent::dmLoadCustomList($query, $output, $count);
     }
-
     //End of database access
 
-    /*
-     * API methods
-     */
-    protected function getadd($request_data) {
-        return $this->add($request_data);
-    }
-
-    protected function postadd($request_data) {
-        return $this->add($request_data);
-    }
-
-    protected function getupdate($request_data) {
-        return $this->updateInfo($request_data);
-    }
-
-    protected function postupdate($request_data) {
-        return $this->updateInfo($request_data);
-    }
-
-    function getbyId($request_data) {
-        return $this->findByID($request_data);
-    }
-
-    protected function postbyId($request_data) {
-        return $this->findByID($request_data);
-    }
-
-    protected function getall($request_data) {
-        return $this->loadAll();
-    }
-
-    protected function postall($request_data) {
-        return $this->loadAll();
-    }
-
-    protected function getremove($request_data) {
-        return $this->delete($request_data);
-    }
-
-    protected function postremove($request_data) {
-        return $this->delete($request_data);
-    }
-
-    /*
-     * Add new book
-     */
-
-    private function add($data) {
+    /**
+    * Method to create a new book
+    *
+    * Add a new book
+    *
+    * @url POST create
+    * @smart-auto-routing false
+    * 
+    * @access public
+    */
+    function create($request_data) {
         //Validating data from the API call
-        $this->_validate($data, "insert");
+        $this->_validate($request_data, "insert");
 
         $book = new Book();
-        foreach ($data as $key => $value) {
+        foreach ($request_data as $key => $value) {
             if ($key != "key") {
                 $book->$key = $value;
             }
@@ -109,23 +79,38 @@ class Book Extends DataManager {
             $response['id'] = $book->id;
             return $response;
         } else {
-            throw new RestException(500, 'Book could not be created!');
+            throw new Luracast\Restler\RestException(500, 'Book could not be created!');
         }
     }
 
-    /*
-     * Getting book by id
-     */
-
-    private function findByID($data) {
+    /**
+    * Method to fecth Book Record by ID
+    *
+    * Fech a record for a specific book
+    * by ID
+    *
+    * @url GET byID/{id}
+    * @url POST byID
+    * @smart-auto-routing false
+    * 
+    * @access public
+    * @throws 404 User not found for requested id  
+    * @param int $id Book to be fetched
+    * @return mixed 
+    */
+    function byID($id) {
         //If id is null
-        if (is_null($data['id']))
-            throw new RestException(400, 'Parameter id is missing or invalid!');
+        if (is_null($id)) {
+            throw new Luracast\Restler\RestException(400, 'Parameter id is missing or invalid!');
+        }
+        
         //Get object by id
-        parent::dm_load_single(NATURAL_DBNAME . ".book", "id='{$data['id']}'");
+        $this->loadSingle("id='{$id}'");
         //If object not found throw an error
-        if ($this->affected < 1)
-            throw new RestException(404, 'Book not found!');
+        if ($this->affected < 1) {
+            throw new Luracast\Restler\RestException(404, 'Book not found!');
+        }
+        
         //Unset restler
         unset($this->restler);
         unset($this->errorcode);
@@ -133,7 +118,6 @@ class Book Extends DataManager {
         unset($this->dbid);
         unset($this->data);
         unset($this->affected);
-
         $resultdata = (array) $this;
         $result['code'] = 200;
         $result['data'] = $resultdata;
@@ -141,39 +125,62 @@ class Book Extends DataManager {
         return $result;
     }
 
-    /*
-     * Get all the books
-     */
-
-    private function loadAll() {
+    /**
+    * Method to fecth All Books
+    *
+    * Fech all records from the database
+    *
+    * @url GET loadAll
+    * @url POST loadAll
+    * @smart-auto-routing false
+    * 
+    * @access public
+    * @throws 404 Book not found
+    * @return mixed 
+    */
+    function loadAll() {
+        $this->loadList("ASSOC", 'id>0');
         unset($this->restler);
-        parent::dm_load_list(NATURAL_DBNAME . ".book", "ASSOC", "id>'0'");
+        //parent::dm_load_list(NATURAL_DBNAME . ".book", "ASSOC", "id>'0'");
         unset($this->errorcode);
         unset($this->error);
         unset($this->dbid);
-        if ($this->affected < 1)
-            throw new RestException(404, 'No items found!');
+        if ($this->affected < 1) {
+            throw new Luracast\Restler\RestException(404, 'No items found!');
+        }
 
-        $this->code = 200;
-        return $this;
+        $resultdata = (array) $this;
+        $result['code'] = 200;
+        $result['data'] = $this->data;
+        //Return response
+        return $result;
     }
 
-    /*
-     * Updating book data
-     */
-
-    protected function updateInfo($data) {
-        $this->_validate($data, "update");
+    /**
+    * Method to Update book information
+    *
+    * Update book on database
+    *
+    * @url GET put
+    * @url POST put
+    * @smart-auto-routing false
+    *
+    * @access public
+    * @throws 404 Book not found
+    * @return mixed 
+    */
+    function put($request_data) {
+        $this->_validate($request_data, "update");
         //Loading the object from the database
         $book = new Book();
-        $book->load_single("id='" . $data['id'] . "'");
+        $book->loadSingle("id='" . $request_data['id'] . "'");
         unset($book->errorcode);
         unset($book->error);
         unset($book->dbid);
         unset($book->data);
         unset($book->affected);
         //Assigning variables
-        foreach ($data as $key => $value) {
+        foreach ($request_data as $key => $value) {
             if ($key == "key" || $key == "id") {
                 //Skipp
             } else {
@@ -181,7 +188,7 @@ class Book Extends DataManager {
             }
         }
         //Updating table with the new information
-        $book->update("id='" . $data['id'] . "'");
+        $book->update("id='" . $request_data['id'] . "'");
         if ($book->affected > 0) {
             //Preparing response
             $response = array();
@@ -190,37 +197,45 @@ class Book Extends DataManager {
             return $response;
         } else {
             //Could not update database table, maybe the record is the same?
-            throw new RestException(500, 'Book could not be updated!');
+            throw new Luracast\Restler\RestException(500, 'Book could not be updated!');
         }
     }
 
-    /*
-     * Removing book
-     */
-
-    private function delete($data) {
-        $this->_validate($data, "delete");
+    /**
+    * Method to delete a book
+    *
+    * Delete book from database
+    *
+    * @url GET delete
+    * @url POST delete
+    * @smart-auto-routing false
+    *
+    * @access public
+    * @throws 404 Book not found
+    * @return mixed 
+    */
+    function delete($request_data) {
+        $this->_validate($request_data, "delete");
         $book = new Book();
-        $book->load_single("id='" . $data['id'] . "'");
-        if ($book->affected < 1)
-            throw new RestException(404, 'Item not found!');
-
-        $book->remove("id='" . $data['id'] . "'");
+        $book->loadSingle("id='" . $request_data['id'] . "'");
+        if ($book->affected < 1) {
+            throw new Luracast\Restler\RestException(404, 'Item not found!');
+        }
+        $book->remove("id='" . $request_data['id'] . "'");
         $response = array();
         $response['code'] = 200;
         $response['message'] = 'Book has been removed!';
         return $response;
     }
-
-    /*
-     * Validating book data
-     */
-
+    /**
+    * @smart-auto-routing false
+    * @access private
+    */
     function _validate($data, $type, $from_api = true) {
         //If the method called is an update, check if the id exists, otherwise return error
         if ($type == "update" || $type == "delete") {
             if (!$data['id']) {
-                throw new RestException(404, 'Parameter ID is required!');
+              throw new Luracast\Restler\RestException(404, 'Parameter ID is required!');
             }
         }
         /*
@@ -230,21 +245,18 @@ class Book Extends DataManager {
 
         if ($type != "delete") {
             if (!$data['name']) {
-                $error = 'Field name is required';
-                $error_code = 404;
+              $error[] = 'Field name is required!';
             }
         }
 
         //If error exists return or throw exception if the call has been made from the API
-        if ($error) {
+        if (!empty($error)) {
             if ($from_api) {
-                throw new RestException($error_code, $error);
+                throw new Luracast\Restler\RestException($error_code, $error[0]);
             }
             return $error;
             exit(0);
         }
     }
-
 }
-
 ?>

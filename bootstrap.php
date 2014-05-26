@@ -67,6 +67,9 @@
   //SET DEFAULT ICONS
   define('NATURAL_EDIT_ICON', 'fa fa-pencil');
   define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
+  
+  //SET API KEY FOR RESTLER
+  define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');
 
   // Twig Template Engine.
   $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');

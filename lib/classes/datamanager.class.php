@@ -30,7 +30,6 @@
 	 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
      $query = "SELECT * FROM {$table} WHERE {$search_str}";
-		 
 		 $query_result = mysql_query($query,$dblink);
 
      if($query_result)
@@ -254,7 +253,7 @@
     /*Loop through the fields to build insert query*/
     foreach($fields as $key => $value)
     {
-      if(!($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key == 'error' || $key == 'data' || $key == 'dbid' || $key == 'id' || $key == 'function')){
+      if(!($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key == 'error' || $key == 'data' || $key == 'dbid' || $key == 'id' || $key == 'function' || $key == 'fn')){
         $query_fields .= ", `{$key}`='{$value}'";
       }
     }
@@ -262,7 +261,7 @@
     $query_fields = substr($query_fields,1);
     $query = "UPDATE {$table} SET {$query_fields} WHERE {$update_rule}";
 
-    $query_result = mysql_query($query,$dblink);
+		$query_result = mysql_query($query,$dblink);
     $this->affected = mysql_affected_rows();
     if(!$this->affected){
       $this->errorcode = MYSQL_UPDATE_ERROR_CODE ;

@@ -10,11 +10,11 @@
 */ 
 
 	class FieldTemplates Extends DataManager{
-		public function loadSingle($search_str, $insert_log = false){
+		public function loadSingle($search_str){
       parent::dmLoadSingle(NATURAL_DBNAME . ".field_templates",$search_str);
     }
      
-    public function loadList($output, $search_str, $insert_log = false){
+    public function loadList($output, $search_str){
       parent::dmLoadList(NATURAL_DBNAME . ".field_templates", $output, $search_str);
     }
 
