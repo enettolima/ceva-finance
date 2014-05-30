@@ -7,6 +7,7 @@
 session_start();
 require_once('../../bootstrap.php');
 require_once('dashboard_widgets.controller.php');
+require_once('dashboard_widgets_blocks.php');
 if (!$_SESSION['logged']) {
     //Checing session to force logout
     //Processed by process_information on lib/js/controller.js
@@ -51,5 +52,14 @@ switch ($fn) {
     case 'dashboard_widgets_delete_form_submit':
         print dashboard_widgets_delete_form_submit($_GET);
         break;
+    case 'dashboard_widgets_load_droplets_wrapper':
+        print dashboard_widgets_load_droplets_wrapper();
+        break;
+    case 'dashboard_widgets_load_droplets':
+        print dashboard_widgets_load_droplets();
+        break;
+    case 'dashboard_update_list':
+      dashboard_update_list($_GET);
+      break;
 }
 ?>

@@ -27,7 +27,11 @@
     <link href="{{ path_to_theme }}css/natural-dashboard.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
     <link href="{{ path_to_theme }}css/natural-colors.css" media="all" rel="stylesheet" type="text/css">
+      <!-- JQuery UI CSS -->
+    <link href="{{ path_to_theme }}css/jQueryUI/jquery-ui-1.10.3.custom.css" media="all" rel="stylesheet" type="text/css">
     {% endblock %}
+    
+    
   </head>
 
   <body class="skin-gray {{ page }}">
@@ -108,8 +112,10 @@
     <script type="text/javascript" src="lib/js/controller.js"></script>
     <!-- Natural Main -->
     <script type="text/javascript" src="{{ path_to_theme }}js/natural-main.js"></script>
-    
+    <!-- Natural Dashboard JS -->
+    <script type="text/javascript" src="lib/js/dashboard.js"></script>
+    <!-- Natural Dashboard Widgets -->
+    <script type="text/javascript">dashboard_action();</script>
     {% endblock %}
-
   </body>
 </html>

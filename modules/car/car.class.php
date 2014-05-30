@@ -3,20 +3,20 @@
  * All methods in this class are protected
  * @access protected
  */
-class DashboardWidgets Extends DataManager {
+class Car Extends DataManager {
     /**
     * @smart-auto-routing false
     * @access private
     */
     function loadSingle($search_str) {
-        parent::dmLoadSingle(NATURAL_DBNAME . ".dashboard_widgets", $search_str);
+        parent::dmLoadSingle(NATURAL_DBNAME . ".car", $search_str);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function loadList($output, $search_str) {
-        parent::dmLoadList(NATURAL_DBNAME . ".dashboard_widgets", $output, $search_str);
+        parent::dmLoadList(NATURAL_DBNAME . ".car", $output, $search_str);
         return $this;
     }
     /**
@@ -24,7 +24,7 @@ class DashboardWidgets Extends DataManager {
     * @access private
     */
     function insert() {
-        parent::dmInsert(NATURAL_DBNAME . ".dashboard_widgets", $this);
+        parent::dmInsert(NATURAL_DBNAME . ".car", $this);
         $this->id = $this->dbid;
     }
     /**
@@ -32,14 +32,14 @@ class DashboardWidgets Extends DataManager {
     * @access private
     */
     function update($upd_rule) {
-        parent::dmUpdate(NATURAL_DBNAME . ".dashboard_widgets", $upd_rule, $this);
+        parent::dmUpdate(NATURAL_DBNAME . ".car", $upd_rule, $this);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function remove($rec_key) {
-        parent::dmRemove(NATURAL_DBNAME . ".dashboard_widgets", $rec_key);
+        parent::dmRemove(NATURAL_DBNAME . ".car", $rec_key);
     }
     /**
     * @smart-auto-routing false
@@ -51,9 +51,9 @@ class DashboardWidgets Extends DataManager {
     //End of database access
 
     /**
-    * Method to create a new dashboard_widgets
+    * Method to create a new car
     *
-    * Add a new dashboard_widgets
+    * Add a new car
     *
     * @url POST create
     * @smart-auto-routing false
@@ -64,29 +64,29 @@ class DashboardWidgets Extends DataManager {
         //Validating data from the API call
         $this->_validate($request_data, "insert");
 
-        $dashboard_widgets = new DashboardWidgets();
+        $car = new Car();
         foreach ($request_data as $key => $value) {
             if ($key != "key") {
-                $dashboard_widgets->$key = $value;
+                $car->$key = $value;
             }
         }
-        $dashboard_widgets->insert();
-        if ($dashboard_widgets->affected > 0) {
+        $car->insert();
+        if ($car->affected > 0) {
             //Preparing response
             $response = array();
             $response['code'] = 201;
-            $response['message'] = 'DashboardWidgets has been created!';
-            $response['id'] = $dashboard_widgets->id;
+            $response['message'] = 'Car has been created!';
+            $response['id'] = $car->id;
             return $response;
         } else {
-            throw new Luracast\Restler\RestException(500, 'DashboardWidgets could not be created!');
+            throw new Luracast\Restler\RestException(500, 'Car could not be created!');
         }
     }
 
     /**
-    * Method to fecth DashboardWidgets Record by ID
+    * Method to fecth Car Record by ID
     *
-    * Fech a record for a specific dashboard_widgets
+    * Fech a record for a specific car
     * by ID
     *
     * @url GET byID/{id}
@@ -95,7 +95,7 @@ class DashboardWidgets Extends DataManager {
     * 
     * @access public
     * @throws 404 User not found for requested id  
-    * @param int $id DashboardWidgets to be fetched
+    * @param int $id Car to be fetched
     * @return mixed 
     */
     function byID($id) {
@@ -108,7 +108,7 @@ class DashboardWidgets Extends DataManager {
         $this->loadSingle("id='{$id}'");
         //If object not found throw an error
         if ($this->affected < 1) {
-            throw new Luracast\Restler\RestException(404, 'DashboardWidgets not found!');
+            throw new Luracast\Restler\RestException(404, 'Car not found!');
         }
         
         //Unset restler
@@ -126,7 +126,7 @@ class DashboardWidgets Extends DataManager {
     }
 
     /**
-    * Method to fecth All DashboardWidgetss
+    * Method to fecth All Cars
     *
     * Fech all records from the database
     *
@@ -135,13 +135,13 @@ class DashboardWidgets Extends DataManager {
     * @smart-auto-routing false
     * 
     * @access public
-    * @throws 404 DashboardWidgets not found
+    * @throws 404 Car not found
     * @return mixed 
     */
     function loadAll() {
         $this->loadList("ASSOC", 'id>0');
         unset($this->restler);
-        //parent::dm_load_list(NATURAL_DBNAME . ".dashboard_widgets", "ASSOC", "id>'0'");
+        //parent::dm_load_list(NATURAL_DBNAME . ".car", "ASSOC", "id>'0'");
         unset($this->errorcode);
         unset($this->error);
         unset($this->dbid);
@@ -157,74 +157,74 @@ class DashboardWidgets Extends DataManager {
     }
 
     /**
-    * Method to Update dashboard_widgets information
+    * Method to Update car information
     *
-    * Update dashboard_widgets on database
+    * Update car on database
     *
     * @url GET put
     * @url POST put
     * @smart-auto-routing false
     *
     * @access public
-    * @throws 404 DashboardWidgets not found
+    * @throws 404 Car not found
     * @return mixed 
     */
     function put($request_data) {
         $this->_validate($request_data, "update");
         //Loading the object from the database
-        $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->loadSingle("id='" . $request_data['id'] . "'");
-        unset($dashboard_widgets->errorcode);
-        unset($dashboard_widgets->error);
-        unset($dashboard_widgets->dbid);
-        unset($dashboard_widgets->data);
-        unset($dashboard_widgets->affected);
+        $car = new Car();
+        $car->loadSingle("id='" . $request_data['id'] . "'");
+        unset($car->errorcode);
+        unset($car->error);
+        unset($car->dbid);
+        unset($car->data);
+        unset($car->affected);
         //Assigning variables
         foreach ($request_data as $key => $value) {
             if ($key == "key" || $key == "id") {
                 //Skipp
             } else {
-                $dashboard_widgets->$key = $value;
+                $car->$key = $value;
             }
         }
         //Updating table with the new information
-        $dashboard_widgets->update("id='" . $request_data['id'] . "'");
-        if ($dashboard_widgets->affected > 0) {
+        $car->update("id='" . $request_data['id'] . "'");
+        if ($car->affected > 0) {
             //Preparing response
             $response = array();
             $response['code'] = 200;
-            $response['message'] = 'DashboardWidgets has been updated!';
+            $response['message'] = 'Car has been updated!';
             return $response;
         } else {
             //Could not update database table, maybe the record is the same?
-            throw new Luracast\Restler\RestException(500, 'DashboardWidgets could not be updated!');
+            throw new Luracast\Restler\RestException(500, 'Car could not be updated!');
         }
     }
 
     /**
-    * Method to delete a dashboard_widgets
+    * Method to delete a car
     *
-    * Delete dashboard_widgets from database
+    * Delete car from database
     *
     * @url GET delete
     * @url POST delete
     * @smart-auto-routing false
     *
     * @access public
-    * @throws 404 DashboardWidgets not found
+    * @throws 404 Car not found
     * @return mixed 
     */
     function delete($request_data) {
         $this->_validate($request_data, "delete");
-        $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->loadSingle("id='" . $request_data['id'] . "'");
-        if ($dashboard_widgets->affected < 1) {
+        $car = new Car();
+        $car->loadSingle("id='" . $request_data['id'] . "'");
+        if ($car->affected < 1) {
             throw new Luracast\Restler\RestException(404, 'Item not found!');
         }
-        $dashboard_widgets->remove("id='" . $request_data['id'] . "'");
+        $car->remove("id='" . $request_data['id'] . "'");
         $response = array();
         $response['code'] = 200;
-        $response['message'] = 'DashboardWidgets has been removed!';
+        $response['message'] = 'Car has been removed!';
         return $response;
     }
     /**
@@ -244,8 +244,8 @@ class DashboardWidgets Extends DataManager {
          */
 
         if ($type != "delete") {
-            if (!$data['title']) {
-              $error[] = 'Field title is required!';
+            if (!$data['make']) {
+              $error[] = 'Field make is required!';
             }
         }
 

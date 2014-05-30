@@ -1,1 +1,1 @@
-{"require":{"twig\/twig":"1.*","luracast\/restler":"3.*"},"autoload":{"classmap":["lib\/classes","modules\/user","modules\/natural","modules\/book","modules\/acl","modules\/menu","modules\/uploader","modules\/dashboard_widgets"]}}
+{"require":{"twig\/twig":"1.*","luracast\/restler":"3.*"},"autoload":{"classmap":["lib\/classes","modules\/user","modules\/natural","modules\/book","modules\/acl","modules\/menu","modules\/uploader","modules\/dashboard_widgets","modules\/car"]}}

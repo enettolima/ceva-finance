@@ -2,6 +2,8 @@
 session_cache_expire(25);
 session_start();
 require_once('bootstrap.php');
+require_once('modules/dashboard_widgets/dashboard_widgets.controller.php');
+require_once('modules/dashboard_widgets/dashboard_widgets_blocks.php');
 
 if ($_SESSION['log_username']) {
 	$_SESSION['dash_type'] = 1;
@@ -30,10 +32,6 @@ if ($_SESSION['log_username']) {
 		$avatar = $file->uri;
 	}
 	
-	//Testing dashboard widgets
-	$dash = new DashboardWidgets();
-	//$dash_containers = '';
-
 	// Twig Base
 	$template = $twig->loadTemplate('base.html');
 	$template->display(array(
@@ -41,7 +39,7 @@ if ($_SESSION['log_username']) {
 		'path_to_theme' => THEME_PATH,
 		'company' => NATURAL_COMPANY,
 		'version' => $version,
-		'page' => 'dashboard',
+		'page' => 'dashboard-main',
 		'menu' => $menu_html,
     'avatar' => $avatar,
 		'user_full_name' => $user_full_name,
@@ -51,7 +49,7 @@ if ($_SESSION['log_username']) {
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
 		//'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
-		'content' => $dash->loadFullDashboard()
+		'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.hp
 	));
 }
 else {
