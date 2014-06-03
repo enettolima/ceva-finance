@@ -48,8 +48,7 @@ if ($_SESSION['log_username']) {
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
-		//'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
-		'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.hp
+		'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.php
 	));
 }
 else {

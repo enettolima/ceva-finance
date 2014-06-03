@@ -814,7 +814,7 @@ function class_form_creator_form(){
         $dm->table_options = implode(';', $items);
     }
 		$dm->type = array('class', 'form');
-    $frm->build('class_form_creator_form', $dm, $_SESSION['log_access_level']);
+    $frm->build('class_form_creator_form', $dm, $_SESSION['log_access_level'], FALSE);
 }
 
 function class_form_creator_form_submit($data){

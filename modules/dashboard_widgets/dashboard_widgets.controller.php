@@ -209,8 +209,7 @@ function dashboard_widgets_load_droplets_wrapper(){
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
-		//'content' => '<div id="myfirstchart"></div>', // TODO: Call function that builds dashboard widgets
-		'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.hp
+    'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets
 	));
 }
 
@@ -218,7 +217,8 @@ function dashboard_widgets_load_droplets(){
     // Dashboard Configuration according logged user personal preferences
     //$content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form() . '</div>';
     // Load the dashboard widgets according pre cofigured by the logged user
-    $content .= '<div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
+    $content .= '<div class="dashboard-config">'.dashboard_setup_form().'</div>
+    <div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
     return $content;
 }
 
@@ -269,7 +269,7 @@ function dashboard_widgets($dashboard_type) {
                          */
                         $widgets[$i] .= ' <div class="portlet ui-state-default ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" id="widget_' . $widget->id .'">
                             <div class="naturalwidget-header">
-                                <i class="fa fa-desktop naturalwidget-icon"></i>
+                                <i class="'.$widget->icon.' naturalwidget-icon"></i>
                                 <span class="widget-title">' . $widget->title . '</span>
                                 <span class="naturalwidget-ctrls" role="menu">
                                     <a class="button-icon button-min" data-placement="bottom" title="" rel="tooltip" href="#" data-original-title="Collapse">
@@ -282,12 +282,12 @@ function dashboard_widgets($dashboard_type) {
                             </div>
                             
                             <div class="naturalwidget-content" id="'.$widget->widget_function.'">
-                                <hidden id="function_to_call" name="function_to_call" value="'.$widget->widget_function.'|'.$user_widgets[$i][$x].'">
-                                Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
+                                <input type="hidden" class="functions" name="function_to_call[]" value="'.$widget->widget_function.'">
                             </div>
                         </div>';
+                        
+                        
+                        //$line[$j][4] = '<a title="'.translate('Edit ACD Group').'" class="edit-icon pointer" onclick="proccess_information(null, \'acd_group_edit_form\', \'call_center\', \'\', \'acd_group_id|' . $acd_group->data[$i]['id'] . '\', null, this, \'slide\');">';
                         /*
                         $widgets[$i] .= '<div id="wid-id-0" class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" style="" role="widget">
                         <header role="heading">
@@ -385,6 +385,125 @@ The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for t
         });
     </script>';*/
     return $content;
+}
+
+/**
+ * Function for the user to Setup the Dashboard
+ */
+function dashboard_setup_form() {
+    // Get the Dashboard Type
+    $dashboard_type = 1; //$_SESSION['dash_type'];
+    $widgets = new DashboardWidgets();
+    $widgets->loadList('ASSOC', 'enabled = 1 AND dashboard_type = ' . $dashboard_type);
+    
+    if ($widgets->affected) {
+        // Retrieve the widgets already selected by the user
+        $user = new User();
+        $user->loadSingle('id = ' . $_SESSION['log_id']);
+        $dash_type = 'dashboard_' . $dashboard_type;
+        if ($user->$dash_type) {
+            $user_widgets = $user->$dash_type;
+        }
+        $checked = '';
+        for ($i = 0; $i < $widgets->affected; $i++) {
+            for ($x = 0; $x < count($widgets->data[$i]); $x++) {
+                if ($user_widgets) {
+                    if (in_array($widgets->data[$i]['id'], $user_widgets[0]) || in_array($widgets->data[$i]['id'], $user_widgets[1]) || in_array($widgets->data[$i]['id'], $user_widgets[2])) {
+                        $checked = 'checked="checked"';
+                    } else {
+                        $checked = '';
+                    }
+                }
+            }
+            $inputs[] = '<label>
+                <input class="checkbox style-0" type="checkbox" 
+                onclick="dashboard_setup()" value="' . $widgets->data[$i]['id'] . '" type="checkbox"
+                name="widget[' . $widgets->data[$i]['id'] . ']" id="input_widget_' . $widgets->data[$i]['id'] . '" ' . $checked . '>
+                <span>' . $widgets->data[$i]['title'] . '</span>
+            </label>';
+        }
+    }
+    if ($inputs) {
+        $form = '<div class="demo">
+        <span id="demo-setting">
+            <i class="fa fa-cog txt-color-blueDark"></i>
+        </span>
+        <form id="dashboard-setup-form" name="dashboard-setup-form">
+            <legend class="no-padding margin-bottom-10">Dashboard Setup</legend>
+            <section>
+                ' . implode('', $inputs) . '
+                <input type="hidden" name="dashboard_type" value="' . $dashboard_type . '" />
+            </section>
+        </form>
+        </div>';
+    }
+    return $form;
+}
+
+function dashboard_setup($data) {
+    $user = new User();
+    $user->loadSingle('id = ' . $_SESSION['log_id']);
+    $dash_type = 'dashboard_' . $data['dashboard_type'];
+    $user_widgets = $user->$dash_type;
+    $nlist = array();
+    $new_list = array();
+    if ($user_widgets && $data['widget']) {
+        // Remove widgets that were not selected now
+        foreach ($data['widget'] as $widget) {
+            $wgt[] = $widget;
+        }
+        for ($i = 0; $i < count($user_widgets); $i++) {
+            for ($x = 0; $x < count($user_widgets[$i]); $x++) {
+                if (in_array($user_widgets[$i][$x], $wgt)) {
+                    $nlist[$i][] = $user_widgets[$i][$x];
+                } else {
+                    $nlist[$i][] = null;
+                }
+            }
+        }
+        foreach ($wgt as $v) {
+            if (in_array($v, $nlist[0]) || in_array($v, $nlist[1])) {
+                //skipp setting this widget to the array cause it already exists
+            } else {
+                if (!$nlist[0][0]) {
+                    $nlist[0][0] = $v;
+                } else {
+                    if (!$nlist[1][0]) {
+                        $nlist[1][0] = $v;
+                    } else {
+                        /*if (!$nlist[2][0]) {
+                            $nlist[2][0] = $v;
+                        } else {
+                            $nlist[0][] = $v;
+                        }*/
+                        $nlist[0][] = $v;
+                    }
+                }
+            }
+        }
+        $new_list[0] = array();
+        $new_list[1] = array();
+        //$new_list[2] = array();
+        for ($i = 0; $i < 2; $i++) {
+            $ct = 0;
+            for ($x = 0; $x < count($nlist[$i]); $x++) {
+                if ($nlist[$i][$x] != null) {
+                    $new_list[$i][$ct] = $nlist[$i][$x];
+                    $ct++;
+                }
+            }
+        }
+    } else {
+        foreach ($data['widget'] as $key => $value) {
+            if ($value) {
+                $new_list[0][0] = $value;
+            }
+        }
+    }
+    //array_unshift($new_list, $widget);
+    $user->$dash_type = $new_list;
+    $user->update('id = ' . $_SESSION['log_id']);
+    return dashboard_widgets($data['dashboard_type']);
 }
 
 /**
