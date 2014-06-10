@@ -233,9 +233,12 @@ function dashboard_widgets($dashboard_type) {
     //$user->update('id = ' . $_SESSION['log_id']);
     $dash_type = 'dashboard_' . $dashboard_type;
     $ct = 1;
+    
+    global $twig;
     if ($user->$dash_type) {
         // Build the dashboard accordingly the dashboard type and if there is something recorded in his desktop
         $user_widgets = $user->$dash_type;
+        
         if ($user_widgets) {
             for ($i = 0; $i < count($user_widgets); $i++) {
                 for ($x = 0; $x < count($user_widgets[$i]); $x++) {
@@ -243,30 +246,18 @@ function dashboard_widgets($dashboard_type) {
                     $widget->loadSingle('id = ' . $user_widgets[$i][$x]);
                     
                     if ($widget->enabled) {
-                        
-                        // Removed from the portlet-content
-                        //' . call_user_func($widget->widget_function, $user_widgets[$i][$x]) . '
-                        /*$widgets[$i] .= ' <div class="portlet ' . $widget->class . '" id="widget_' . $widget->id .'">
-                            <div class="portlet-header">' . $widget->title . '</div>
-                            <div class="portlet-content content" id="'.$widget->widget_function.'">
-                                <hidden id="function_to_call" name="function_to_call" value="'.$widget->widget_function.'|'.$user_widgets[$i][$x].'">
-                            </div>
-                        </div>';*/
+                        $widgets[$i] .= $twig->render('dashboard-widget.html',
+                            array(
+                                'icon' => $widget->icon,
+                                'widget_id' => $widget->id,
+                                'widget_title' => $widget->title,
+                                'widget_function' => $widget->widget_function,
+                            )
+                        );
                         
                         /*
-                         <span class="widget-icon">
-                                    <i class="glyphicon glyphicon-stats txt-color-darken"></i>
-                                </span>
-                                <span class="widget-title">' . $widget->title . '</span>
-                                <span class="naturalwidget-ctrls" role="menu">
-                                    <a class="button-icon" data-placement="bottom" title="" rel="tooltip" href="#" data-original-title="Collapse">
-                                        <i class="fa fa-minus "></i>
-                                    </a>
-                                    <a class="button-icon" data-placement="bottom" title="" rel="tooltip" href="javascript:void(0);" data-original-title="Delete">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </span>
-                         */
+                         * Example of widget
+                         *
                         $widgets[$i] .= ' <div class="portlet ui-state-default ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" id="widget_' . $widget->id .'">
                             <div class="naturalwidget-header">
                                 <i class="'.$widget->icon.' naturalwidget-icon"></i>
@@ -285,27 +276,8 @@ function dashboard_widgets($dashboard_type) {
                                 <input type="hidden" class="functions" name="function_to_call[]" value="'.$widget->widget_function.'">
                             </div>
                         </div>';
+                        */
                         
-                        
-                        //$line[$j][4] = '<a title="'.translate('Edit ACD Group').'" class="edit-icon pointer" onclick="proccess_information(null, \'acd_group_edit_form\', \'call_center\', \'\', \'acd_group_id|' . $acd_group->data[$i]['id'] . '\', null, this, \'slide\');">';
-                        /*
-                        $widgets[$i] .= '<div id="wid-id-0" class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-togglebutton="false" style="" role="widget">
-                        <header role="heading">
-                        <span class="widget-icon">
-                        <i class="glyphicon glyphicon-stats txt-color-darken"></i>
-                        </span>
-                        <h2>Live Feeds </h2>
-                        <ul id="myTab" class="nav nav-tabs pull-right in">
-                        <li class="active">
-                        <li>
-                        <li>
-                        </ul>
-                        <span class="jarviswidget-loader">
-                        <i class="fa fa-refresh fa-spin"></i>
-                        </span>
-                        </header>
-                        <div class="no-padding" role="content">
-                        </div>';*/
                     }
                 }
             }
@@ -314,76 +286,22 @@ function dashboard_widgets($dashboard_type) {
         // Return the message to configure his/her dashboard
         //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
     }
-
+    /*
+     *Example of the html for the template
     $content = '<form id="dashboard-form" name="dashboard-form">
        <input type="hidden" name="dashboard_type" value="' . $dashboard_type . '" />
     </form>';
-    
-    /*
-    $( ".dashboard" ).sortable({
-        connectWith: ".dashboard",
-        handle: ".portlet-header",
-        cancel: ".portlet-toggle",
-        placeholder: "portlet-placeholder ui-corner-all"
-        });*/
     $content .= '
     <div id="dash1" class="dashboard">' . $widgets[0] . '</div>
     <div id="dash2" class="dashboard">' . $widgets[1] . '</div>';
-    //<script>dashboard_action();</script>';
-    //<div id="dash3" class="dashboard">' . $widgets[2] . '</div>';
-    /*
-    '<script>
-    $(".dashboard").sortable({
-        connectWith: ".dashboard",
-        handle: ".portlet-header",
-        cancel: ".portlet-toggle",
-        placeholder: "portlet-placeholder ui-corner-all",
-        stop: function(event, ui) {
-            var i = 0;
-            var e = "";
-            var positions = new Array;
-            $(".dashboard").each(function() {
-                e = $(this).sortable("toArray");
-                positions[i] = e;
-                i++;
-            });
-
-            positions = positions.join("-");
-            // Send info to database
-            process_information(\'dashboard-form\', \'dashboard_update_list\', \'dashboard_widgets\', null, \'positions|\' + positions, null, \'status-message\', null);
-        }
-    });
-    $(".dashboard").disableSelection();
-    $( ".portlet" )
-        .addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
-        .find( ".portlet-header" )
-        .addClass( "ui-widget-header ui-corner-all" )
-        .prepend( "<span class=\'ui-icon ui-icon-minusthick portlet-toggle\'></span>");
-        $( ".portlet-toggle" ).click(function() {
-        var icon = $( this );
-        icon.toggleClass( "ui-icon-minusthick ui-icon-plusthick" );
-        icon.closest( ".portlet" ).find( ".portlet-content" ).toggle();
-    });
-    </script>';*/
-    /*<script>
-        
-        $(".portlet").addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-            .find( ".portlet-header" )
-            .addClass( "ui-corner-all" )
-            .prepend( "<span class=\'ui-icon ui-icon-circle-minus\'></span>")
-            .prepend( "<span class=\'ui-icon ui-icon-circle-close\'></span>")
-            .end()
-            .find( ".portlet-content" );
-     
-        $( ".portlet-header .ui-icon-circle-minus" ).click(function() {
-            $( this ).toggleClass( "ui-icon-circle-minus" ).toggleClass( "ui-icon-circle-plus" );
-            $( this ).parents( ".portlet:first" ).find( ".portlet-content" ).toggle();
-        });
-     
-        $( ".portlet-header .ui-icon-circle-close" ).click(function() {
-            dashboard_delete_widget($( this ).parents( ".portlet:first" ).attr("id"));
-        });
-    </script>';*/
+    */
+    $content = $twig->render('dashboard-droplets.html',
+        array(
+            'dashboard_type' => $dashboard_type,
+            'dash1' => $widgets[0],
+            'dash2' => $widgets[1],
+        )
+    );
     return $content;
 }
 
