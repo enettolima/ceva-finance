@@ -370,7 +370,10 @@
   background: url('../images/loading.gif') no-repeat center;
   padding: 15px;
   width: 100%;
-  height: 260px;
+  height: 200px;
+  -moz-transform:scale(0.5);
+  -webkit-transform:scale(0.5);
+  transform:scale(0.5);
 }
 
 .widget-title {
