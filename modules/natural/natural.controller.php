@@ -422,16 +422,6 @@ function module_remove($data) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 /*
  * START OF THE FORM MANAGEMENT
  */
@@ -561,7 +551,6 @@ function form_create_form_submit($data) {
 }
 
 function form_edit_form($data){
-		//print_debug($data);
 		$form = new DataManager();
 		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
 		$frm = new DbForm();
@@ -814,7 +803,7 @@ function class_form_creator_form(){
         $dm->table_options = implode(';', $items);
     }
 		$dm->type = array('class', 'form');
-    $frm->build('class_form_creator_form', $dm, $_SESSION['log_access_level']);
+    $frm->build('class_form_creator_form', $dm, $_SESSION['log_access_level'], FALSE);
 }
 
 function class_form_creator_form_submit($data){
@@ -1019,5 +1008,17 @@ function create_form($table_name) {
  * END OF THE FORM MANAGEMENT
  */
 
+function support_info(){
+		global $twig;
+		// Twig Base
+		$template = $twig->loadTemplate('content.html');
+		$template->display(array(
+				// Dashboard - Passing default variables to content.html
+				'page_title' => 'Support',
+				'page_subtitle' => 'Natural',
+				'content' => 'Thank you for using natural framework,
+				<br>for documentation or questions please visit www.opensourcemind.net or email us at devteam@opensourcemind.net.'
+		));
+}
 
 ?>

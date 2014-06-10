@@ -17,7 +17,9 @@ if (!$_SESSION['logged']) {
 //Getting function
 $fn = $_GET['fn'];
 switch ($fn) {
-    
+    /*
+     *Natural Form example
+     */
     case 'natural_form_example':
         print natural_form_example();
         break;
@@ -125,61 +127,9 @@ switch ($fn) {
     case 'class_form_creator_form_submit':
         print class_form_creator_form_submit($_GET);
         break;
+    case 'support_info':
+        print support_info();
+        break;
     
-    /*
-     *Old Functions 
-     */
-    case "add_new_form":
-        print $frm->build("form_new");
-        break;
-    case "save_new_form":
-        print save_new_form($_GET);
-        break;
-    case "edit_form_param":
-        print edit_form_param($_GET);
-        break;
-    case "save_form_param":
-        print save_form_param($_GET);
-        break;
-    case "delete_form":
-        print delete_form($_GET);
-        break;
-    case "edit_form_fields":
-        print edit_form_fields($_GET);
-        break;
-    case "add_new_field":
-        print add_new_field($_GET);
-        break;
-    case "add_field":
-        print add_field($_GET);
-        break;
-    case "edit_field":
-        print edit_field($_GET);
-        break;
-    case "save_form_fields":
-        print save_form_fields($_GET);
-        break;
-    case "delete_field":
-        print delete_field($_GET);
-        break;
-    case "show_table_list":
-        print show_table_list();
-        break;
-    case "create_class":
-        if ($_GET['create'] == "class") {
-            print create_class($_GET['table_name']);
-        } else {
-            print create_form($_GET['table_name']);
-        }
-        break;
-    case "delete_field":
-        print build_classes($_GET['table_name']);
-        break;
-    case "search_form_menu":
-        print search_form_menu();
-        break;
-    case "proccess_search":
-        print list_forms($_GET);
-        break;
 }
 ?>

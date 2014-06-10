@@ -1009,14 +1009,14 @@ $o['v1']['user/byUsername'] = array (
     ),
 );
 
-//==== v1 acllevels/create ====
+//==== v1 car/create ====
 
-$o['v1']['acllevels/create'] = array (
+$o['v1']['car/create'] = array (
     'POST' => 
     array (
-        'url' => 'acllevels/create',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/create',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'create',
         'arguments' => 
         array (
@@ -1028,8 +1028,8 @@ $o['v1']['acllevels/create'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to create a new acl_levels',
-            'longDescription' => 'Add a new acl_levels',
+            'description' => 'Method to create a new car',
+            'longDescription' => 'Add a new car',
             'url' => 'POST create',
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1037,7 +1037,7 @@ $o['v1']['acllevels/create'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1066,14 +1066,14 @@ $o['v1']['acllevels/create'] = array (
     ),
 );
 
-//==== v1 acllevels/byID/{n0} ====
+//==== v1 car/byID/{n0} ====
 
-$o['v1']['acllevels/byID/{n0}'] = array (
+$o['v1']['car/byID/{n0}'] = array (
     'GET' => 
     array (
-        'url' => 'acllevels/byID/{id}',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/byID/{id}',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'byID',
         'arguments' => 
         array (
@@ -1085,8 +1085,8 @@ $o['v1']['acllevels/byID/{n0}'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to fecth AclLevels Record by ID',
-            'longDescription' => 'Fech a record for a specific acl_levels by ID',
+            'description' => 'Method to fecth Car Record by ID',
+            'longDescription' => 'Fech a record for a specific car by ID',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1104,7 +1104,7 @@ $o['v1']['acllevels/byID/{n0}'] = array (
                 array (
                     'type' => 'int',
                     'name' => 'id',
-                    'description' => 'AclLevels to be fetched',
+                    'description' => 'Car to be fetched',
                     'label' => 'Id',
                     'default' => NULL,
                     'required' => true,
@@ -1126,21 +1126,21 @@ $o['v1']['acllevels/byID/{n0}'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
         ),
         'accessLevel' => 0,
     ),
 );
 
-//==== v1 acllevels/byID ====
+//==== v1 car/byID ====
 
-$o['v1']['acllevels/byID'] = array (
+$o['v1']['car/byID'] = array (
     'POST' => 
     array (
-        'url' => 'acllevels/byID',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/byID',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'byID',
         'arguments' => 
         array (
@@ -1152,8 +1152,8 @@ $o['v1']['acllevels/byID'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to fecth AclLevels Record by ID',
-            'longDescription' => 'Fech a record for a specific acl_levels by ID',
+            'description' => 'Method to fecth Car Record by ID',
+            'longDescription' => 'Fech a record for a specific car by ID',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1171,7 +1171,7 @@ $o['v1']['acllevels/byID'] = array (
                 array (
                     'type' => 'int',
                     'name' => 'id',
-                    'description' => 'AclLevels to be fetched',
+                    'description' => 'Car to be fetched',
                     'label' => 'Id',
                     'default' => NULL,
                     'required' => true,
@@ -1193,21 +1193,21 @@ $o['v1']['acllevels/byID'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
         ),
         'accessLevel' => 0,
     ),
 );
 
-//==== v1 acllevels/loadAll ====
+//==== v1 car/loadAll ====
 
-$o['v1']['acllevels/loadAll'] = array (
+$o['v1']['car/loadAll'] = array (
     'GET' => 
     array (
-        'url' => 'acllevels/loadAll',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/loadAll',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'loadAll',
         'arguments' => 
         array (
@@ -1217,7 +1217,7 @@ $o['v1']['acllevels/loadAll'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to fecth All AclLevelss',
+            'description' => 'Method to fecth All Cars',
             'longDescription' => 'Fech all records from the database',
             'url' => 0,
             'smart-auto-routing' => 'false',
@@ -1227,7 +1227,7 @@ $o['v1']['acllevels/loadAll'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1239,7 +1239,7 @@ $o['v1']['acllevels/loadAll'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1249,9 +1249,9 @@ $o['v1']['acllevels/loadAll'] = array (
     ),
     'POST' => 
     array (
-        'url' => 'acllevels/loadAll',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/loadAll',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'loadAll',
         'arguments' => 
         array (
@@ -1261,7 +1261,7 @@ $o['v1']['acllevels/loadAll'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to fecth All AclLevelss',
+            'description' => 'Method to fecth All Cars',
             'longDescription' => 'Fech all records from the database',
             'url' => 0,
             'smart-auto-routing' => 'false',
@@ -1271,7 +1271,7 @@ $o['v1']['acllevels/loadAll'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1283,7 +1283,7 @@ $o['v1']['acllevels/loadAll'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1293,14 +1293,14 @@ $o['v1']['acllevels/loadAll'] = array (
     ),
 );
 
-//==== v1 acllevels/put ====
+//==== v1 car/put ====
 
-$o['v1']['acllevels/put'] = array (
+$o['v1']['car/put'] = array (
     'GET' => 
     array (
-        'url' => 'acllevels/put',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/put',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'put',
         'arguments' => 
         array (
@@ -1312,8 +1312,8 @@ $o['v1']['acllevels/put'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to Update acl_levels information',
-            'longDescription' => 'Update acl_levels on database',
+            'description' => 'Method to Update car information',
+            'longDescription' => 'Update car on database',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1322,7 +1322,7 @@ $o['v1']['acllevels/put'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1334,7 +1334,7 @@ $o['v1']['acllevels/put'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1359,9 +1359,9 @@ $o['v1']['acllevels/put'] = array (
     ),
     'POST' => 
     array (
-        'url' => 'acllevels/put',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/put',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'put',
         'arguments' => 
         array (
@@ -1373,8 +1373,8 @@ $o['v1']['acllevels/put'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to Update acl_levels information',
-            'longDescription' => 'Update acl_levels on database',
+            'description' => 'Method to Update car information',
+            'longDescription' => 'Update car on database',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1383,7 +1383,7 @@ $o['v1']['acllevels/put'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1395,7 +1395,7 @@ $o['v1']['acllevels/put'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1420,14 +1420,14 @@ $o['v1']['acllevels/put'] = array (
     ),
 );
 
-//==== v1 acllevels/delete ====
+//==== v1 car/delete ====
 
-$o['v1']['acllevels/delete'] = array (
+$o['v1']['car/delete'] = array (
     'GET' => 
     array (
-        'url' => 'acllevels/delete',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/delete',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'delete',
         'arguments' => 
         array (
@@ -1439,8 +1439,8 @@ $o['v1']['acllevels/delete'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to delete a acl_levels',
-            'longDescription' => 'Delete acl_levels from database',
+            'description' => 'Method to delete a car',
+            'longDescription' => 'Delete car from database',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1449,7 +1449,7 @@ $o['v1']['acllevels/delete'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1461,7 +1461,7 @@ $o['v1']['acllevels/delete'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1486,9 +1486,9 @@ $o['v1']['acllevels/delete'] = array (
     ),
     'POST' => 
     array (
-        'url' => 'acllevels/delete',
-        'className' => 'AclLevels',
-        'path' => 'acllevels',
+        'url' => 'car/delete',
+        'className' => 'Car',
+        'path' => 'car',
         'methodName' => 'delete',
         'arguments' => 
         array (
@@ -1500,8 +1500,8 @@ $o['v1']['acllevels/delete'] = array (
         ),
         'metadata' => 
         array (
-            'description' => 'Method to delete a acl_levels',
-            'longDescription' => 'Delete acl_levels from database',
+            'description' => 'Method to delete a car',
+            'longDescription' => 'Delete car from database',
             'url' => 0,
             'smart-auto-routing' => 'false',
             'access' => 'public',
@@ -1510,7 +1510,7 @@ $o['v1']['acllevels/delete'] = array (
                 0 => 
                 array (
                     'code' => 404,
-                    'reason' => 'AclLevels not found',
+                    'reason' => 'Car not found',
                 ),
             ),
             'return' => 
@@ -1522,7 +1522,7 @@ $o['v1']['acllevels/delete'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'acllevels/',
+            'resourcePath' => 'car/',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -1575,9 +1575,9 @@ $o['apiVersionMap']['User'] = array (
     1 => 'User',
 );
 
-//==== apiVersionMap AclLevels ====
+//==== apiVersionMap Car ====
 
-$o['apiVersionMap']['AclLevels'] = array (
-    1 => 'AclLevels',
+$o['apiVersionMap']['Car'] = array (
+    1 => 'Car',
 );
 return $o;
