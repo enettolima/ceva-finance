@@ -7,7 +7,7 @@
 #
 # Host: dev.opensourcemind.us (MySQL 5.5.37-0ubuntu0.14.04.1)
 # Database: natural_framework
-# Generation Time: 2014-06-10 03:48:58 +0000
+# Generation Time: 2014-06-10 16:29:57 +0000
 # ************************************************************
 
 
@@ -97,12 +97,12 @@ LOCK TABLES `dashboard_widgets` WRITE;
 
 INSERT INTO `dashboard_widgets` (`id`, `title`, `description`, `subject`, `widget_function`, `enabled`, `class`, `dashboard_type`, `icon`)
 VALUES
-	(1,'Donut','Example of a donut ','','donut_example',1,'ui-state-default',1,'fa fa-cog'),
-	(2,'Area Graph','This is a ticket report that shows tickets with more than 24 hours of public update','','area_graph_example',1,'ui-state-default',1,'fa fa-bars'),
+	(1,'Donut','Example of a donut ','','donut_example',1,'ui-state-default',1,'fa fa-circle-o-notch'),
+	(2,'Area Graph','This is a ticket report that shows tickets with more than 24 hours of public update','','area_graph_example',1,'ui-state-default',1,'fa fa-stumbleupon'),
 	(3,'Line Chart','Line Chart Example','','line_chart_example',1,'ui-state-default',1,'fa fa-th'),
 	(4,'Period Chart','Example of period chart','','period_chart_example',1,'ui-state-default',1,'fa fa-desktop'),
-	(5,'Bar Graph','Example Bar Graph','','bar_graph_example',1,'ui-state-default',1,'fa fa-picture-o'),
-	(6,'Simple Bar Chart','Example of a simple bar chart','','bar_chart_example',1,'ui-state-default',1,'fa fa-cloud');
+	(5,'Bar Graph','Example Bar Graph','','bar_graph_example',1,'ui-state-default',1,'fa fa-bar-chart-o'),
+	(6,'Simple Bar Chart','Example of a simple bar chart','','bar_chart_example',1,'ui-state-default',1,'fa fa-bar-chart-o');
 
 /*!40000 ALTER TABLE `dashboard_widgets` ENABLE KEYS */;
 UNLOCK TABLES;

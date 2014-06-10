@@ -215,36 +215,29 @@ function dashboard_widgets_load_droplets_wrapper(){
 
 function dashboard_widgets_load_droplets(){
     // Dashboard Configuration according logged user personal preferences
-    //$content .= '<span class="dashboard-setup-title closed">Dashboard Setup</span><div id="dashboard-setup">' . dashboard_setup_form() . '</div>';
-    // Load the dashboard widgets according pre cofigured by the logged user
-    $content .= '<div class="dashboard-config">'.dashboard_setup_form().'</div>
-    <div id="dashboard-widgets">' . dashboard_widgets($_SESSION['dash_type']) . '</div>';
+    global $twig;
+    $content = $twig->render('dashboard-content.html',
+        array(
+            'setup_form' => dashboard_setup_form(),
+            'widgets' => dashboard_widgets($_SESSION['dash_type'])
+        )
+    );
     return $content;
 }
 
 function dashboard_widgets($dashboard_type) {
     $user = new User();
     $user->loadSingle('id = ' . $_SESSION['log_id']);
-    $arr[0][0] = 1;
-    $arr[0][1] = 4;
-    $arr[1][0] = 3;
-    $arr[2][0] = 2;
-    //$user->dashboard_1 = $arr;
-    //$user->update('id = ' . $_SESSION['log_id']);
     $dash_type = 'dashboard_' . $dashboard_type;
-    $ct = 1;
-    
     global $twig;
     if ($user->$dash_type) {
         // Build the dashboard accordingly the dashboard type and if there is something recorded in his desktop
         $user_widgets = $user->$dash_type;
-        
         if ($user_widgets) {
             for ($i = 0; $i < count($user_widgets); $i++) {
                 for ($x = 0; $x < count($user_widgets[$i]); $x++) {
                     $widget = new DashboardWidgets();
                     $widget->loadSingle('id = ' . $user_widgets[$i][$x]);
-                    
                     if ($widget->enabled) {
                         $widgets[$i] .= $twig->render('dashboard-widget.html',
                             array(
@@ -254,30 +247,6 @@ function dashboard_widgets($dashboard_type) {
                                 'widget_function' => $widget->widget_function,
                             )
                         );
-                        
-                        /*
-                         * Example of widget
-                         *
-                        $widgets[$i] .= ' <div class="portlet ui-state-default ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" id="widget_' . $widget->id .'">
-                            <div class="naturalwidget-header">
-                                <i class="'.$widget->icon.' naturalwidget-icon"></i>
-                                <span class="widget-title">' . $widget->title . '</span>
-                                <span class="naturalwidget-ctrls" role="menu">
-                                    <a class="button-icon button-min" data-placement="bottom" title="" rel="tooltip" href="#" data-original-title="Collapse">
-                                        <i class="fa fa-minus "></i>
-                                    </a>
-                                    <a class="button-icon  button-close" data-placement="bottom" title="" rel="tooltip" href="javascript:void(0);" data-original-title="Delete">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </span>
-                            </div>
-                            
-                            <div class="naturalwidget-content" id="'.$widget->widget_function.'">
-                                <input type="hidden" class="functions" name="function_to_call[]" value="'.$widget->widget_function.'">
-                            </div>
-                        </div>';
-                        */
-                        
                     }
                 }
             }
@@ -286,15 +255,6 @@ function dashboard_widgets($dashboard_type) {
         // Return the message to configure his/her dashboard
         //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
     }
-    /*
-     *Example of the html for the template
-    $content = '<form id="dashboard-form" name="dashboard-form">
-       <input type="hidden" name="dashboard_type" value="' . $dashboard_type . '" />
-    </form>';
-    $content .= '
-    <div id="dash1" class="dashboard">' . $widgets[0] . '</div>
-    <div id="dash2" class="dashboard">' . $widgets[1] . '</div>';
-    */
     $content = $twig->render('dashboard-droplets.html',
         array(
             'dashboard_type' => $dashboard_type,
@@ -333,27 +293,21 @@ function dashboard_setup_form() {
                     }
                 }
             }
-            $inputs[] = '<label>
-                <input class="checkbox style-0" type="checkbox" 
-                onclick="dashboard_setup()" value="' . $widgets->data[$i]['id'] . '" type="checkbox"
-                name="widget[' . $widgets->data[$i]['id'] . ']" id="input_widget_' . $widgets->data[$i]['id'] . '" ' . $checked . '>
-                <span>' . $widgets->data[$i]['title'] . '</span>
-            </label>';
+            $inputs[$i]['id']   = $widgets->data[$i]['id'];
+            $inputs[$i]['title']= $widgets->data[$i]['title'];
+            $inputs[$i]['check']= $checked;
         }
     }
     if ($inputs) {
-        $form = '<div class="demo">
-        <span id="demo-setting">
-            <i class="fa fa-cog txt-color-blueDark"></i>
-        </span>
-        <form id="dashboard-setup-form" name="dashboard-setup-form">
-            <legend class="no-padding margin-bottom-10">Dashboard Setup</legend>
-            <section>
-                ' . implode('', $inputs) . '
-                <input type="hidden" name="dashboard_type" value="' . $dashboard_type . '" />
-            </section>
-        </form>
-        </div>';
+        global $twig;
+        $form = $twig->render(
+            'dashboard-setup.html',
+            array(
+              'title'   => 'Dashboard Setup',
+              'type'    => $dashboard_type,
+              'inputs'  => $inputs
+            )
+        );
     }
     return $form;
 }
@@ -441,6 +395,5 @@ function dashboard_update_list($data) {
   $dashboard_type = 'dashboard_' . $data['dashboard_type'];
   $user->$dashboard_type = $positions;
   $user->update('id = ' . $_SESSION['log_id']);
-  //return '';
 }
 ?>
