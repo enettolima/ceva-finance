@@ -14,18 +14,24 @@
     <!-- Ionicons -->
     <link href="{{ path_to_theme }}css/ionicons.min.css" rel="stylesheet" type="text/css" />
     <!-- Loading -->
-    <link href="{{ path_to_theme }}css/bootural-loading.css" media="all" rel="stylesheet" type="text/css">
+    <link href="{{ path_to_theme }}css/natural-loading.css" media="all" rel="stylesheet" type="text/css">
     <!-- Notifications -->
-    <link href="{{ path_to_theme }}css/bootural-notifications.css" media="all" rel="stylesheet" type="text/css">
+    <link href="{{ path_to_theme }}css/natural-notifications.css" media="all" rel="stylesheet" type="text/css">
     <!-- Morris Charts -->
     <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css" media="all" rel="stylesheet" type="text/css">
     <!-- Chosen -->
     <link rel="stylesheet" href="http://harvesthq.github.io/chosen/chosen.css" media="all" rel="stylesheet" type="text/css">
     <!-- Main CSS -->
-    <link href="{{ path_to_theme }}css/bootural-main.css" media="all" rel="stylesheet" type="text/css">
+    <link href="{{ path_to_theme }}css/natural-main.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Dashboard Widgets CSS -->
+    <link href="{{ path_to_theme }}css/natural-dashboard.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
-    <link href="{{ path_to_theme }}css/bootural-colors.css" media="all" rel="stylesheet" type="text/css">
+    <link href="{{ path_to_theme }}css/natural-colors.css" media="all" rel="stylesheet" type="text/css">
+      <!-- JQuery UI CSS -->
+    <link href="{{ path_to_theme }}css/jQueryUI/jquery-ui-1.10.3.custom.css" media="all" rel="stylesheet" type="text/css">
     {% endblock %}
+    
+    
   </head>
 
   <body class="skin-gray {{ page }}">
@@ -100,13 +106,30 @@
     <script type="text/javascript" src="{{ path_to_theme }}js/notifications.min.js"></script>
     <!-- Morris Charts -->
     <script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
-
+    <!-- JQuery UI -->
+    <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script>
     <!-- Natural Controler -->
     <script type="text/javascript" src="lib/js/controller.js"></script>
-
-    <!-- Bootural Main -->
+    <!-- Natural Main -->
     <script type="text/javascript" src="{{ path_to_theme }}js/natural-main.js"></script>
+    <!-- Natural Dashboard JS -->
+    <script type="text/javascript" src="lib/js/dashboard.js"></script>
+    <!-- Natural Dashboard Widgets // Function at dashboard.js-->
+    <script type="text/javascript">build_dashboard();</script>
+    
+    <!-- PAGE RELATED PLUGIN(S) -->
+    <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.cust.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.resize.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.fillbetween.min.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.orderBar.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.pie.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.tooltip.js"></script>
+    
+    <!-- PAGE RELATED PLUGIN(S) -->    
+    <!-- Morris Chart Dependencies -->
+    <script type="text/javascript" src="lib/js/morris/raphael.2.1.0.min.js"></script>
+    <script type="text/javascript" src="lib/js/morris/morris.min.js"></script>
     {% endblock %}
-
   </body>
 </html>

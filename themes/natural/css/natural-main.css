@@ -4,7 +4,7 @@
  */
 html,
 body {
-  overflow-x: hidden!important;
+  /*overflow-x: hidden!important; showing only half of the profile popup when there is nothing on the content*/
   font-family: 'Source Sans Pro', sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100%;
@@ -19,9 +19,12 @@ a:hover, a:active, a:focus {
 a.disabled {
   cursor:not-allowed;
   pointer-events:none;
-  opacity:.65
+  opacity:.55
 }
 
+li {
+  
+}
 /**
  * Layouts
  */
@@ -624,7 +627,7 @@ label {
 }
 .field-type-list i:before {
   border-top: 4px solid #404040;
-  top: 0;
+  top: 4px;
 }
 .field-type-list i:after,
 .field-type-list i:before {

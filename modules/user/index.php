@@ -11,6 +11,7 @@ require_once('user.controller.php');
 
 if (!$_SESSION['logged']) {
   echo "LOGOUT";
+  exit(0);
 }
 
 $user_id = $_GET['user_id'];

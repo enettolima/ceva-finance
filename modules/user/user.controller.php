@@ -3,15 +3,12 @@
  * User List.
  */
 function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
-	$module = 'user';
-	$function = 'user_list';
 	$view = new ListView();
 
 	// Row Id for update only row
 	if (!empty($row_id)) {
 		$row_id = 'u.id = ' . $row_id;
-	}
-	else {
+	} else {
 		$row_id = 'u.id != 0';
 	}
 
@@ -40,7 +37,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
-
+	
 	if ($user->affected > 0) {
 		// Building the header with sorter
 		$headers[] = array('display' => 'Id', 'field' => 'u.id');
@@ -53,13 +50,15 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 		for ($i = 0; $i < $user->affected; $i++) {
 			$j = $i + 1;
-			$rows[$j]['row_id'] = $user->data[$i]['id'];
-			$rows[$j]['id'] = $user->data[$i]['id'];
-			$rows[$j]['first_name'] = $user->data[$i]['first_name'];
-			$rows[$j]['last_name'] = $user->data[$i]['last_name'];
-			$rows[$j]['username'] = $user->data[$i]['username'];
-			$rows[$j]['edit'] = theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => 'disabled'));
-			$rows[$j]['delete'] = theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+			//This is important for the row update
+			$rows[$j]['row_id'] 		= $user->data[$i]['id'];
+			//////////////////////////////////////
+			$rows[$j]['id'] 				= $user->data[$i]['id'];
+			$rows[$j]['first_name']	= $user->data[$i]['first_name'];
+			$rows[$j]['last_name'] 	= $user->data[$i]['last_name'];
+			$rows[$j]['username'] 	= $user->data[$i]['username'];
+			$rows[$j]['edit'] 			= theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$j]['delete'] 		= theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
 		}
 	}
 
@@ -67,15 +66,15 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'show_headers' => TRUE,
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
-		'empty_message' => translate('No users were found!'),
+		'empty_message' => translate('No user found!'),
 		'table_prefix' => theme_link_process_information(translate('Create New User'), 'user_create_form', 'user_create_form', 'user', array('response_type' => 'modal')),
-		'pager_items' => build_pager($function, $module, $user->total_records, $limit, $page),
+		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
 		'show_search' => TRUE,
-		'function' => $function,
-		'module' => $module,
+		'function' => 'user_list',
+		'module' => 'user',
 		'update_row_id' => '',
 	  'table_form_id' => '',
 		'table_form_process' => '',
@@ -187,8 +186,6 @@ function user_edit_form($user_id) {
 function user_edit_form_submit($data) {
   $user = new User();
   $user->loadSingle('id = ' . $data['id']);
-  $contact = new Contact();
-  $contact->load_single('id = ' . $data['contact_id']);
   // Validate User Fields
 	$error = user_validate_fields($data);
   if (!empty($error)) {
@@ -203,13 +200,7 @@ function user_edit_form_submit($data) {
 				$user->$field = $data[$field];
 			}
 		}
-		foreach ($contact as $field => $value) {
-			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
-				$contact->$field = $data[$field];
-			}
-		}
-    $user->update('id = ' . $data['id']);
-		$contact->update('id = ' . $data['contact_id']);
+		$user->update('id = ' . $data['id']);
 		if ($user->affected > 0) {
 		  natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!', 'success');
 		}
@@ -267,7 +258,7 @@ function user_delete_form_submit($data) {
   $user->loadSingle('id = ' . $data['id']);
   if ($user->affected > 0) {
     // Remove user
-    //$user->remove('id = ' . $data['id']);
+    $user->remove('id = ' . $data['id']);
     natural_set_message('User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!', 'success');
     return $data['id'];
   }

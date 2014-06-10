@@ -53,7 +53,6 @@ function sec2hms($sec) {
  * Convert all strings to a different language
  */
 function translate($string, $lang = 'en') {
-    require_once(NATURAL_CLASSES_PATH . 'language.class.php');
     $lg = new Language();
     $lg->loadSingle("original='{$string}' AND lang='{$lang}'");
     if ($lg->affected > 0) {

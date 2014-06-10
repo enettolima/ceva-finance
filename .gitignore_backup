@@ -1,0 +1,23 @@
+# Igreno Mac OS files
+.DS_Store
+
+#Ignore Netbeans paths 
+nbprojects/
+
+#Ignore default Natural files
+bootstrap.dev.php
+compilation_cache/
+files/
+
+#Ignore komodo files
+Natural.komodoproject
+
+#Ignore libs installed with composer
+vendor/
+composer.lock
+
+#Ignore vagrant auto-generated files
+.vagrant/machines
+
+#Restler files
+api/cache/
