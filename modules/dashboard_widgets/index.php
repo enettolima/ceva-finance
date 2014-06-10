@@ -59,32 +59,31 @@ switch ($fn) {
         print dashboard_widgets_load_droplets();
         break;
     case 'dashboard_update_list':
-      dashboard_update_list($_GET);
-      break;
+        dashboard_update_list($_GET);
+        break;
     case 'dashboard_setup':
-      print dashboard_setup($_GET);
-      break;
-    
+        print dashboard_setup($_GET);
+        break;
     /*
      *Calling functions at dashboard_widgets_blocks.php
      */
     case 'donut_example':
-      print donut_example($_GET);
-      break;
+        print donut_example($_GET);
+        break;
     case 'area_graph_example':
-      print area_graph_example($_GET);
-      break;
+        print area_graph_example($_GET);
+        break;
     case 'bar_graph_example':
-      print bar_graph_example($_GET);
-      break;
+        print bar_graph_example($_GET);
+        break;
     case 'line_chart_example':
-      print line_chart_example($_GET);
-      break;
+        print line_chart_example($_GET);
+        break;
     case 'period_chart_example':
-      print period_chart_example($_GET);
-      break;
+        print period_chart_example($_GET);
+        break;
     case 'bar_chart_example':
-      print bar_chart_example($_GET);
-      break;    
+        print bar_chart_example($_GET);
+        break;    
 }
 ?>
