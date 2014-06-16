@@ -59,10 +59,7 @@
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
 
   //SET NATURAL CURRENT VERSION
-  define('NATURAL_VERSION', 'Natural 4.0');
-
-  //SET HIVE CURRENT VERSION
-  define('NATURAL_VERSION', 'Clean Project 1.0');
+  define('NATURAL_VERSION', 'Natural 2.0b');
 
   //SET DEFAULT ICONS
   define('NATURAL_EDIT_ICON', 'fa fa-pencil');
