@@ -16,7 +16,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
     if (!empty($search)) {
         $search_fields = array('b.id', 'b.title', 'b.description');
         $exceptions = array();
-        $search_query = build_search_query($search_query, $search_fields, $exceptions);
+        $search_query = build_search_query($search, $search_fields, $exceptions);
     } else {
         $search_query = '';
     }

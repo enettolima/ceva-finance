@@ -21,15 +21,3 @@ composer.lock
 
 #Restler files
 api/cache/
-
-#Restler cache files
-api/cache/_resources-v1.php
-api/cache/_resources_acllevels.php
-api/cache/_resources_book.php
-api/cache/_resources_car.php
-api/cache/_resources_language.php
-api/cache/_resources_module.php
-api/cache/_resources_simpleauth.php
-api/cache/_resources_user.php
-api/cache/readme.md
-api/cache/routes.php
