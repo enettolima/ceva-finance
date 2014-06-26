@@ -1,1 +1,1 @@
-<?php return '{"apiVersion":"1","swaggerVersion":"1.1","basePath":"http:\\/\\/localhost:8888\\/api","apis":[{"path":"\\/resources\\/user","description":""}]}';
+<?php return '{"apiVersion":"1","swaggerVersion":"1.1","basePath":"http:\\/\\/localhost:8888\\/api","apis":[{"path":"\\/resources\\/book","description":"All methods in this class are protected"},{"path":"\\/resources\\/user","description":""}]}';

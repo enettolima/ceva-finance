@@ -16,7 +16,7 @@ function menu_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     if (!empty($search)) {
         $search_fields = array('b.id', 'b.label', 'b.func', 'b.module');
         $exceptions = array();
-        $search_query = build_search_query($search_query, $search_fields, $exceptions);
+        $search_query = build_search_query($search, $search_fields, $exceptions);
     } else {
         $search_query = '';
     }

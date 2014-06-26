@@ -86,7 +86,7 @@
                   {% if field.html_type == 'checkbox' %}
                     {% for checkbox_key, option in field.options %}
                     <div class="checkbox form-checkbox" {% if field.tooltip %} data-toggle="tooltip" data-placement="bottom" title="{{ tooltip }}" {% endif %}>
-                      <label for="{{ field.field_id }}[{{ option.value }}]">
+                      <label for="{{ field.field_id }}-{{ checkbox_key }}">
                         <input type="checkbox" data-id="{{ field.id }}-{{ checkbox_key }}" name="{{ field.field_name }}[]" id="{{ field.field_id }}-{{ checkbox_key }}" class="{{ field.css_class }}" value="{{ option.value }}" {{ option.status }} {{ field.html_options }} onClick="{{ field.click }}" onChange="{{ field.onchange }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
                         {{ option.label }}
                       </label>
@@ -98,7 +98,7 @@
                   {% if field.html_type == 'radio' %}
                     {% for radio_key, option in field.options %}
                     <div class="radio form-radio" {% if field.tooltip %} data-toggle="tooltip" data-placement="bottom" title="{{ field.tooltip }}" {% endif %}>
-                      <label for="{{ field.field_id }}">
+                      <label for="{{ field.field_id }}-{{ radio_key }}">
                         <input type="radio" data-id="{{ field.id }}-{{ radio_key }}" name="{{ field.field_name }}" id="{{ field.field_id }}-{{ radio_key }}" class="{{ field.css_class }}" value="{{ option.value }}" {{ option.status }} {{ field.html_options }} onClick="{{ field.click }}" onChange="{{ field.onchange }}" onFocus="{{ field.focus }}" onBlur="{{ field.blur }}">
                         {{ option.label }}
                       </label>

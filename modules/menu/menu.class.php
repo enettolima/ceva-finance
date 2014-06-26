@@ -372,7 +372,11 @@ class Menu Extends DataManager {
               $error[] = 'Field Function is required!';
             }
 						$menu = new Menu();
-						$menu->loadSingle("element_name='".$data['element_name']."'");
+						if($data['fn']=='menu_edit_form_submit'){
+								$menu->loadSingle("element_name='".$data['element_name']."' AND id!='".$data['id']."'");		
+						}else{
+								$menu->loadSingle("element_name='".$data['element_name']."'");
+						}
 						if($menu->affected>0){
 							$error[] = 'Element name already in use, please try with a different element name!';
 						}
