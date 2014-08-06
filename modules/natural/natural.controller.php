@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
  * Just to show the form example
