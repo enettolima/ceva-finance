@@ -1,4 +1,4 @@
-<?
+<?php
  /** 
 * HIVE - Copyleft Open Source Mind, GP 
 * Last Modified: Date: 07-22-2009 14:16:49 -0500 (Jul-Wed-2009) $ @ Revision: $Rev: 11 $ 

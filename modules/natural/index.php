@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * HIVE - Copyleft Open Source Mind, GP 

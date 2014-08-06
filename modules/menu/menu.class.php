@@ -101,7 +101,7 @@ class Menu Extends DataManager {
           $link['children'] = $children;
         }
         $branch[$link['id']] = $link;
-        unset($links[$link['id']]);
+        //unset($links[$link['id']]);
       }
     }
   
