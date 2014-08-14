@@ -233,9 +233,10 @@ class Book Extends DataManager {
     */
     function _validate($data, $type, $from_api = true) {
         //If the method called is an update, check if the id exists, otherwise return error
+        $error_code = 400;
         if ($type == "update" || $type == "delete") {
             if (!$data['id']) {
-              throw new Luracast\Restler\RestException(404, 'Parameter ID is required!');
+                $error[] = 'Parameter ID is required!';
             }
         }
         /*
@@ -243,6 +244,20 @@ class Book Extends DataManager {
          * Add more fields as needed
          */
 
+        if ($type == "edit"){
+            $this->loadSingle("name='{$data['name']}' AND id!='{$data['id']}'");
+            if($this->affected>0){
+                $error[] = 'This book name already exists!';
+            }
+        }
+        
+        if ($type == "create"){
+            $this->loadSingle("name='{$data['name']}'");
+            if($this->affected>0){
+                $error[] = 'This book name already exists!';
+            }
+        }
+        
         if ($type != "delete") {
             if (!$data['name']) {
               $error[] = 'Field name is required!';

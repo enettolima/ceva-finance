@@ -87,15 +87,13 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 function book_create_form() {
     $frm = new DbForm();
     return $frm->build("book_create_form");
-    //print $form;
 }
 
 /*
  * Insert on table
  */
 function book_create_form_submit($data) {
-    $book_val = new Book();
-    $error    = $book_val->_validate($data, false, false);
+    $error    = book_validate($data);
     if (!empty($error)) {
       foreach($error as $msg) {
         natural_set_message($msg, 'error');
@@ -191,11 +189,16 @@ function book_delete_form_submit($data) {
  */
 function book_validate($data) {
     $book = new Book();
-    $edit = false;
-    if (stripos("edit", $words)) {
-        $edit = true;
+    if (strpos($data['fn'], "edit")) {
+        $type = "edit";
     }
-    return $book->_validate($data, $edit, false);
+    if (strpos($data['fn'], "delete")) {
+        $type = "delete";
+    }
+    if (strpos($data['fn'], "create")) {
+        $type = "create";
+    }
+    return $book->_validate($data, $type, false);
 }
 
 ?>

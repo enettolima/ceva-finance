@@ -190,11 +190,16 @@ function book_delete_form_submit($data) {
  */
 function book_validate($data) {
     $book = new Book();
-    $edit = false;
-    if (stripos("edit", $words)) {
-        $edit = true;
+    if (strpos($data['fn'], "edit")) {
+        $type = "edit";
     }
-    return $book->_validate($data, $edit, false);
+    if (strpos($data['fn'], "delete")) {
+        $type = "delete";
+    }
+    if (strpos($data['fn'], "create")) {
+        $type = "create";
+    }
+    return $book->_validate($data, $type, false);
 }
 
 ?>
