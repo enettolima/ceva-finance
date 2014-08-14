@@ -233,10 +233,9 @@ class Book Extends DataManager {
     */
     function _validate($data, $type, $from_api = true) {
         //If the method called is an update, check if the id exists, otherwise return error
-        $error_code = 400;
         if ($type == "update" || $type == "delete") {
             if (!$data['id']) {
-                $error[] = 'Parameter ID is required!';
+              throw new Luracast\Restler\RestException(404, 'Parameter ID is required!');
             }
         }
         /*
