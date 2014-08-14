@@ -61,7 +61,7 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     
     $options = array(
         'show_headers' => TRUE,
-        'page_title' => translate('Users List'),
+        'page_title' => translate('Book List'),
         'page_subtitle' => translate('Manage Books'),
         'empty_message' => translate('No book found!'),
         'table_prefix' => theme_link_process_information(translate('Create New Book'), 'book_create_form', 'book_create_form', 'book', array('response_type' => 'modal')),
@@ -190,11 +190,16 @@ function book_delete_form_submit($data) {
  */
 function book_validate($data) {
     $book = new Book();
-    $edit = false;
-    if (stripos("edit", $words)) {
-        $edit = true;
+    if (strpos($data['fn'], "edit")) {
+        $type = "edit";
     }
-    return $book->_validate($data, $edit, false);
+    if (strpos($data['fn'], "delete")) {
+        $type = "delete";
+    }
+    if (strpos($data['fn'], "create")) {
+        $type = "create";
+    }
+    return $book->_validate($data, $type, false);
 }
 
 ?>
