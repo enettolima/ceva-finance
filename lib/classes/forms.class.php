@@ -296,10 +296,16 @@ class DbForm {
     }
 
     // Adding the hidden fields
-    if (!empty($form_fields->data)) {
+    /*if (!empty($form_fields->data)) {
+      $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
+    }*/
+
+    if ($fs->affected>0) {
+      $fieldsets['blank']['fields'] = $hidden_fields;
+    }else{
       $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
     }
-
+    
     // Render Array
     $render = array(
       'page_title' => !empty($form_param->form_title) ? $form_param->form_title : '',
