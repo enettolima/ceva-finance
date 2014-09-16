@@ -27,8 +27,5 @@ Develop fast, develop Naturally !
 
 `a2enmod rewrite`
 
-####Restart Apache
+####Restart Apache service
 `service apache2 restart`
-
-
-**Make sure Apache can write to the natural/api/cache directory**
