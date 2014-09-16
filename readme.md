@@ -26,4 +26,4 @@ Develop fast, develop Naturally !
 ####Restart Apache
 `service apache2 restart`
 
-** Make sure Apache can write to the natural/api/cache directory
+**Make sure Apache can write to the natural/api/cache directory**
