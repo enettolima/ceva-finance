@@ -6,8 +6,12 @@ to provide a feature rich platform for app development.
 Develop fast, develop Naturally !
 
 ## Requirements
+* PHP 5+
+* MYSQL 5+
 * [PHP Composer] (https://getcomposer.org/)
 * Apache mod_rewrite enabled (Restler APIs and Docs)
+* Apache must be able to write to the API cache folder under YOUR_PROJECT/api
+* Apache must be able to write to the API docs folder under YOUR_PROJECT/api/docs
 
 ## Enabling Mod Rewrite
 
@@ -25,5 +29,6 @@ Develop fast, develop Naturally !
 
 ####Restart Apache
 `service apache2 restart`
+
 
 **Make sure Apache can write to the natural/api/cache directory**
