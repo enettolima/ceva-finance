@@ -13,6 +13,5 @@
                 "lib\/classes",
                 "modules\/"
                 ]
-            },
-    "minimum-stability": "dev-master"
+            }
 }
