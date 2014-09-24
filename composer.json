@@ -4,6 +4,14 @@
     "keywords": ["framework", "php", "natural"],
     "license": "MIT",
     "type": "project",
+    "authors": [
+        {
+            "name": "Open Source Mind",
+            "email": "devteam@opensourcemind.net",
+            "homepage": "http://www.opensourcemind.net",
+            "role": "Developer"
+        }
+    ],   
     "require":{
         "twig\/twig":"1.*",
         "luracast\/restler":"3.*"
