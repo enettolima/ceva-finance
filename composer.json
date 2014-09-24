@@ -1,1 +1,23 @@
-{"require":{"twig\/twig":"1.*","luracast\/restler":"3.*"},"autoload":{"classmap":["lib\/classes","modules\/user","modules\/natural","modules\/book","modules\/acl","modules\/menu","modules\/uploader","modules\/dashboard_widgets"]}}
+{
+    "name": "opensourcemind/natural-php",
+    "description": "The Natural PHP Framework",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "type": "project",
+    "require":{
+        "twig\/twig":"1.*",
+        "luracast\/restler":"3.*"
+        },
+    "autoload":{
+        "classmap":[
+                "lib\/classes",
+                "modules\/user",
+                "modules\/natural",
+                "modules\/book",
+                "modules\/acl",
+                "modules\/menu",
+                "modules\/uploader",
+                "modules\/dashboard_widgets"
+                ]
+            }
+}
