@@ -93,7 +93,7 @@ function book_create_form() {
  * Insert on table
  */
 function book_create_form_submit($data) {
-    $book_val = new Book();
+    $book_val = new TemplateBook();
     $error    = $book_val->_validate($data, false, false);
     if (!empty($error)) {
       foreach($error as $msg) {
@@ -101,7 +101,7 @@ function book_create_form_submit($data) {
       }
       return FALSE;
     }
-    $book = new Book();
+    $book = new TemplateBook();
     foreach ($data as $field => $value) {
         if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
             $book->$field = $value;
@@ -121,7 +121,7 @@ function book_create_form_submit($data) {
  * show edit form
  */
 function book_edit_form($data) {
-    $book = new Book();
+    $book = new TemplateBook();
     $book->loadSingle('id='.$data['book_id']);
     $frm = new DbForm();
     $frm->build('book_edit_form', $book, $_SESSION['log_access_level']);
@@ -138,7 +138,7 @@ function book_edit_form_submit($data) {
         }
         return FALSE;
     } else {
-        $book = new Book();
+        $book = new TemplateBook();
         $book->loadSingle("id='" . $data['id'] . "'");
         foreach ($data as $field => $value) {
             if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
@@ -157,7 +157,7 @@ function book_edit_form_submit($data) {
  * show edit form
  */
 function book_delete_form($data) {
-    $book = new Book();
+    $book = new TemplateBook();
     $book->loadSingle('id='.$data['book_id']);
     if($book->affected>0){
         $frm = new DbForm();
@@ -172,7 +172,7 @@ function book_delete_form($data) {
  * Remove from table
  */
 function book_delete_form_submit($data) {
-    $book = new Book();
+    $book = new TemplateBook();
     $book->remove('id=' . $data['id']);
     if ($book->affected > 0) {
         //return "ERROR||Could not remove!";
@@ -189,7 +189,7 @@ function book_delete_form_submit($data) {
  * Validate data
  */
 function book_validate($data) {
-    $book = new Book();
+    $book = new TemplateBook();
     if (strpos($data['fn'], "edit")) {
         $type = "edit";
     }
