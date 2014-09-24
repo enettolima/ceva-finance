@@ -13,6 +13,9 @@ Develop fast, develop Naturally !
 * Apache must be able to write to the API cache folder under YOUR_PROJECT/api
 * Apache must be able to write to the API docs folder under YOUR_PROJECT/api/docs
 
+## Installation
+`composer create-project opensourcemind/natual-php PROJECT_FOLDER`
+
 ## Enabling Mod Rewrite
 
 #####You must edit your Apache configuration to make sure you allow overrides, this is required by mod_rewrite
