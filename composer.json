@@ -1,7 +1,7 @@
 {
     "name": "opensourcemind/natural-php",
     "description": "The Natural PHP Framework",
-    "keywords": ["framework", "php", "natural"],
+    "keywords": ["framework", "php", "natural", "natural-php"],
     "license": "MIT",
     "type": "project",
     "authors": [

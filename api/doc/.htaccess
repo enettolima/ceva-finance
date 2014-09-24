@@ -1,5 +1,6 @@
 DirectoryIndex index.php
 <IfModule mod_rewrite.c>
+		Options +FollowSymlinks
     RewriteEngine On
     RewriteBase /api/doc
     RewriteRule ^$ index.html [QSA,L]
