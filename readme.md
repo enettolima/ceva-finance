@@ -3,6 +3,7 @@
 ***
 Natural PHP is a framework that incorporates other open source projects
 to provide a feature rich platform for app development.
+
 Develop fast, develop Naturally !
 
 ## Requirements
@@ -13,32 +14,36 @@ Develop fast, develop Naturally !
 * Apache must be able to write to the API cache folder under YOUR_PROJECT/api
 * Apache must be able to write to the API docs folder under YOUR_PROJECT/api/docs
 
-## Installation
-To install the latest stable release using composer:
-
+## Install with composer
+To install the latest stable release:  
 `composer create-project opensourcemind/natural-php PROJECT_FOLDER`
 
-To install the latest development release using composer:
-
+To install the latest development release:  
 `composer create-project -s dev opensourcemind/natural-php PROJECT_FOLDER`
 
-To install the another specific version (i.e. 2.0.0 ) using composer:
-
+To install the another specific version (i.e. 2.0.0 ):  
 `composer create-project opensourcemind/natural-php PROJECT_FOLDER 2.0.0`
 
-## Enabling Mod Rewrite
+##Configure your database
+After installing you should edit your database information in the files `bootstrap.php`  
+We recommend you copy this file into a file named `bootstrap.dev.php` which Natural will
+prefer the dev file over the production one when present.  
+
+Natural also requires some specific tables available in your database and the easiest way to add them is to import the file `natural_framework.sql` available in your project folder.
+
+## Enable Mod Rewrite
 
 #####You must edit your Apache configuration to make sure you allow overrides, this is required by mod_rewrite
 
+``` 
+<Directory /var/www/html/>
+      Options Indexes FollowSymLinks
+       AllowOverride All
+</Directory>
 ```
-        <Directory /var/www/html/>
-                Options Indexes FollowSymLinks
-                AllowOverride All
-        </Directory>
-```
-####Enable mod_rewrite in Apache
 
-`a2enmod rewrite`
+####Enable mod_rewrite in Apache  
+`a2enmod rewrite`  
 
-####Restart Apache service
+####Restart Apache service  
 `service apache2 restart`
