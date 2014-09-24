@@ -1,5 +1,5 @@
 # Natural PHP
-###The open source, PHP framework for natural development
+###The open source framework for natural app development in PHP
 ***
 Natural PHP is a framework that incorporates other open source projects
 to provide a feature rich platform for app development.
