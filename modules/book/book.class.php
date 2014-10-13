@@ -120,7 +120,11 @@ class Book Extends DataManager {
         unset($this->affected);
         $resultdata = (array) $this;
         $result['code'] = 200;
-        $result['data'] = $resultdata;
+        
+        foreach($resultdata as $key => $value){
+            $result[$key] = $value;
+        }
+        //$result['data'] = $resultdata;
         //Return response
         return $result;
     }

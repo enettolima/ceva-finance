@@ -51,9 +51,9 @@ class TemplateBook Extends DataManager {
     //End of database access
 
     /**
-    * Method to create a new.book
+    * Method to create a new book
     *
-    * Add a new TemplateBook
+    * Add a new book
     *
     * @url POST create
     * @smart-auto-routing false
@@ -64,38 +64,38 @@ class TemplateBook Extends DataManager {
         //Validating data from the API call
         $this->_validate($request_data, "insert");
 
-        .book = new.book();
+        $book = new Book();
         foreach ($request_data as $key => $value) {
             if ($key != "key") {
-                .book->$key = $value;
+                $book->$key = $value;
             }
         }
-        .book->insert();
-        if (.book->affected > 0) {
+        $book->insert();
+        if ($book->affected > 0) {
             //Preparing response
             $response = array();
             $response['code'] = 201;
-            $response['message'] = .book has been created!';
-            $response['id'] = .book->id;
+            $response['message'] = 'Book has been created!';
+            $response['id'] = $book->id;
             return $response;
         } else {
-            throw new Luracast\Restler\RestException(500, 'book could not be created!');
+            throw new Luracast\Restler\RestException(500, 'Book could not be created!');
         }
     }
 
     /**
-    * Method to fecth.book Record by ID
+    * Method to fecth Book Record by ID
     *
-    * Fech a record for a specific TemplateBook
+    * Fech a record for a specific book
     * by ID
     *
     * @url GET byID/{id}
-    * @url POST byID'
+    * @url POST byID
     * @smart-auto-routing false
     * 
     * @access public
     * @throws 404 User not found for requested id  
-    * @param int $id.book to be fetched
+    * @param int $id Book to be fetched
     * @return mixed 
     */
     function byID($id) {
@@ -108,7 +108,7 @@ class TemplateBook Extends DataManager {
         $this->loadSingle("id='{$id}'");
         //If object not found throw an error
         if ($this->affected < 1) {
-            throw new Luracast\Restler\RestException(404, 'book not found!');
+            throw new Luracast\Restler\RestException(404, 'Book not found!');
         }
         
         //Unset restler
@@ -120,13 +120,17 @@ class TemplateBook Extends DataManager {
         unset($this->affected);
         $resultdata = (array) $this;
         $result['code'] = 200;
-        $result['data'] = $resultdata;
+        
+        foreach($resultdata as $key => $value){
+            $result[$key] = $value;
+        }
+        //$result['data'] = $resultdata;
         //Return response
         return $result;
     }
 
     /**
-    * Method to fecth All.books
+    * Method to fecth All Books
     *
     * Fech all records from the database
     *
@@ -135,7 +139,7 @@ class TemplateBook Extends DataManager {
     * @smart-auto-routing false
     * 
     * @access public
-    * @throws 404.book not found
+    * @throws 404 Book not found
     * @return mixed 
     */
     function loadAll() {
@@ -157,74 +161,74 @@ class TemplateBook Extends DataManager {
     }
 
     /**
-    * Method to Update.book information
+    * Method to Update book information
     *
-    * Update.book on database
+    * Update book on database
     *
     * @url GET put
     * @url POST put
     * @smart-auto-routing false
     *
     * @access public
-    * @throws 404.book not found
+    * @throws 404 Book not found
     * @return mixed 
     */
     function put($request_data) {
         $this->_validate($request_data, "update");
         //Loading the object from the database
-        .book = new.book();
-        .book->loadSingle("id='" . $request_data['id'] . "'");
-        unset(.book->errorcode);
-        unset(.book->error);
-        unset(.book->dbid);
-        unset(.book->data);
-        unset(.book->affected);
+        $book = new Book();
+        $book->loadSingle("id='" . $request_data['id'] . "'");
+        unset($book->errorcode);
+        unset($book->error);
+        unset($book->dbid);
+        unset($book->data);
+        unset($book->affected);
         //Assigning variables
         foreach ($request_data as $key => $value) {
             if ($key == "key" || $key == "id") {
                 //Skipp
             } else {
-                .book->$key = $value;
+                $book->$key = $value;
             }
         }
         //Updating table with the new information
-        .book->update("id='" . $request_data['id'] . "'");
-        if (.book->affected > 0) {
+        $book->update("id='" . $request_data['id'] . "'");
+        if ($book->affected > 0) {
             //Preparing response
             $response = array();
             $response['code'] = 200;
-            $response['message'] = 'book has been updated!';
+            $response['message'] = 'Book has been updated!';
             return $response;
         } else {
             //Could not update database table, maybe the record is the same?
-            throw new Luracast\Restler\RestException(500, 'book could not be updated!');
+            throw new Luracast\Restler\RestException(500, 'Book could not be updated!');
         }
     }
 
     /**
-    * Method to delete a.book
+    * Method to delete a book
     *
-    * Delete.book from database
+    * Delete book from database
     *
     * @url GET delete
     * @url POST delete
     * @smart-auto-routing false
     *
     * @access public
-    * @throws 404.book not found
+    * @throws 404 Book not found
     * @return mixed 
     */
     function delete($request_data) {
         $this->_validate($request_data, "delete");
-        .book = new.book();
-        .book->loadSingle("id='" . $request_data['id'] . "'");
-        if (.book->affected < 1) {
+        $book = new Book();
+        $book->loadSingle("id='" . $request_data['id'] . "'");
+        if ($book->affected < 1) {
             throw new Luracast\Restler\RestException(404, 'Item not found!');
         }
-        .book->remove("id='" . $request_data['id'] . "'");
+        $book->remove("id='" . $request_data['id'] . "'");
         $response = array();
         $response['code'] = 200;
-        $response['message'] = "Book has been removed!';
+        $response['message'] = 'Book has been removed!';
         return $response;
     }
     /**
@@ -244,6 +248,20 @@ class TemplateBook Extends DataManager {
          * Add more fields as needed
          */
 
+        if ($type == "edit"){
+            $this->loadSingle("name='{$data['name']}' AND id!='{$data['id']}'");
+            if($this->affected>0){
+                $error[] = 'This book name already exists!';
+            }
+        }
+        
+        if ($type == "create"){
+            $this->loadSingle("name='{$data['name']}'");
+            if($this->affected>0){
+                $error[] = 'This book name already exists!';
+            }
+        }
+        
         if ($type != "delete") {
             if (!$data['name']) {
               $error[] = 'Field name is required!';

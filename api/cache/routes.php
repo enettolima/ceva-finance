@@ -51,12 +51,17 @@ $o['v1']['resources/{s0}'] = array (
                 0 => 
                 array (
                     'code' => 500,
-                    'reason' => 'RestException',
+                    'message' => 'RestException',
+                    'exception' => 'Exception',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 
+                array (
+                    0 => 'null',
+                    1 => 'stdClass',
+                ),
                 'description' => '',
             ),
             'url' => 'GET {id}',
@@ -76,14 +81,15 @@ $o['v1']['resources/{s0}'] = array (
             array (
                 0 => 'http://luracast.com/products/restler/',
             ),
-            'version' => '3.0.0rc5',
+            'version' => '3.0.0rc6',
             'scope' => 
             array (
                 '*' => 'Luracast\\Restler\\',
                 'String' => 'Luracast\\Restler\\Data\\String',
+                'Scope' => 'Luracast\\Restler\\Scope',
                 'stdClass' => 'stdClass',
             ),
-            'resourcePath' => 'resources/',
+            'resourcePath' => 'resources',
             'classDescription' => 'API Class to create Swagger Spec 1.1 compatible id and operation listing',
         ),
         'accessLevel' => 1,
@@ -134,14 +140,15 @@ $o['v1']['resources'] = array (
             array (
                 0 => 'http://luracast.com/products/restler/',
             ),
-            'version' => '3.0.0rc5',
+            'version' => '3.0.0rc6',
             'scope' => 
             array (
                 '*' => 'Luracast\\Restler\\',
                 'String' => 'Luracast\\Restler\\Data\\String',
+                'Scope' => 'Luracast\\Restler\\Scope',
                 'stdClass' => 'stdClass',
             ),
-            'resourcePath' => 'resources/',
+            'resourcePath' => 'resources',
             'classDescription' => 'API Class to create Swagger Spec 1.1 compatible id and operation listing',
             'param' => 
             array (
@@ -195,14 +202,15 @@ $o['v1']['resources/index'] = array (
             array (
                 0 => 'http://luracast.com/products/restler/',
             ),
-            'version' => '3.0.0rc5',
+            'version' => '3.0.0rc6',
             'scope' => 
             array (
                 '*' => 'Luracast\\Restler\\',
                 'String' => 'Luracast\\Restler\\Data\\String',
+                'Scope' => 'Luracast\\Restler\\Scope',
                 'stdClass' => 'stdClass',
             ),
-            'resourcePath' => 'resources/',
+            'resourcePath' => 'resources',
             'classDescription' => 'API Class to create Swagger Spec 1.1 compatible id and operation listing',
             'param' => 
             array (
@@ -253,7 +261,7 @@ $o['v1']['resources/verifyaccess'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'boolean',
                 'description' => 'True if the user should be able to view this API\'s docs',
             ),
             'category' => 'Framework',
@@ -272,14 +280,15 @@ $o['v1']['resources/verifyaccess'] = array (
             array (
                 0 => 'http://luracast.com/products/restler/',
             ),
-            'version' => '3.0.0rc5',
+            'version' => '3.0.0rc6',
             'scope' => 
             array (
                 '*' => 'Luracast\\Restler\\',
                 'String' => 'Luracast\\Restler\\Data\\String',
+                'Scope' => 'Luracast\\Restler\\Scope',
                 'stdClass' => 'stdClass',
             ),
-            'resourcePath' => 'resources/',
+            'resourcePath' => 'resources',
             'classDescription' => 'API Class to create Swagger Spec 1.1 compatible id and operation listing',
         ),
         'accessLevel' => 3,
@@ -310,8 +319,9 @@ $o['v1']['simpleauth/key'] = array (
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'User not found for requested id',
+                    'code' => '404',
+                    'message' => 'not found for requested id',
+                    'exception' => 'User',
                 ),
             ),
             'param' => 
@@ -325,7 +335,7 @@ $o['v1']['simpleauth/key'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
@@ -333,7 +343,7 @@ $o['v1']['simpleauth/key'] = array (
                 '*' => '',
                 'iAuthenticate' => 'Luracast\\Restler\\iAuthenticate',
             ),
-            'resourcePath' => 'simpleauth/',
+            'resourcePath' => 'simpleauth',
         ),
         'accessLevel' => 2,
     ),
@@ -367,14 +377,14 @@ $o['v1']['book/create'] = array (
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
                 0 => 
                 array (
                     'name' => 'request_data',
-                    'label' => 'Request_data',
+                    'label' => 'Request Data',
                     'default' => NULL,
                     'required' => true,
                     'children' => 
@@ -417,15 +427,19 @@ $o['v1']['book/byID/{n0}'] = array (
         array (
             'description' => 'Method to fecth Book Record by ID',
             'longDescription' => 'Fech a record for a specific book by ID',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET byID/{id}',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'User not found for requested id',
+                    'code' => '404',
+                    'message' => 'not found for requested id',
+                    'exception' => 'User',
                 ),
             ),
             'param' => 
@@ -449,14 +463,14 @@ $o['v1']['book/byID/{n0}'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
         ),
         'accessLevel' => 0,
@@ -484,15 +498,19 @@ $o['v1']['book/byID'] = array (
         array (
             'description' => 'Method to fecth Book Record by ID',
             'longDescription' => 'Fech a record for a specific book by ID',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET byID/{id}',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'User not found for requested id',
+                    'code' => '404',
+                    'message' => 'not found for requested id',
+                    'exception' => 'User',
                 ),
             ),
             'param' => 
@@ -516,14 +534,14 @@ $o['v1']['book/byID'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
         ),
         'accessLevel' => 0,
@@ -549,27 +567,31 @@ $o['v1']['book/loadAll'] = array (
         array (
             'description' => 'Method to fecth All Books',
             'longDescription' => 'Fech all records from the database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET loadAll',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -593,27 +615,31 @@ $o['v1']['book/loadAll'] = array (
         array (
             'description' => 'Method to fecth All Books',
             'longDescription' => 'Fech all records from the database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET loadAll',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
@@ -644,34 +670,38 @@ $o['v1']['book/put'] = array (
         array (
             'description' => 'Method to Update book information',
             'longDescription' => 'Update book on database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET put',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
                 0 => 
                 array (
                     'name' => 'request_data',
-                    'label' => 'Request_data',
+                    'label' => 'Request Data',
                     'default' => NULL,
                     'required' => true,
                     'children' => 
@@ -680,7 +710,7 @@ $o['v1']['book/put'] = array (
                     'type' => 'array',
                     'properties' => 
                     array (
-                        'from' => 'body',
+                        'from' => 'query',
                     ),
                 ),
             ),
@@ -705,34 +735,38 @@ $o['v1']['book/put'] = array (
         array (
             'description' => 'Method to Update book information',
             'longDescription' => 'Update book on database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET put',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
                 0 => 
                 array (
                     'name' => 'request_data',
-                    'label' => 'Request_data',
+                    'label' => 'Request Data',
                     'default' => NULL,
                     'required' => true,
                     'children' => 
@@ -771,34 +805,38 @@ $o['v1']['book/delete'] = array (
         array (
             'description' => 'Method to delete a book',
             'longDescription' => 'Delete book from database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET delete',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
                 0 => 
                 array (
                     'name' => 'request_data',
-                    'label' => 'Request_data',
+                    'label' => 'Request Data',
                     'default' => NULL,
                     'required' => true,
                     'children' => 
@@ -807,7 +845,7 @@ $o['v1']['book/delete'] = array (
                     'type' => 'array',
                     'properties' => 
                     array (
-                        'from' => 'body',
+                        'from' => 'query',
                     ),
                 ),
             ),
@@ -832,34 +870,38 @@ $o['v1']['book/delete'] = array (
         array (
             'description' => 'Method to delete a book',
             'longDescription' => 'Delete book from database',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET delete',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'Book not found',
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Book',
                 ),
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'book/',
+            'resourcePath' => 'book',
             'classDescription' => 'All methods in this class are protected',
             'param' => 
             array (
                 0 => 
                 array (
                     'name' => 'request_data',
-                    'label' => 'Request_data',
+                    'label' => 'Request Data',
                     'default' => NULL,
                     'required' => true,
                     'children' => 
@@ -898,15 +940,19 @@ $o['v1']['user/byUsername/{s0}'] = array (
         array (
             'description' => 'Method to fecth User Record by Username',
             'longDescription' => 'Fech a record for a specific Natural user by Username',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET byUsername/{username}',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'User not found for requested username',
+                    'code' => '404',
+                    'message' => 'not found for requested username',
+                    'exception' => 'User',
                 ),
             ),
             'param' => 
@@ -930,14 +976,14 @@ $o['v1']['user/byUsername/{s0}'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'user/',
+            'resourcePath' => 'user',
         ),
         'accessLevel' => 0,
     ),
@@ -964,15 +1010,19 @@ $o['v1']['user/byUsername'] = array (
         array (
             'description' => 'Method to fecth User Record by Username',
             'longDescription' => 'Fech a record for a specific Natural user by Username',
-            'url' => 0,
+            'url' => 
+            array (
+                'description' => 'GET byUsername/{username}',
+            ),
             'smart-auto-routing' => 'false',
             'access' => 'public',
             'throws' => 
             array (
                 0 => 
                 array (
-                    'code' => 404,
-                    'reason' => 'User not found for requested username',
+                    'code' => '404',
+                    'message' => 'not found for requested username',
+                    'exception' => 'User',
                 ),
             ),
             'param' => 
@@ -996,14 +1046,584 @@ $o['v1']['user/byUsername'] = array (
             ),
             'return' => 
             array (
-                'type' => 'array',
+                'type' => 'mixed',
                 'description' => '',
             ),
             'scope' => 
             array (
                 '*' => '',
             ),
-            'resourcePath' => 'user/',
+            'resourcePath' => 'user',
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/create ====
+
+$o['v1']['cars/create'] = array (
+    'POST' => 
+    array (
+        'url' => 'cars/create',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'create',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to create a new cars',
+            'longDescription' => 'Add a new cars',
+            'url' => 'POST create',
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request Data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'array',
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/byID/{n0} ====
+
+$o['v1']['cars/byID/{n0}'] = array (
+    'GET' => 
+    array (
+        'url' => 'cars/byID/{id}',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'byID',
+        'arguments' => 
+        array (
+            'id' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth Cars Record by ID',
+            'longDescription' => 'Fech a record for a specific cars by ID',
+            'url' => 
+            array (
+                'description' => 'GET byID/{id}',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found for requested id',
+                    'exception' => 'User',
+                ),
+            ),
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'type' => 'int',
+                    'name' => 'id',
+                    'description' => 'Cars to be fetched',
+                    'label' => 'Id',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'properties' => 
+                    array (
+                        'from' => 'path',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/byID ====
+
+$o['v1']['cars/byID'] = array (
+    'POST' => 
+    array (
+        'url' => 'cars/byID',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'byID',
+        'arguments' => 
+        array (
+            'id' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth Cars Record by ID',
+            'longDescription' => 'Fech a record for a specific cars by ID',
+            'url' => 
+            array (
+                'description' => 'GET byID/{id}',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found for requested id',
+                    'exception' => 'User',
+                ),
+            ),
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'type' => 'int',
+                    'name' => 'id',
+                    'description' => 'Cars to be fetched',
+                    'label' => 'Id',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/loadAll ====
+
+$o['v1']['cars/loadAll'] = array (
+    'GET' => 
+    array (
+        'url' => 'cars/loadAll',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'loadAll',
+        'arguments' => 
+        array (
+        ),
+        'defaults' => 
+        array (
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth All Carss',
+            'longDescription' => 'Fech all records from the database',
+            'url' => 
+            array (
+                'description' => 'GET loadAll',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'cars/loadAll',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'loadAll',
+        'arguments' => 
+        array (
+        ),
+        'defaults' => 
+        array (
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to fecth All Carss',
+            'longDescription' => 'Fech all records from the database',
+            'url' => 
+            array (
+                'description' => 'GET loadAll',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/put ====
+
+$o['v1']['cars/put'] = array (
+    'GET' => 
+    array (
+        'url' => 'cars/put',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'put',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to Update cars information',
+            'longDescription' => 'Update cars on database',
+            'url' => 
+            array (
+                'description' => 'GET put',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request Data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'query',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'cars/put',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'put',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to Update cars information',
+            'longDescription' => 'Update cars on database',
+            'url' => 
+            array (
+                'description' => 'GET put',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request Data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+);
+
+//==== v1 cars/delete ====
+
+$o['v1']['cars/delete'] = array (
+    'GET' => 
+    array (
+        'url' => 'cars/delete',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'delete',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to delete a cars',
+            'longDescription' => 'Delete cars from database',
+            'url' => 
+            array (
+                'description' => 'GET delete',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request Data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'query',
+                    ),
+                ),
+            ),
+        ),
+        'accessLevel' => 0,
+    ),
+    'POST' => 
+    array (
+        'url' => 'cars/delete',
+        'className' => 'Cars',
+        'path' => 'cars',
+        'methodName' => 'delete',
+        'arguments' => 
+        array (
+            'request_data' => 0,
+        ),
+        'defaults' => 
+        array (
+            0 => NULL,
+        ),
+        'metadata' => 
+        array (
+            'description' => 'Method to delete a cars',
+            'longDescription' => 'Delete cars from database',
+            'url' => 
+            array (
+                'description' => 'GET delete',
+            ),
+            'smart-auto-routing' => 'false',
+            'access' => 'public',
+            'throws' => 
+            array (
+                0 => 
+                array (
+                    'code' => '404',
+                    'message' => 'not found',
+                    'exception' => 'Cars',
+                ),
+            ),
+            'return' => 
+            array (
+                'type' => 'mixed',
+                'description' => '',
+            ),
+            'scope' => 
+            array (
+                '*' => '',
+            ),
+            'resourcePath' => 'cars',
+            'classDescription' => 'All methods in this class are protected',
+            'param' => 
+            array (
+                0 => 
+                array (
+                    'name' => 'request_data',
+                    'label' => 'Request Data',
+                    'default' => NULL,
+                    'required' => true,
+                    'children' => 
+                    array (
+                    ),
+                    'type' => 'array',
+                    'properties' => 
+                    array (
+                        'from' => 'body',
+                    ),
+                ),
+            ),
         ),
         'accessLevel' => 0,
     ),
@@ -1035,5 +1655,11 @@ $o['apiVersionMap']['Book'] = array (
 
 $o['apiVersionMap']['User'] = array (
     1 => 'User',
+);
+
+//==== apiVersionMap Cars ====
+
+$o['apiVersionMap']['Cars'] = array (
+    1 => 'Cars',
 );
 return $o;
