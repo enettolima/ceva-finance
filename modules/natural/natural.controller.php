@@ -312,12 +312,13 @@ function create_module_file($files, $data) {
         if ($v == "index.php") {
             $file = file_get_contents("template/index.php");
         } else {
-            $file = file_get_contents("template/book." . $v);
+            $file = file_get_contents("template/template_book." . $v);
         }
 				// Do tag replacements or whatever you want
         $file = str_replace("book", $name, $file);
+				$file = str_replace("TemplateBook", $data['class_name'], $file);
         $file = str_replace("Book", $data['class_name'], $file);
-        $file = str_replace("name", $data['field_1'], $file);
+				$file = str_replace("name", $data['field_1'], $file);
         $file = str_replace("Name", $data['field_label_1'], $file);
         $file = str_replace("author", $data['field_2'], $file);
         $file = str_replace("Author", $data['field_label_2'], $file);
@@ -328,7 +329,8 @@ function create_module_file($files, $data) {
             file_put_contents($data['path'] . $name . "." . $v, $file);
         }
     }
-		update_composer_dependencies($data);
+		//Composer Json update not required anymore
+		//update_composer_dependencies($data);
 }
 
 /*

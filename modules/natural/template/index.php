@@ -6,7 +6,7 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once('template_book.controller.php');
+require_once('book.controller.php');
 if (!$_SESSION['logged']) {
     //Checing session to force logout
     //Processed by process_information on lib/js/controller.js

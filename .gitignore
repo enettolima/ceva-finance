@@ -18,6 +18,3 @@ composer.lock
 
 #Ignore vagrant auto-generated files
 .vagrant/machines
-
-#Restler files
-api/cache/
