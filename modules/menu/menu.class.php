@@ -9,14 +9,14 @@ class Menu Extends DataManager {
     * @access private
     */
     function loadSingle($search_str) {
-        parent::dmLoadSingle(NATURAL_DBNAME . ".menu", $search_str);
+        parent::dmLoadSingle("menu", $search_str);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function loadList($output, $search_str) {
-        parent::dmLoadList(NATURAL_DBNAME . ".menu", $output, $search_str);
+        parent::dmLoadList("menu", $output, $search_str);
         return $this;
     }
     /**
@@ -24,7 +24,7 @@ class Menu Extends DataManager {
     * @access private
     */
     function insert() {
-        parent::dmInsert(NATURAL_DBNAME . ".menu", $this);
+        parent::dmInsert("menu", $this);
         $this->id = $this->dbid;
     }
     /**
@@ -32,14 +32,14 @@ class Menu Extends DataManager {
     * @access private
     */
     function update($upd_rule) {
-        parent::dmUpdate(NATURAL_DBNAME . ".menu", $upd_rule, $this);
+        parent::dmUpdate("menu", $upd_rule, $this);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function remove($rec_key) {
-        parent::dmRemove(NATURAL_DBNAME . ".menu", $rec_key);
+        parent::dmRemove("menu", $rec_key);
     }
     /**
     * @smart-auto-routing false
@@ -66,7 +66,7 @@ class Menu Extends DataManager {
 	 * @return mixed 
 	 */
   public function byLevel($menu_name = 'main', $level) {
-    parent::dmLoadList(NATURAL_DBNAME . '.menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
+    parent::dmLoadList('menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
     if ($this->affected) {
       $links = array();
       foreach ($this->data as $key => $item) {

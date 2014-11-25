@@ -273,7 +273,7 @@ function dashboard_setup_form() {
     $dashboard_type = 1; //$_SESSION['dash_type'];
     $widgets = new DashboardWidgets();
     $widgets->loadList('ASSOC', 'enabled = 1 AND dashboard_type = ' . $dashboard_type);
-    
+   
     if ($widgets->affected) {
         // Retrieve the widgets already selected by the user
         $user = new User();
@@ -283,20 +283,18 @@ function dashboard_setup_form() {
             $user_widgets = $user->$dash_type;
         }
         $checked = '';
-        for ($i = 0; $i < $widgets->affected; $i++) {
-            for ($x = 0; $x < count($widgets->data[$i]); $x++) {
+	foreach ($widgets->data as $id => $widget) {
                 if ($user_widgets) {
-                    if (in_array($widgets->data[$i]['id'], $user_widgets[0]) || in_array($widgets->data[$i]['id'], $user_widgets[1]) || in_array($widgets->data[$i]['id'], $user_widgets[2])) {
+                    if (in_array($widget['id'], $user_widgets[0]) || in_array($widget['id'], $user_widgets[1]) || in_array($widget['id'], $user_widgets[2])) {
                         $checked = 'checked="checked"';
                     } else {
                         $checked = '';
                     }
-                }
-            }
-            $inputs[$i]['id']   = $widgets->data[$i]['id'];
-            $inputs[$i]['title']= $widgets->data[$i]['title'];
-            $inputs[$i]['check']= $checked;
-        }
+                }		
+            $inputs[$id]['id']   = $widget['id'];
+            $inputs[$id]['title']= $widget['title'];
+            $inputs[$id]['check']= $checked;
+	}
     }
     if ($inputs) {
         global $twig;

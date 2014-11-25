@@ -26,37 +26,27 @@
  *
  */
   public function dmLoadSingle($table, $search_str) {
-     //Use configuration from bootstrap
-	 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+     $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+     $db = new NotORM($pdo);
 
-     $query = "SELECT * FROM {$table} WHERE {$search_str}";
-		 $query_result = mysql_query($query,$dblink);
-
-     if($query_result)
-       $this->affected = mysql_affected_rows();
+     $q = $db->{$table}()
+	->where($search_str)
+	->limit(1);
+    
+     $this->affected = count($q);
 
      if(!$this->affected)
      {
         $this->errorcode = RECORD_NOT_FOUND_CODE;
         $this->error = RECORD_NOT_FOUND_MESG;
         return;
-     }else if($this->affected > 1){
-        $this->errorcode = QUERY_RETURNED_MULTIPLE_RECORDS_CODE;
-        $this->error = QUERY_RETURNED_MULTIPLE_RECORDS_MESG;
-        return;
      }
 
-     $cols = mysql_num_fields($query_result);
-     while($row = mysql_fetch_array($query_result))
-     {
-         for($i = 0; $i <= $cols-1; $i++)
-         {
-              $field = mysql_field_name($query_result,$i);
-              $this->{$field} = $row[$i];
-         }
+     foreach ($q as $id => $r) {
+     	foreach ($r as $field => $value){
+	  		$this->{$field} = $value ;
+	}
      }
-     mysql_close($dblink);
-     $dblink = null ;
   }
   
 /**
@@ -65,26 +55,18 @@
  *
  */
   public function dmLoadList($table, $output, $search_str, $count = FALSE, $count_query = NULL){
-     //Use configuration from bootstrap
-		 $dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
-     $query = "SELECT * FROM {$table} WHERE {$search_str}";
+     $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+     $db = new NotORM($pdo);
 
-		if ($count && !isset($count_query)) {
-			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
-		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0];
-		}
-		elseif ($count && isset($count_query)) {
-			/**
-			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field".
-			 * So instead, you should pass "SELECT COUNT(DISTINCT(field)) FROM table" as the optional $count_query parameter
-			 */
-			$total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0];
-		}
-		 $query_result = mysql_query($query,$dblink);
-     $this->affected = mysql_affected_rows();
+     //Total records count used in pagination
+     $this->total_records = $db->{$table}()->count('*');
+
+     $q = $db->{$table}()
+	->where($search_str);
+
+     $this->affected = count($q);
+
      if(!$this->affected)
      {
         $this->errorcode = RECORD_NOT_FOUND_CODE;
@@ -94,35 +76,22 @@
      switch(strtoupper($output))
      {
          case "ASSOC":
-                 $cols = mysql_num_fields($query_result);
-                 $row_num = 0 ;
-                 while($row = mysql_fetch_array($query_result, MYSQL_ASSOC))
-                     {
-                     for($i = 0; $i <= $cols-1; $i++)
-                     {
-                         $field = mysql_field_name($query_result,$i);
-                         $this->data[$row_num][$field] = $row[$field];
-                     }
-
-                     $row_num++ ;
-                 }
+     		foreach ($q as $id => $r) {
+        		foreach ($r as $field => $value){
+                         	$this->data[$id][$field] = $value;
+        		}
+     		}
              break;
          case "NUM":
-                 $cols = mysql_num_fields($query_result);
-                 $row_num = 0 ;
-                 while($row = mysql_fetch_array($query_result, MYSQL_NUM))
-                 {
-                     for($i = 0; $i <= $cols-1; $i++)
-                     {
-                         $this->data[$row_num][$i] = $row[$i];
-                     }
-
-                     $row_num++ ;
-                 }
+     		foreach ($q as $id => $r) {
+			$i = 0;
+        		foreach ($r as $field => $value){
+                         	$this->data[$id][$i] = $value;
+				$i++;
+        		}
+     		}
              break;
      }
-     mysql_close($dblink);
-     $dblink = null ;
   }
 
  /**

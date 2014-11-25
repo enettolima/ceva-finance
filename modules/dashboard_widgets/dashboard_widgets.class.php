@@ -9,14 +9,14 @@ class DashboardWidgets Extends DataManager {
     * @access private
     */
     function loadSingle($search_str) {
-        parent::dmLoadSingle(NATURAL_DBNAME . ".dashboard_widgets", $search_str);
+        parent::dmLoadSingle("dashboard_widgets", $search_str);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function loadList($output, $search_str) {
-        parent::dmLoadList(NATURAL_DBNAME . ".dashboard_widgets", $output, $search_str);
+        parent::dmLoadList("dashboard_widgets", $output, $search_str);
         return $this;
     }
     /**
@@ -24,7 +24,7 @@ class DashboardWidgets Extends DataManager {
     * @access private
     */
     function insert() {
-        parent::dmInsert(NATURAL_DBNAME . ".dashboard_widgets", $this);
+        parent::dmInsert("dashboard_widgets", $this);
         $this->id = $this->dbid;
     }
     /**
@@ -32,14 +32,14 @@ class DashboardWidgets Extends DataManager {
     * @access private
     */
     function update($upd_rule) {
-        parent::dmUpdate(NATURAL_DBNAME . ".dashboard_widgets", $upd_rule, $this);
+        parent::dmUpdate("dashboard_widgets", $upd_rule, $this);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function remove($rec_key) {
-        parent::dmRemove(NATURAL_DBNAME . ".dashboard_widgets", $rec_key);
+        parent::dmRemove("dashboard_widgets", $rec_key);
     }
     /**
     * @smart-auto-routing false
@@ -141,7 +141,7 @@ class DashboardWidgets Extends DataManager {
     function loadAll() {
         $this->loadList("ASSOC", 'id>0');
         unset($this->restler);
-        //parent::dm_load_list(NATURAL_DBNAME . ".dashboard_widgets", "ASSOC", "id>'0'");
+        //parent::dm_load_list("dashboard_widgets", "ASSOC", "id>'0'");
         unset($this->errorcode);
         unset($this->error);
         unset($this->dbid);

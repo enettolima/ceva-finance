@@ -8,9 +8,8 @@ class ACL {
 
     public function login() {
         $user = new User();
-        $NATURAL_key = NATURAL_MAGIC_KEY;
-        $user->loadSingle("username='{$this->username}' AND password=AES_ENCRYPT('{$this->password}','{$NATURAL_key}') AND status>'0' LIMIT 1");
-        if ($user->affected) {
+        $user->authenticate($this->username, $this->password);
+        if ($user->granted) {
             $_SESSION['affected'] = $user->affected;
             $_SESSION['logged'] = true;
             $_SESSION['log_id'] = $user->id;

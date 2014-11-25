@@ -50,15 +50,13 @@
 
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
 
-  define('NATURAL_DBNAME_READ', 'natural_framework');
-  define('NATURAL_DBHOST_READ', '127.0.0.1');
-  define('NATURAL_DBUSER_READ', 'root');
-  define('NATURAL_DBPASS_READ', '123456');
+  define('NATURAL_PDO_DSN_READ', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
+  define('NATURAL_PDO_USER_READ', 'root');
+  define('NATURAL_PDO_PASS_READ', '123456');
 
-  define('NATURAL_DBNAME_WRITE', 'natural_framework');
-  define('NATURAL_DBHOST_WRITE', '127.0.0.1');
-  define('NATURAL_DBUSER_WRITE', 'root');
-  define('NATURAL_DBPASS_WRITE', '123456');
+  define('NATURAL_PDO_DSN_WRITE', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
+  define('NATURAL_PDO_USER_WRITE', 'root');
+  define('NATURAL_PDO_PASS_WRITE', '123456');
 
   //SET MAGIC KEY
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');

@@ -1,7 +1,55 @@
 <?php
 
 class User Extends DataManager{
+	/**
+	 * Method to fecth Authenticate user
+	 *
+	 * Fech a record for a specific authenticated user
+	 * by Username and password
+	 *
+	 * @url GET authenticate/{username}/{password}
+	 * @url POST authenticate
+	 * @smart-auto-routing false
+	 * 
+	 * @access public
+	 * @throws 403 User cannot be authenticated 
+	 * @param string $username User to be fetched
+	 * @param string $password Authentication Password
+	 * @return mixed 
+	 */
+
+	public function authenticate($username,$password) {
+	  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+	  $db = new NotORM($pdo);
+	  $u = $db->user()
+    		->select("*")
+    		->where("username", $username)
+		->and("password=AES_ENCRYPT( ? , ? )", $password, NATURAL_MAGIC_KEY )
+		->and("status > ?", 0)
+    		->limit(1)
+		->fetch();
+	  if(count($u)>0){
+
+	  foreach ($u as $field => $value){
+	  	$this->$field = $value ;
+  	  }
 	
+	  $this->granted = true;
+
+	   $res = array ( 'accessGranted' => true,
+			  'firstName' =>$u[first_name],
+			  'lastName' => $u[last_name],
+			  'status' => $u[status]
+	  );
+	  return $res;
+	  }else{
+		$this->granted = false;
+		throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');	
+	  }
+
+	}
+
+
 	/**
 	 * Method to fecth User Record by Username
 	 *
@@ -19,13 +67,14 @@ class User Extends DataManager{
 	 */
 
 	public function byUsername($username) {		
-	  parent::dmLoadSingle(NATURAL_DBNAME . ".user","username='{$username}'");
+	  parent::dmLoadSingle("user","username='{$username}'");
 		if($this->affected > 0) {
 				$res = array (	'id' => $this->id,
 					'firstName' => $this->first_name,
 					'lastName' => $this->last_name,
 					'status' => $this->status
 				);
+
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
@@ -37,20 +86,17 @@ class User Extends DataManager{
 	* @access private
 	*/
 	public function loadSingle($search_str){
-		$NATURAL_key = NATURAL_MAGIC_KEY;
-		parent::dmCustomQuery("SELECT id, file_id, first_name, last_name, username, AES_DECRYPT(password,'{$NATURAL_key}') as password,
-			email, access_level, status, language, dashboard_1, dashboard_2
-			FROM ".NATURAL_DBNAME.".user WHERE ".$search_str, true);
+		parent::dmLoadSingle("user", $search_str);
 		$this->dashboard_1 = unserialize($this->dashboard_1);
 		$this->dashboard_2 = unserialize($this->dashboard_2);
-    }
+    	}
 	
 	/**
 	* @smart-auto-routing false
 	* @access private
 	*/
 	public function loadList($output, $search_str, $insert_log = false){
-		parent::dmLoadList(NATURAL_DBNAME . ".user", $output, $search_str);
+		parent::dmLoadList("user", $output, $search_str);
 	}
 	
 	/**
@@ -106,7 +152,7 @@ class User Extends DataManager{
 	* @access private
 	*/
 	public function remove($rec_key){
-		parent::dmRemove(NATURAL_DBNAME . ".user", $rec_key);
+		parent::dmRemove("user", $rec_key);
 	}
 	
 	/**
