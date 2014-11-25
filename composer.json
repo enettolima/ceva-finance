@@ -14,7 +14,8 @@
     ],   
     "require":{
         "twig\/twig":"1.*",
-        "luracast\/restler":"3.*"
+        "luracast\/restler":"3.*",
+				"vrana/notorm": "dev-master"
         },
     "autoload":{
         "classmap":[

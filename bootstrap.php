@@ -18,8 +18,7 @@
   //define('NATURAL_ROOT_PATH'    , dirname(__FILE__));
   define('NATURAL_LIB_PATH'       , NATURAL_ROOT_PATH . '/lib/');
   define('NATURAL_CLASSES_PATH'   , NATURAL_ROOT_PATH . '/lib/classes/');
-  define('NATURAL_IMAGE_PATH'     , NATURAL_ROOT_PATH.'/media/images/');
-  define('NATURAL_911WSDL_PATH'   , NATURAL_ROOT_PATH.'/lib/wsdl/');
+  define('NATURAL_IMAGE_PATH'     , NATURAL_ROOT_PATH . '/media/images/');
   define('NATURAL_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/themes/natural/');
   define('THEME_PATH'             , 'themes/natural/');
   define('PAGER_LIMIT'            , 25);
@@ -47,17 +46,26 @@
   //PLATFORM NAME
   define('NATURAL_PLATFORM', 'Natural');
 
-  //Define primary Database Name
-  define('NATURAL_DBNAME', 'natural_framework');
 
-  //SET PRODUCTION DATABASE INFORMATION
-  define('NATURAL_DBHOST', 'localhost');
-  define('NATURAL_DBUSER', 'root');
-  define('NATURAL_DBPASS', '123456');
+
+	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
+
+  define('NATURAL_DBNAME_READ', 'natural_framework');
+  define('NATURAL_DBHOST_READ', '127.0.0.1');
+  define('NATURAL_DBUSER_READ', 'root');
+  define('NATURAL_DBPASS_READ', '123456');
+
+  define('NATURAL_DBNAME_WRITE', 'natural_framework');
+  define('NATURAL_DBHOST_WRITE', '127.0.0.1');
+  define('NATURAL_DBUSER_WRITE', 'root');
+  define('NATURAL_DBPASS_WRITE', '123456');
 
   //SET MAGIC KEY
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
 
+  //SET API KEY FOR RESTLER
+  define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');    
+    
   //SET NATURAL CURRENT VERSION
   define('NATURAL_VERSION', 'Natural 2.0b');
 
@@ -65,8 +73,6 @@
   define('NATURAL_EDIT_ICON', 'fa fa-pencil');
   define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
   
-  //SET API KEY FOR RESTLER
-  define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');
 
   // Twig Template Engine.
   $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');
