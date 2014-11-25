@@ -18,3 +18,10 @@ composer.lock
 
 #Ignore vagrant auto-generated files
 .vagrant/machines
+
+#Ignore caches and stuff that needs to be rebuilt
+api/cache/*
+
+#Exceptions that shouldn't be ignore
+!api/cache/readme.md
+!.gitignore
