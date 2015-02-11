@@ -252,7 +252,7 @@ class Menu Extends DataManager {
     function loadAll() {
         $this->loadList("ASSOC", 'id>0');
         unset($this->restler);
-        //parent::dm_load_list(NATURAL_DBNAME . ".menu", "ASSOC", "id>'0'");
+        //parent::dm_load_list("menu", "ASSOC", "id>'0'");
         unset($this->errorcode);
         unset($this->error);
         unset($this->dbid);

@@ -32,7 +32,7 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Dial List Table Object
     $book = new DataManager();
     $book->dmLoadCustomList("SELECT b.*
-    FROM " . NATURAL_DBNAME . ".book b
+    FROM " . "book b
     WHERE $row_id  $search_query
     ORDER BY  $sort 
     LIMIT  $start, $limit", 'ASSOC', TRUE);

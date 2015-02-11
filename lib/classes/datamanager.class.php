@@ -1,399 +1,362 @@
 <?php
-/** 
-* NATURAL - Copyright Open Source Mind, LLC 
-* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
-* @package Natural Framework 
-*/
+/**
+ * NATURAL - Copyright Open Source Mind, LLC
+ * Last Modified: Date: 05-06-2014 17:23:02 -0500 $ @ Revision: $Rev: 11 $
+ * @package Natural Framework */
 
-/** 
-* DataManager is responsible to interact with your database
-*/ 
 /**
  *
  * @access private
  *
  */
- class DataManager{
-  public $affected;
-  public $errorcode = 0 ;
-  public $error = "";
-  public $data;
-  public $dbid;
+class DataManager {
+	public $affected;
+	public $errorcode = 0;
+	public $error = "";
+	public $data;
+	public $dbid;
 
- /**
- *
- * @access private
- *
- */
-  public function dmLoadSingle($table, $search_str) {
-     $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
-     $db = new NotORM($pdo);
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmLoadSingle($table, $search_str) {
+		$db = new DataConnection->readOnly();
+		$q = $db->{$table}()->where($search_str)->limit(1);
 
-     $q = $db->{$table}()
-	->where($search_str)
-	->limit(1);
-    
-     $this->affected = count($q);
+		$this->affected = count($q);
 
-     if(!$this->affected)
-     {
-        $this->errorcode = RECORD_NOT_FOUND_CODE;
-        $this->error = RECORD_NOT_FOUND_MESG;
-        return;
-     }
+		if (!$this->affected) {
+			$this->errorcode = RECORD_NOT_FOUND_CODE;
+			$this->error =
+			RECORD_NOT_FOUND_MESG;
 
-     foreach ($q as $id => $r) {
-     	foreach ($r as $field => $value){
-	  		$this->{$field} = $value ;
-	}
-     }
-  }
-  
-/**
- *
- * @access private
- *
- */
-  public function dmLoadList($table, $output, $search_str, $count = FALSE, $count_query = NULL){
-
-     $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
-     $db = new NotORM($pdo);
-
-     //Total records count used in pagination
-     $this->total_records = $db->{$table}()->count('*');
-
-     $q = $db->{$table}()
-	->where($search_str);
-
-     $this->affected = count($q);
-
-     if(!$this->affected)
-     {
-        $this->errorcode = RECORD_NOT_FOUND_CODE;
-        $this->error = RECORD_NOT_FOUND_MESG;
-        return;
-     }
-     switch(strtoupper($output))
-     {
-         case "ASSOC":
-     		foreach ($q as $id => $r) {
-        		foreach ($r as $field => $value){
-                         	$this->data[$id][$field] = $value;
-        		}
-     		}
-             break;
-         case "NUM":
-     		foreach ($q as $id => $r) {
-			$i = 0;
-        		foreach ($r as $field => $value){
-                         	$this->data[$id][$i] = $value;
-				$i++;
-        		}
-     		}
-             break;
-     }
-  }
-
- /**
- *
- * @access private
- *
- */
-  
-  public function dmLoadCustomList($query, $output, $count = FALSE, $count_query = NULL){
-		//Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-
-		mysql_select_db(NATURAL_DBNAME);
-
-	  if ($count && !isset($count_query)) {
-			$count_query = preg_replace(array('/SELECT.*?FROM/As', '/ORDER BY .*/', '/LIMIT .*/'), array('SELECT COUNT(*) FROM', '', ''), $query);
-		  $total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0];
-  	}
-		elseif ($count && isset($count_query)) {
-			/**
-			 * if you want to page the query "SELECT COUNT(*), TYPE FROM table GROUP BY field", the above code would invoke the incorrect query "SELECT COUNT(*) FROM table GROUP BY field".
-			 * So instead, you should pass "SELECT COUNT(DISTINCT(field)) FROM table" as the optional $count_query parameter
-			 */
-			$total_records = mysql_fetch_row(mysql_query($count_query, $dblink));
-			$this->total_records = $total_records[0];
+			return;
 		}
 
-	  //print($query);
-		$query_result = mysql_query($query, $dblink);
-   	$this->affected = mysql_affected_rows();
-    if(!$this->affected) {
-     // $this->errorcode = RECORD_NOT_FOUND_CODE;
-     // $this->error = RECORD_NOT_FOUND_MESG;
-      return;
-    }
+		foreach ($q as $id => $r) {
+			foreach ($r as $field => $value) {
+				$this->{$field} = $value;
+			}
+		}
+	}
 
-    switch(strtoupper($output)) {
-      case "ASSOC":
-        $cols = mysql_num_fields($query_result);
-        $row_num = 0 ;
-        while($row = mysql_fetch_array($query_result, MYSQL_ASSOC)) {
-          for($i = 0; $i <= $cols-1; $i++) {
-            $field = mysql_field_name($query_result,$i);
-            $this->data[$row_num][$field] = $row[$field];
-          }
-          $row_num++ ;
-        }
-        break;
-      case "NUM":
-        $cols = mysql_num_fields($query_result);
-        $row_num = 0 ;
-        while($row = mysql_fetch_array($query_result, MYSQL_NUM)) {
-          for($i = 0; $i <= $cols-1; $i++) {
-            $this->data[$row_num][$i] = $row[$i];
-          }
-          $row_num++ ;
-        }
-        break;
-    }
-    mysql_close($dblink);
-    $dblink = null ;
-  }
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmLoadList($table, $output, $search_str, $count = false,
+		$count_query = null) {
+		$db = new DataConnection->readOnly();
 
- /**
- *
- * @access private
- *
- */
-  
-  public function dmInsert($table, $fields){
+		//Total records count used in pagination
+		$this->total_records = $db->{$table}()->count('*');
 
-    //Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+		$q = $db->{$table}()
+		        ->where($search_str);
 
-    /*Loop through the fields to build insert query*/
-    foreach($fields as $key => $value)
-    {
-      if(!($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key == 'error' || $key == 'data' || $key == 'dbid')){
-        $query_fields .= ",`{$key}`='{$value}'";
-      }
-    }
+		$this->affected = count($q);
 
-    $query_fields = substr($query_fields,1);
-    $query = "INSERT INTO {$table} SET {$query_fields}";
-    $query_result = mysql_query($query,$dblink);
-    $this->affected = mysql_affected_rows();
-    if(!$this->affected){
-      $this->errorcode = MYSQL_INSERT_ERROR_CODE ;
-      $this->error = MYSQL_INSERT_ERROR_MESG." : ".(mysql_error($this->dblink)?mysql_errno():0);
-    }else{
-      $this->dbid = mysql_insert_id($dblink);
-    }
-    mysql_close($dblink);
-    $dblink = null ;
-  }
+		if (!$this->affected) {
+			$this->errorcode = RECORD_NOT_FOUND_CODE;
+			$this->error = RECORD_NOT_FOUND_MESG;
 
- /**
- *
- * @access private
- *
- */
-  
-  public function dmRemove($table, $record_key){
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+			return;
+		}
 
-		$query = "DELETE FROM {$table} WHERE {$record_key}";
-    $query_result = mysql_query($query,$dblink);
-    $this->affected = mysql_affected_rows();
-    if(!$this->affected){
-      $this->errorcode = MYSQL_DELETE_ERROR_CODE ;
-      $this->error = MYSQL_DELETE_ERROR_MESG." : ".(mysql_error());
-    }
-    mysql_close($dblink);
-    $dblink = null ;
-  }
+		switch (strtoupper($output)) {
+			case "ASSOC":
+				foreach ($q as $id => $r) {
+					foreach ($r as $field => $value) {
+						$this->data[$id][$field] = $value;
+					}
+				}
+				break;
+			case "NUM":
+				foreach ($q as $id => $r) {
+					$i = 0;
+					foreach ($r as $field => $value) {
+						$this->data[$id][$i] = $value;
+						$i++;
+					}
+				}
+				break;
+		}
+	}
 
- /**
- *
- * @access private
- *
- */
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmLoadCustomList($query, $output, $count = false, $count_query
+		= null) {
 
-  public function dmUpdate($table, $update_rule, $fields){
-    //Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+		$db = new DataConnection->readOnly();
 
-    /*Loop through the fields to build insert query*/
-    foreach($fields as $key => $value)
-    {
-      if(!($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key == 'error' || $key == 'data' || $key == 'dbid' || $key == 'id' || $key == 'function' || $key == 'fn')){
-        $query_fields .= ", `{$key}`='{$value}'";
-      }
-    }
+		//Total records count used in pagination
+		$this->total_records = $db->{$table}()->count('*');
 
-    $query_fields = substr($query_fields,1);
-    $query = "UPDATE {$table} SET {$query_fields} WHERE {$update_rule}";
+		$q = $db->{$table}()
+		        ->where($query);
 
-		$query_result = mysql_query($query,$dblink);
-    $this->affected = mysql_affected_rows();
-    if(!$this->affected){
-      $this->errorcode = MYSQL_UPDATE_ERROR_CODE ;
-      $this->error = MYSQL_UPDATE_ERROR_MESG ;
-      //$this->error = MYSQL_UPDATE_ERROR_MESG." : ".(mysql_error($this->dblink)?mysql_errno():0);
-    }else{
-      $this->dbid = mysql_insert_id($dblink);
-    }
+		$this->affected = count($q);
 
-    mysql_close($dblink);
-    $dblink = null ;
-  }
+		if (!$this->affected) {
+			$this->errorcode = RECORD_NOT_FOUND_CODE;
+			$this->error = RECORD_NOT_FOUND_MESG;
 
- /**
- *
- * @access private
- *
- */
+			return;
+		}
 
-	public function dmRandom($alpha = false, $length = 6){
-		if($alpha){
-			$random_key = substr(md5(rand().rand()), 0, $length);
+		switch (strtoupper($output)) {
+			case "ASSOC":
+				foreach ($q as $id => $r) {
+					foreach ($r as $field => $value) {
+						$this->data[$id][$field] = $value;
+					}
+				}
+				break;
+			case "NUM":
+				foreach ($q as $id => $r) {
+					$i = 0;
+					foreach ($r as $field => $value) {
+						$this->data[$id][$i] = $value;
+						$i++;
+					}
+				}
+				break;
+		}
+
+	}
+
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmInsert($table, $fields) {
+	
+			/*Loop through the fields to remove object items from field*/
+			foreach ($fields as $key => $value) {
+				if (($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key
+					== 'error' || $key == 'data' || $key == 'dbid')) {
+					unset($fields[$key]);
+				}
+			}
+
+		$db = new DataConnection->readWrite();
+
+		$q = $db->{$table}()->insert($fields);
+
+		$this->affected = count($q);
+
+		if (!$this->affected) {
+			$this->errorcode = MYSQL_INSERT_ERROR_CODE;
+			$this->error = MYSQL_INSERT_ERROR_MESG ;
+			return;
 		}else{
+			$this->dbid = $db->{$table}()->->insert_id();
+		}
+	}
+
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmRemove($table, $record_key) {
+	
+		$db = new DataConnection->readWrite();
+
+		$q = $db->{$table}()->where($record_key)->delete();
+
+		$this->affected = count($q);
+
+		if (!$this->affected) {
+			$this->errorcode = MYSQL_DELETE_ERROR_CODE;
+			$this->error = MYSQL_DELETE_ERROR_MESG;
+		}
+	}
+
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmUpdate($table, $update_rule, $fields) {
+		/*Loop through the fields to remove object items from field*/
+			foreach ($fields as $key => $value) {
+				if (($key == 'dblink' || $key == 'affected' || $key == 'errorcode' || $key
+					== 'error' || $key == 'data' || $key == 'dbid' || $key == 'id' || $key == 'function' || $key == 'fn')) {
+					unset($fields[$key]);
+				}
+			}
+
+		$db = new DataConnection->readWrite();
+
+		$q = $db->{$table}()->where($update_rule)->update($fields);
+
+		$this->affected = count($q);
+
+		if (!$this->affected) {
+			$this->errorcode = MYSQL_UPDATE_ERROR_CODE;
+			$this->error = MYSQL_UPDATE_ERROR_MESG;
+			return;
+		}else{
+			$this->dbid = $db->{$table}()->->insert_id();
+		}
+	}
+
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmRandom($alpha = false, $length = 6) {
+		if ($alpha) {
+			$random_key = substr(md5(rand() . rand()), 0, $length);
+		} else {
 			$random_key = substr(mt_rand(), 0, $length);
 		}
+
 		return $random_key;
 	}
 
- /**
- *
- * @access private
- *
- */
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmCheckModule($module) {
 
-	public function dmCustomQuery($query, $return_object=false, $return_id=false){
+		$db = new DataConnection->readOnly();
+
+		$table = MODULES_TABLE;
+
+		$q = $db->{$table}()->where('module', $module)->limit(1);
+
+		$this->affected = count($q);
+
+		if (!$this->affected) {
+			$this->errorcode = RECORD_NOT_FOUND_CODE;
+			$this->error =
+			RECORD_NOT_FOUND_MESG;
+
+			return;
+		} elseif ($this->affected > 1) {
+			$this->errorcode = QUERY_RETURNED_MULTIPLE_RECORDS_CODE;
+			$this->error =
+			QUERY_RETURNED_MULTIPLE_RECORDS_MESG;
+
+			return;
+		}
+
+		foreach ($q as $id => $r) {
+			foreach ($r as $field => $value) {
+				$this->{$field} = $value;
+			}
+		}
+	}
+
+
+	/** 
+	 * Should we translate the methods below
+	 * to use not orm or should we just do
+	 * away with them and use not orm directly ?
+	 */ 
+
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmCustomQuery($query, $return_object = false,
+		$return_id = false) {
 		//Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+		$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER,
+			NATURAL_DBPASS);
 
 		mysql_select_db(NATURAL_DBNAME);
 
-   	$query_result = mysql_query($query, $dblink);
+		$query_result = mysql_query($query, $dblink);
 
 		if (!$query_result) {
-			$this->message  = 'Invalid query: ' . mysql_error() . "\n";
+			$this->message = 'Invalid query: ' . mysql_error() .
+			"\n";
 			$this->message .= 'Whole query: ' . $query;
-		}
-    else{
+		} else {
 			$this->affected = mysql_affected_rows();
-			if($this->affected>0 && $return_object==true){
+			if ($this->affected > 0 && $return_object == true) {
 				$cols = mysql_num_fields($query_result);
-				while($row = mysql_fetch_array($query_result)){
-					for($i = 0; $i <= $cols-1; $i++){
-						$field = mysql_field_name($query_result,$i);
+				while ($row = mysql_fetch_array($query_result)) {
+					for ($i = 0; $i <= $cols - 1; $i++) {
+						$field =
+						mysql_field_name($query_result, $i);
 						$this->{$field} = $row[$i];
 					}
 				}
 			}
 		}
-		if($return_id) {
+		if ($return_id) {
 			$this->dbid = mysql_insert_id($dblink);
 		}
 		mysql_close($dblink);
-		$dblink = null ;
+		$dblink = null;
 	}
 
- /**
- *
- * @access private
- *
- */
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmCustomInsert($query) {
 
-	public function dmCheckModule($module){
 		//Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-		mysql_select_db(NATURAL_DBNAME);
-		$query = "SELECT * FROM ".NATURAL_DBNAME.".".MODULES_TABLE." WHERE module='{$module}' LIMIT 1";
-   	$query_result = mysql_query($query, $dblink);
+		$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER,
+			NATURAL_DBPASS);
 
-		if($query_result)
-       $this->affected = mysql_affected_rows();
-
-     if(!$this->affected){
-        $this->errorcode = RECORD_NOT_FOUND_CODE;
-        $this->error = RECORD_NOT_FOUND_MESG;
-        return;
-     }else if($this->affected > 1){
-        $this->errorcode = QUERY_RETURNED_MULTIPLE_RECORDS_CODE;
-        $this->error = QUERY_RETURNED_MULTIPLE_RECORDS_MESG;
-        return;
-     }
-
-     $cols = mysql_num_fields($query_result);
-     while($row = mysql_fetch_array($query_result)){
-			 for($i = 0; $i <= $cols-1; $i++){
-				 $field = mysql_field_name($query_result,$i);
-				 $this->{$field} = $row[$i];
-			 }
-     }
-     mysql_close($dblink);
-     $dblink = null ;
-/*
-		if (!$query_result) {
-			$this->message  = 'Invalid query: ' . mysql_error() . "\n";
-			$this->message .= 'Whole query: ' . $query;
-		}else{
-			$this->affected = mysql_affected_rows();
-			$cols = mysql_num_fields($query_result);
-			while($row = mysql_fetch_array($query_result)){
-				for($i = 0; $i <= $cols-1; $i++){
-					$field = mysql_field_name($query_result,$i);
-					$this->{$field} = $row[$i];
-				}
-			}
-			mysql_close($dblink);
-			$dblink = null ;
-		}*/
+		$query_result = mysql_query($query, $dblink);
+		$this->affected =
+		mysql_affected_rows();
+		if (!$this->affected) {
+			$this->errorcode = MYSQL_INSERT_ERROR_CODE;
+			$this->error =
+			MYSQL_INSERT_ERROR_MESG . " :
+      " . (mysql_error($this->dblink) ? mysql_errno() : 0);
+		} else {
+			$this->dbid = mysql_insert_id($dblink);
+		}
+		mysql_close($dblink);
+		$dblink = null;
 	}
 
- /**
- *
- * @access private
- *
- */
+	/**
+	 *
+	 * @access private
+	 *
+	 */
+	public function dmCustomUpdate($query) {
+		//Use configuration from bootstrap
+		$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER,
+			NATURAL_DBPASS);
 
-  public function dmCustomInsert($query){
+		$query_result = mysql_query($query, $dblink);
+		$this->affected =
+		mysql_affected_rows();
+		if (!$this->affected) {
+			$this->errorcode = MYSQL_UPDATE_ERROR_CODE;
+			$this->error =
+			MYSQL_UPDATE_ERROR_MESG;
+			//$this->error = MYSQL_UPDATE_ERROR_MESG." :
+			//".(mysql_error($this->dblink)?mysql_errno():0);
+		} else {
+			$this->dbid = mysql_insert_id($dblink);
+		}
 
-    //Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-
-    $query_result = mysql_query($query,$dblink);
-    $this->affected = mysql_affected_rows();
-    if(!$this->affected){
-      $this->errorcode = MYSQL_INSERT_ERROR_CODE ;
-      $this->error = MYSQL_INSERT_ERROR_MESG." : ".(mysql_error($this->dblink)?mysql_errno():0);
-    }else{
-      $this->dbid = mysql_insert_id($dblink);
-    }
-    mysql_close($dblink);
-    $dblink = null ;
-  }
-  
- /**
- *
- * @access private
- *
- */
-
-  public function dmCustomUpdate($query){
-    //Use configuration from bootstrap
-		$dblink = mysql_connect (NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-
-    $query_result = mysql_query($query,$dblink);
-    $this->affected = mysql_affected_rows();
-    if(!$this->affected){
-      $this->errorcode = MYSQL_UPDATE_ERROR_CODE ;
-      $this->error = MYSQL_UPDATE_ERROR_MESG ;
-      //$this->error = MYSQL_UPDATE_ERROR_MESG." : ".(mysql_error($this->dblink)?mysql_errno():0);
-    }else{
-      $this->dbid = mysql_insert_id($dblink);
-    }
-
-    mysql_close($dblink);
-    $dblink = null ;
-  }
- }
-?>
+		mysql_close($dblink);
+		$dblink = null;
+	}
+}

@@ -8,8 +8,8 @@ require_once('modules/dashboard_widgets/dashboard_widgets_blocks.php');
 if ($_SESSION['log_username']) {
 	$_SESSION['dash_type'] = 1;
 	$module = new Module();
-	$module->loadSingle("module='dashboard' LIMIT 1");
-	$_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
+	//$module->loadSingle("module='dashboard' LIMIT 1");
+	//$_SESSION['dialer-version'] = NATURAL_VERSION . ' - r.' . $module->version;
 	$username = $_SESSION['log_username'];
 	$user_full_name = $_SESSION['log_first_name'] . ' ' . $_SESSION['log_last_name'];
 	$version = NATURAL_VERSION;
@@ -31,7 +31,7 @@ if ($_SESSION['log_username']) {
 	if($file->affected>0){
 		$avatar = $file->uri;
 	}
-	
+
 	// Twig Base
 	$template = $twig->loadTemplate('base.html');
 	$template->display(array(

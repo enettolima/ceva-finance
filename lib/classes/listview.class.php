@@ -1,8 +1,8 @@
 <?php
-/** 
-* NATURAL - Copyright Open Source Mind, LLC 
-* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $ 
-* @package Natural Framework 
+/**
+* NATURAL - Copyright Open Source Mind, LLC
+* Last Modified: Date: 05-06-2014 17:23:02 -0500  $ @ Revision: $Rev: 11 $
+* @package Natural Framework
 */
 
 /**

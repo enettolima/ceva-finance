@@ -9,14 +9,14 @@ class TemplateBook Extends DataManager {
     * @access private
     */
     function loadSingle($search_str) {
-        parent::dmLoadSingle(NATURAL_DBNAME . ".book", $search_str);
+        parent::dmLoadSingle("book", $search_str);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function loadList($output, $search_str) {
-        parent::dmLoadList(NATURAL_DBNAME . ".book", $output, $search_str);
+        parent::dmLoadList("book", $output, $search_str);
         return $this;
     }
     /**
@@ -24,7 +24,7 @@ class TemplateBook Extends DataManager {
     * @access private
     */
     function insert() {
-        parent::dmInsert(NATURAL_DBNAME . ".book", $this);
+        parent::dmInsert("book", $this);
         $this->id = $this->dbid;
     }
     /**
@@ -32,14 +32,14 @@ class TemplateBook Extends DataManager {
     * @access private
     */
     function update($upd_rule) {
-        parent::dmUpdate(NATURAL_DBNAME . ".book", $upd_rule, $this);
+        parent::dmUpdate("book", $upd_rule, $this);
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function remove($rec_key) {
-        parent::dmRemove(NATURAL_DBNAME . ".book", $rec_key);
+        parent::dmRemove("book", $rec_key);
     }
     /**
     * @smart-auto-routing false
@@ -145,7 +145,7 @@ class TemplateBook Extends DataManager {
     function loadAll() {
         $this->loadList("ASSOC", 'id>0');
         unset($this->restler);
-        //parent::dm_load_list(NATURAL_DBNAME . ".book", "ASSOC", "id>'0'");
+        //parent::dm_load_list("book", "ASSOC", "id>'0'");
         unset($this->errorcode);
         unset($this->error);
         unset($this->dbid);

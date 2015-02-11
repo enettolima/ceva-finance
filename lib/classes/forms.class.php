@@ -139,12 +139,12 @@ class DbForm {
 
     $level = ($level == NULL && isset($_SESSION['log_access_level'])) ? $_SESSION['log_access_level'] : $level;
 
-    $form_param->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, "form_id='" . $form_name . "' LIMIT 1");
+    $form_param->dmLoadSingle("" . FORM_TABLE, "form_id='" . $form_name . "' LIMIT 1");
     if (!$form_param->affected) {
       $error_message = 'Parameters for the form ' . $form_name . ' not found!';
     }
 
-    $form_fields->dmLoadList(NATURAL_DBNAME . "." . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
+    $form_fields->dmLoadList("" . FIELD_TABLE, "ASSOC", "form_template_id='" . $form_param->id . "' ORDER BY form_field_order ASC");
     if (!$form_fields->affected) {
       $error_message = 'Form ' . $form_name . ' not found!';
     }
@@ -287,7 +287,7 @@ class DbForm {
     }
 
     $fs = new DataManager();
-    $fs->dmLoadList("" . NATURAL_DBNAME . "." . FIELDSET_TABLE . "", "ASSOC", "name IN (" . implode(', ', $fieldset_clause) .  ") ORDER BY position");
+    $fs->dmLoadList("" . "" . FIELDSET_TABLE . "", "ASSOC", "name IN (" . implode(', ', $fieldset_clause) .  ") ORDER BY position");
     for ($z = 0; $z < $fs->affected; $z++) {
       $fieldsets[$fs->data[$z]['name']]['id'] = $fs->data[$z]['id'];
       $fieldsets[$fs->data[$z]['name']]['name'] = $fs->data[$z]['name'];
@@ -305,7 +305,7 @@ class DbForm {
     }else{
       $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
     }
-    
+
     // Render Array
     $render = array(
       'page_title' => !empty($form_param->form_title) ? $form_param->form_title : '',

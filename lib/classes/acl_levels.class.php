@@ -11,20 +11,20 @@
 
 class AclLevels Extends DataManager{
   public function loadSingle($search_str, $insert_log = false){
-    parent::dmLoadSingle(NATURAL_DBNAME . ".acl_levels",$search_str);
+    parent::dmLoadSingle("acl_levels",$search_str);
   }
   public function loadList($output, $search_str, $insert_log = false){
-    parent::dmLoadList(NATURAL_DBNAME . ".acl_levels", $output, $search_str);
+    parent::dmLoadList("acl_levels", $output, $search_str);
   }
   public function insert(){
-    parent::dmInsert(NATURAL_DBNAME . ".acl_levels", $this);
+    parent::dmInsert("acl_levels", $this);
     $this->id = $this->dbid;
   }
   public function update($upd_rule){
-    parent::dmUpdate(NATURAL_DBNAME . ".acl_levels", $upd_rule, $this);
+    parent::dmUpdate("acl_levels", $upd_rule, $this);
   }
   public function remove($rec_key){
-    parent::dmRemove(NATURAL_DBNAME . ".acl_levels", $rec_key);
+    parent::dmRemove("acl_levels", $rec_key);
   }
 }
 ?>

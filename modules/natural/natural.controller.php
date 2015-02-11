@@ -80,7 +80,7 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Module Object
     $modules = new DataManager();
     $modules->dmLoadCustomList("SELECT m.*
-		FROM " . NATURAL_DBNAME . ".module m
+		FROM " . "module m
 		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
@@ -166,7 +166,7 @@ function module_create_form_submit($data) {
         $data['module_name'] = $data['table_name'];
         $data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
 
-        $query = "DESCRIBE " . NATURAL_DBNAME . "." . $data['table_name'] . "";
+        $query = "DESCRIBE " . "" . $data['table_name'] . "";
 
         $fields = new DataManager();
         $fields->dmLoadCustomList($query, 'ASSOC');
@@ -365,7 +365,7 @@ function validate_module_info($data, $edit = false) {
 				return 'Module <i>' . $data['module'] . '</i> already exists!';
 		}
     if ($data['create_forms'] == 1) {
-        $query = "SELECT * FROM " . NATURAL_DBNAME . ".form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
+        $query = "SELECT * FROM " . "form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
             OR form_id = '" . $data['table_name'] . "_edit' 
             OR form_id = '" . $data['table_name'] . "_view'";
         $form = new DataManager();
@@ -375,7 +375,7 @@ function validate_module_info($data, $edit = false) {
 		    }
     }
     if ($data['create_menu'] == 1) {
-        $query = "SELECT * FROM " . NATURAL_DBNAME . ".menu WHERE element_name = '" . $data['module'] . "_main'";
+        $query = "SELECT * FROM " . "menu WHERE element_name = '" . $data['module'] . "_main'";
         $form = new DataManager();
         $form->dmLoadCustomList($query, 'ASSOC');
         if ($form->affected > 0) {
@@ -409,14 +409,14 @@ function create_module_api($data) {
  */
 function module_remove($data) {
     $module = new DataManager();
-    $module->dm_load_single(NATURAL_DBNAME . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    $module->dm_load_single("" . MODULES_TABLE,"id='{$data['module_id']}'");
     //$module->dm_load_single($table, $search_str)
     $name = $module->name;
     if (!$module->affected) {
         return "ERROR|19109|Module Not Found, Please contact your system administrator!";
         exit(0);
     }
-    $module->dm_remove(NATURAL_DBNAME . "." . MODULES_TABLE,"id='{$data['module_id']}'");
+    $module->dm_remove("" . MODULES_TABLE,"id='{$data['module_id']}'");
     if ($module->affected) {
         return "Module {$name} was removed successfully!<br>NOTE: Database and module structure was not removed!";
     } else {
@@ -459,7 +459,7 @@ function form_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Module Object
     $forms = new DataManager();
     $forms->dmLoadCustomList("SELECT f.*
-		FROM " . NATURAL_DBNAME . ".form_templates f
+		FROM " . "form_templates f
 		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
@@ -529,7 +529,7 @@ function form_create_form_submit($data) {
         }
     }
     //Try to find another Database with the same name.
-    $check_query = "SELECT * FROM " . NATURAL_DBNAME . "." . FORM_TABLE . " WHERE form_name='{$data['form_name']}'";
+    $check_query = "SELECT * FROM " . "" . FORM_TABLE . " WHERE form_name='{$data['form_name']}'";
     $query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $check_query);
     if (mysql_affected_rows()) {
 				natural_set_message('Sorry but this form name already exist, please try again with different name!', 'error');
@@ -539,7 +539,7 @@ function form_create_form_submit($data) {
 
     $query_fields = substr($query_fields, 1);
 
-    $query = "INSERT INTO " . NATURAL_DBNAME . "." . FORM_TABLE . " SET {$query_fields}";
+    $query = "INSERT INTO " . "" . FORM_TABLE . " SET {$query_fields}";
     $query_result = mysql_query($query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $query . "<br>" . $query_fields);
     $affected = mysql_affected_rows();
 		//print_debug($query_result);
@@ -554,7 +554,7 @@ function form_create_form_submit($data) {
 
 function form_edit_form($data){
 		$form = new DataManager();
-		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
 		$frm = new DbForm();
     $frm->build("form_edit_form", $form, $_SESSION['log_access_level']);
 }
@@ -571,7 +571,7 @@ function form_edit_form_submit($data){
 		
     $query_fields = substr($query_fields, 1);
 		//Updating form parameters.
-    $check_query = "UPDATE " . NATURAL_DBNAME . "." . FORM_TABLE . " SET {$query_fields} WHERE id='{$data['id']}'";
+    $check_query = "UPDATE " . "" . FORM_TABLE . " SET {$query_fields} WHERE id='{$data['id']}'";
 		$query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error());
     if (mysql_affected_rows()) {
         natural_set_message('Form '.$data['form_name'].' saved successfully!', 'success');
@@ -581,7 +581,7 @@ function form_edit_form_submit($data){
 
 function form_delete_form($data){
 		$form = new DataManager();
-    $form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+    $form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
     if($form->affected>0){
         $frm = new DbForm();
         $frm->build('form_delete_form', $form, $_SESSION['log_access_level']);
@@ -593,12 +593,12 @@ function form_delete_form($data){
 
 function form_delete_form_submit($data){
 		$form = new DataManager();
-		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
 		$name = $form->form_title;
-		$form->dmRemove(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['id']);
+		$form->dmRemove("" . FORM_TABLE, 'id='.$data['id']);
 		
 		$fields = new DataManager();
-		$fields->dmRemove(NATURAL_DBNAME . "." . FIELD_TABLE, 'form_template_id='.$data['id']);
+		$fields->dmRemove("" . FIELD_TABLE, 'form_template_id='.$data['id']);
 		if($form->affected>0){
 				natural_set_message('Form '.$name.' has been removed successfully!', 'success');
 				return $data['id'];
@@ -642,7 +642,7 @@ function field_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Module Object
     $field = new DataManager();
     $field->dmLoadCustomList("SELECT f.*
-		FROM " . NATURAL_DBNAME . ".field_templates f
+		FROM " . "field_templates f
 		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
@@ -723,7 +723,7 @@ function field_create_form_submit($data){
     }
 		
 		$form = new DataManager();
-		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['form_reference']);
+		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['form_reference']);
 		$field->form_reference = $form->form_name;
 		$field->form_template_id = $data['form_reference'];
 
@@ -756,7 +756,7 @@ function field_edit_form_submit($data){
     }
 		
 		$form = new DataManager();
-		$form->dmLoadSingle(NATURAL_DBNAME . "." . FORM_TABLE, 'id='.$data['form_reference']);
+		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['form_reference']);
 		$ff->form_reference = $form->form_name;
 		$ff->form_template_id = $data['form_reference'];
 		
@@ -832,7 +832,7 @@ function class_creator($table_name){
     $data['field_2'] = 'b.author';
     $data['field_label_2'] = 'Author';
 
-		$query = "DESCRIBE " . NATURAL_DBNAME . "." . $table_name . "";
+		$query = "DESCRIBE " . "" . $table_name . "";
 		$fields = new DataManager();
 		$fields->dmLoadCustomList($query, 'ASSOC');
 		if ($fields->affected > 0) {
@@ -882,7 +882,7 @@ function create_form($table_name) {
     $param['form_name'] 	= $form_add;
     $param['form_title'] 	= 'Add New '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
-    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+    $ft->dmInsert("" . FORM_TABLE, $param);
 		$form_add_id = $ft->dbid;
     
     //Saving form parameters for edit form
@@ -890,7 +890,7 @@ function create_form($table_name) {
     $param['form_name'] 	= $form_edit;
     $param['form_title'] 	= 'Edit '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
-    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+    $ft->dmInsert("" . FORM_TABLE, $param);
 		$form_edit_id = $ft->dbid;
     
     //Saving form parameters for delete form
@@ -898,7 +898,7 @@ function create_form($table_name) {
     $param['form_name'] 	= $form_delete;
     $param['form_title'] 	= 'Delete '.ucwords(str_replace("_", " ", strtolower($table_name)));
     $param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
-    $ft->dmInsert(NATURAL_DBNAME . "." . FORM_TABLE, $param);
+    $ft->dmInsert("" . FORM_TABLE, $param);
 		$form_delete_id = $ft->dbid;
 
     $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -941,13 +941,13 @@ function create_form($table_name) {
             $field['def_label'] = $label;
 
             //Insert template new
-            $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+            $ff->dmInsert("" . FIELD_TABLE, $field);
 
             //Insert template edit
             $field['form_reference'] = $form_edit;
 						$field['form_template_id'] = $form_edit_id;
             $field['def_val'] = "{$row['Field']}";
-            $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+            $ff->dmInsert("" . FIELD_TABLE, $field);
 
 						if($row['Field']=='id'){
 								//Insert delete id
@@ -956,7 +956,7 @@ function create_form($table_name) {
 								$field['def_val'] 				= "{$row['Field']}";
 								$field['html_type'] 			= "hidden";
 								$field['def_label'] 			= 'ID';
-								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);		
+								$ff->dmInsert("" . FIELD_TABLE, $field);		
 						}
 						if($i==1){
 								//Insert delete message
@@ -968,7 +968,7 @@ function create_form($table_name) {
 								$field['def_label'] 			= '';
 								$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
 								$field['html_type'] 			= 'message';
-								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+								$ff->dmInsert("" . FIELD_TABLE, $field);
 								
 								//Insert delete object
 								$field['form_reference'] 	= $form_delete;
@@ -979,7 +979,7 @@ function create_form($table_name) {
 								$field['def_label'] 			= '';
 								$field['def_val'] 				= "{$row['Field']}";
 								$field['html_type'] 			= 'message';
-								$ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);		
+								$ff->dmInsert("" . FIELD_TABLE, $field);		
 						}
             $i++;
         }
@@ -992,15 +992,15 @@ function create_form($table_name) {
 				$field['def_label'] 			= '';
 				$field['def_val'] 				= '';
         $field['html_type'] 			= 'submit';
-        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+        $ff->dmInsert("" . FIELD_TABLE, $field);
 				
 				$field['form_reference'] 	= $form_edit;
 				$field['form_template_id']= $form_edit_id;
-        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+        $ff->dmInsert("" . FIELD_TABLE, $field);
 				
 				$field['form_reference'] 	= $form_delete;
 				$field['form_template_id']= $form_delete_id;
-        $ff->dmInsert(NATURAL_DBNAME . "." . FIELD_TABLE, $field);
+        $ff->dmInsert("" . FIELD_TABLE, $field);
     }
 		natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');		
 }

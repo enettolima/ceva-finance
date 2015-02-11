@@ -32,7 +32,7 @@ function menu_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Dial List Table Object
     $menu = new DataManager();
     $menu->dmLoadCustomList("SELECT b.*
-    FROM " . NATURAL_DBNAME . ".menu b
+    FROM " . "menu b
     WHERE $row_id  $search_query
     ORDER BY  $sort 
     LIMIT  $start, $limit", 'ASSOC', TRUE);

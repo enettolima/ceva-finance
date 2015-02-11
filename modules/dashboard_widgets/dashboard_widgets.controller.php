@@ -32,7 +32,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
     // Dial List Table Object
     $dashboard_widgets = new DataManager();
     $dashboard_widgets->dmLoadCustomList("SELECT b.*
-    FROM " . NATURAL_DBNAME . ".dashboard_widgets b
+    FROM " . "dashboard_widgets b
     WHERE $row_id  $search_query
     ORDER BY  $sort 
     LIMIT  $start, $limit", 'ASSOC', TRUE);

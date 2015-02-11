@@ -11,24 +11,24 @@
 class Files Extends DataManager {
 
     public function loadSingle($search_str) {
-        parent::dmLoadSingle(NATURAL_DBNAME . ".files", $search_str);
+        parent::dmLoadSingle("files", $search_str);
     }
 
     public function loadList($output, $search_str) {
-        parent::dmLoadList(NATURAL_DBNAME . ".files", $output, $search_str);
+        parent::dmLoadList("files", $output, $search_str);
     }
 
     public function insert() {
-        parent::dmInsert(NATURAL_DBNAME . ".files", $this);
+        parent::dmInsert("files", $this);
         $this->id = $this->dbid;
     }
 
     public function update($upd_rule) {
-        parent::dmUpdate(NATURAL_DBNAME . ".files", $upd_rule, $this);
+        parent::dmUpdate("files", $upd_rule, $this);
     }
 
     public function remove($rec_key) {
-        parent::dmRemove(NATURAL_DBNAME . ".files", $rec_key);
+        parent::dmRemove("files", $rec_key);
     }
 
 }

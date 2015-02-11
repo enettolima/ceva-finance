@@ -33,7 +33,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 	// Dial List Table Object
 	$user = new DataManager();
 	$user->dmLoadCustomList("SELECT u.*
-		FROM " . NATURAL_DBNAME . ".user u
+		FROM " . "user u
 		WHERE $row_id $search_query
 		ORDER BY  $sort
 		LIMIT  $start, $limit", 'ASSOC', TRUE);
