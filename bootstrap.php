@@ -2,8 +2,7 @@
   define('NATURAL_ROOT_PATH', dirname(__FILE__));
   if (file_exists(NATURAL_ROOT_PATH . '/bootstrap.dev.php')) {
     require(NATURAL_ROOT_PATH . '/bootstrap.dev.php');
-  }
-  else {
+  } else {
   /* Define system defaults and main configuration */
 
   //SET NATURAL INTO DEVELOPMENT MODE
@@ -46,8 +45,6 @@
   //PLATFORM NAME
   define('NATURAL_PLATFORM', 'Natural');
 
-
-
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
 
   define('NATURAL_PDO_DSN_READ', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
@@ -57,6 +54,12 @@
   define('NATURAL_PDO_DSN_WRITE', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_WRITE', 'root');
   define('NATURAL_PDO_PASS_WRITE', '123456');
+
+  //Temporary DB info to support datamanager
+  define('NATURAL_DBNAME', 'natural_framework');
+  define('NATURAL_DBHOST', 'localhost');
+  define('NATURAL_DBUSER', 'root');
+  define('NATURAL_DBPASS', '123456');
 
   //SET MAGIC KEY
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');

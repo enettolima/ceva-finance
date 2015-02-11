@@ -22,15 +22,15 @@ class DataManager {
 	 *
 	 */
 	public function dmLoadSingle($table, $search_str) {
-		$db = new DataConnection->readOnly();
+		$db = DataConnection::readOnly();
+
 		$q = $db->{$table}()->where($search_str)->limit(1);
 
 		$this->affected = count($q);
 
 		if (!$this->affected) {
 			$this->errorcode = RECORD_NOT_FOUND_CODE;
-			$this->error =
-			RECORD_NOT_FOUND_MESG;
+			$this->error = RECORD_NOT_FOUND_MESG;
 
 			return;
 		}
@@ -49,7 +49,7 @@ class DataManager {
 	 */
 	public function dmLoadList($table, $output, $search_str, $count = false,
 		$count_query = null) {
-		$db = new DataConnection->readOnly();
+		$db = DataConnection::readOnly();
 
 		//Total records count used in pagination
 		$this->total_records = $db->{$table}()->count('*');
@@ -94,7 +94,7 @@ class DataManager {
 	public function dmLoadCustomList($query, $output, $count = false, $count_query
 		= null) {
 
-		$db = new DataConnection->readOnly();
+		$db = DataConnection::readOnly();
 
 		//Total records count used in pagination
 		$this->total_records = $db->{$table}()->count('*');
@@ -147,7 +147,7 @@ class DataManager {
 				}
 			}
 
-		$db = new DataConnection->readWrite();
+		$db = DataConnection::readWrite();
 
 		$q = $db->{$table}()->insert($fields);
 
@@ -158,7 +158,7 @@ class DataManager {
 			$this->error = MYSQL_INSERT_ERROR_MESG ;
 			return;
 		}else{
-			$this->dbid = $db->{$table}()->->insert_id();
+			$this->dbid = $db->{$table}()->insert_id();
 		}
 	}
 
@@ -169,7 +169,7 @@ class DataManager {
 	 */
 	public function dmRemove($table, $record_key) {
 	
-		$db = new DataConnection->readWrite();
+		$db = DataConnection::readWrite();
 
 		$q = $db->{$table}()->where($record_key)->delete();
 
@@ -195,7 +195,7 @@ class DataManager {
 				}
 			}
 
-		$db = new DataConnection->readWrite();
+		$db = DataConnection::readWrite();
 
 		$q = $db->{$table}()->where($update_rule)->update($fields);
 
@@ -206,7 +206,7 @@ class DataManager {
 			$this->error = MYSQL_UPDATE_ERROR_MESG;
 			return;
 		}else{
-			$this->dbid = $db->{$table}()->->insert_id();
+			$this->dbid = $db->{$table}()->insert_id();
 		}
 	}
 
@@ -232,7 +232,7 @@ class DataManager {
 	 */
 	public function dmCheckModule($module) {
 
-		$db = new DataConnection->readOnly();
+		$db = DataConnection::readOnly();
 
 		$table = MODULES_TABLE;
 

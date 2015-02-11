@@ -19,19 +19,18 @@ class User Extends DataManager{
 	 */
 
 	public function authenticate($username,$password) {
-	  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
-	  $db = new NotORM($pdo);
+	  $db = DataConnection::readOnly();
 	  $u = $db->user()
     		->select("*")
     		->where("username", $username)
-		->and("password=AES_ENCRYPT( ? , ? )", $password, NATURAL_MAGIC_KEY )
-		->and("status > ?", 0)
+				->and("password=AES_ENCRYPT( ? , ? )", $password, NATURAL_MAGIC_KEY )
+				->and("status > ?", 0)
     		->limit(1)
-		->fetch();
-	  if(count($u)>0){
+				->fetch();
 
-	  foreach ($u as $field => $value){
-	  	$this->$field = $value ;
+	  if(count($u)>0){
+	  	foreach ($u as $field => $value){
+	  		$this->$field = $value ;
   	  }
 	
 	  $this->granted = true;
