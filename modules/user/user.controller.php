@@ -141,7 +141,7 @@ function user_create_form_submit($data) {
 			$user->insert(true);
 			$temp_pass 	      = $user->temp_password;
 		}
-    if ($user->affected > 0) {
+		if ($user->affected > 0) {
 	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
 	  }
 	  return user_list($user->id);

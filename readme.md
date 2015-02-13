@@ -48,3 +48,7 @@ to your database is to import the file `natural_framework.sql` available in your
 
 ####Restart Apache service  
 `service apache2 restart`
+
+Vagrant database credentials
+user: root
+pass: 123456
