@@ -125,30 +125,23 @@ function user_create_form_submit($data) {
   }
 	else {
 		// Verify Username
-		$user->loadSingle('username = "' . $data['username'] . '"');
+		$user->byUsername($data['username']);
     if ($user->affected) {
 		  natural_set_message('Username "' . $data['username'] . '" already taken.', 'error');
       return FALSE;
     }
-		// Adding values
-		$user->first_name 	= $data['first_name'];
-		$user->last_name 		= $data['last_name'];
-		$user->email 				= $data['email'];
-		$user->username 		= $data['username'];
-		$user->access_level = $data['access_level'];
-		$user->language 		= "en";
-		$user->file_id 			= $data["avatar"][0];
-		$user->status 			= 1;
 
+		// Adding values
 		if($data['password']){
 			$user->password 	= $data['password'];
-			$user->insert(false,false);
-			$temp_pass 	      = $data['password'];
+			$gen_pass = fasle;;
 		}else{
-			$user->insert(true);
-			$temp_pass 	      = $user->temp_password;
+			$gen_pass = true;
 		}
-    if ($user->affected > 0) {
+
+		$res = $user->create(false, $gen_pass, $data);
+
+    if ($res) {
 	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
 	  }
 	  return user_list($user->id);
@@ -160,7 +153,7 @@ function user_create_form_submit($data) {
  */
 function user_edit_form($user_id) {
   $user = new User();
-  $user->loadSingle('id = ' . $user_id);
+  $user->byId($user_id);
   if ($user->affected > 0) {
     $frm = new DbForm();
     // Select the properly levels

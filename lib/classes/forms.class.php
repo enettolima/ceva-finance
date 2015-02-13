@@ -139,13 +139,14 @@ class DbForm {
 
 		$db = DataConnection::readOnly();
 
-		$form_param = $db->FORM_TABLE()
+		$form_param = $db->{FORM_TABLE}()
 											->where('form_id', $form_name)
-											->limit(1);
+											->limit(1)
+											->fetch();
 
-		$form_fields = $db->FIELD_TABLE()
+		$form_fields = $db->{FIELD_TABLE}()
 												->where('form_template_id', $form_param['id'])
-												->order('form_fields_order asc');
+												->order('form_field_order asc');
 
     $fields = array();
     $hidden_fields = array();
@@ -170,8 +171,17 @@ class DbForm {
 
     // Start looping through fields.
     foreach($form_fields as $form_field) {
-      if ($form_field['level'] != $level ) {//&& $form_field['field_name'] == $form_fields->data[$f - 1]['field_name']) {
-        continue;
+
+      // Verifies the form field Level and applies the ACL if needed to make this work you must set the level field in the field_template
+      // to the minimum level that has access to the raw field withou the ACL being applied. for example if you set the Level to 41 and ACL to readonly
+      // anyone with level 41 and below will not be able to edit the field only people with level 42 and above.
+			if ($level <= $form_field['level']) {
+        if ($form_field['acl'] == 'readonly') {
+          $form_field['css_class'] .= 'form-readonly';
+        }else {
+          $form_field['html_type'] = 'hidden';
+          $form_field['def_val'] = is_array($form_field['def_val']) ? implode(', ', $form_field['def_val']) : $form_field['def_val'];
+        }
       }
 
       // Field ID
@@ -201,18 +211,6 @@ class DbForm {
         }
       }
 
-      // Verifies the form field Level and applies the ACL if needed to make this work you must set the level field in the field_template
-      // to the minimum level that has access to the raw field withou the ACL being applied. for example if you set the Level to 41 and ACL to readonly
-      // anyone with level 41 and below will not be able to edit the field only people with level 42 and above.
-      if ($form_field['level'] >= $level) {
-        if ($form_field['acl'] == 'readonly') {
-          $form_field['css_class'] .= 'form-readonly';
-        }
-        else {
-          $form_field['html_type'] = 'hidden';
-          $form_field['def_val'] = is_array($form_field['def_val']) ? implode(', ', $form_field['def_val']) : $form_field['def_val'];
-        }
-      }
 
       // Preprocess some fields before sendint to the template engine.
       switch ($form_field['html_type']) {
@@ -225,20 +223,29 @@ class DbForm {
         case 'checkbox':
         case 'radio':
 				case 'list':
-					//UNCOMMENT THIS
-          //$options = $this->_getFieldOptions($form_field);
+          $options = $this->_getFieldOptions($form_field);
           $form_field['options'] = $options;
           break;
         case 'readonly':
           if ($form_field['data_table'] != '') {
-            $dm = new DataManager;
-            $query = "SELECT {$form_field['data_label']} FROM {$form_field['data_table']} WHERE {$form_field['data_value']} = '{$form_field['def_val']}' AND {$form_field['data_query']}  ORDER BY {$form_field['data_sort']} LIMIT 1";
-            $dm->dmCustomQuery($query, true);
             $data_label = $form_field['data_label'];
-            if (!$dm->$data_label) {
-              $dm->$data_label = '-';
-            }
-            $form_field['def_val'] = $dm->$data_label;
+						$dm = DataConnection::readOnly();
+						$label_val = $dm->{$form_field['data_table']}()
+															->select($form_field['data_label'])
+															->where($form_field['data_value'], $form_field['def_val'])
+															->and($form_field['data_query'])
+															->order($form_field['data_sort'])
+															->limit(1)
+															->fetch();
+            if (!$label_val) {
+            	$form_field['def_val'] = "-";
+						}else{
+							$form_field['def_val'] = $label_val[$form_field['data_label']];
+						}
+
+						//$dm = new DataManager;
+            //$query = "SELECT {$form_field['data_label']} FROM {$form_field['data_table']} WHERE {$form_field['data_value']} = '{$form_field['def_val']}' AND {$form_field['data_query']}  ORDER BY {$form_field['data_sort']} LIMIT 1";
+            //$dm->dmCustomQuery($query, true);
           }
           break;
         case 'uploader':
@@ -301,8 +308,7 @@ class DbForm {
       }
     }
 
-
-		$fsets = $db->FIELDSET_TABLE()
+		$fsets = $db->{FIELDSET_TABLE}()
 							->where('name IN ( ? )', implode(', ', $fieldset_clause))
 							->order('position');
 
@@ -318,11 +324,8 @@ class DbForm {
       $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
     }*/
 
-    if (count($fsets)>0) {
-      $fieldsets['blank']['fields'] = $hidden_fields;
-    }else{
-      //$fieldsets['blank']['fields'] = $form_fields + $hidden_fields;
-    }
+      $fieldsets['blank']['fields'] = $form_fields;
+      $fieldsets['hidden']['fields'] = $hidden_fields;
 
     // Render Array
     $render = array(

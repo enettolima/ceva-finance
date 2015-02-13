@@ -124,6 +124,7 @@ class User {
 				$this->language      = $u['preferred_language'];
 				$this->dashboard_1   = unserialize($u['dashboard_1']);
 				$this->dashboard_2   = unserialize($u['dashboard_2']);
+				$this->affected 		 = 1;
 
 				//setting response for api calls
 				$res = array( 'id'					 => $u['id'], 
@@ -201,7 +202,7 @@ class User {
 	* @smart-auto-routing false
 	* @access private
 	*/
-	public function create($show_password=false, $auto_gen_pass=true){
+	public function create($show_password=false, $auto_gen_pass=true, $data = null){
 			if($auto_gen_pass){
 				$temp_password = parent::dmRandom(true, 6);
 			}else{
@@ -211,26 +212,47 @@ class User {
 			$hasher = new Phpass\PasswordHash(8,false);
 			$hashed_pass = $hasher->HashPassword($temp_password);
 
+			
 			$db = DataConnection::readWrite();
 			$u = $db->user();
 
-			$data = array(  'file_id'      => $this->file_id,
-										  'first_name'   => $this->first_name,
-											'last_name'    => $this->last_name,
-											'username'     => $this->username,
-											'password'     => $hashed_pass,
-											'email'        => $this->email,
-											'access_level' => $this->access_level,
-											'status'       => $this->status,
-											'language'     => $this->preferred_language,
-											'dashboard_1'  => serialize($this->dashboard_1),
-											'dashboard_2'  => serialize($this->dashboard_2));
+			if($data == null) {
+				$data = array(  'file_id'      => $this->file_id,
+											  'first_name'   => $this->first_name,
+												'last_name'    => $this->last_name,
+												'username'     => $this->username,
+												'email'        => $this->email,
+												'access_level' => $this->access_level,
+												'status'       => $this->status,
+												'language'     => $this->preferred_language,
+												'dashboard_1'  => serialize($this->dashboard_1),
+												'dashboard_2'  => serialize($this->dashboard_2));
+			}else{
+				$data['dashboard_1']  = serialize($data['dashboard_1']);
+				$data['dashboard_2']  = serialize($data['dashboard_2']);
+			}
 
-		  $affected = $u->insert($data);
+			if(!isset($data['status'])){
+					$data['status'] = 1;
+			}
+
+			if(!isset($data['language'])){
+					$data['language'] = 'en';
+			}
+
+			$data['password'] = $hashed_password;
+
+			$affected = $u->insert($data);
+
+			foreach($data as $key => $value){
+				$this->{$key} = $value;
+			}
+
 			$this->id = $u->insert_id();
 			if($show_password){
 				$this->temp_password = $temp_password;
 			}
+			return $affected;
     }
 	
 	/**
