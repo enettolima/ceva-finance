@@ -2,7 +2,6 @@
 
   session_start();
   require_once('../../bootstrap.php');
-  require_once('acl.func.php');
 
   if(!$_SESSION['logged'])
   {

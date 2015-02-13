@@ -35,7 +35,6 @@ class ACL {
             session_destroy();
         }
     }
-
 }
 
 ?>

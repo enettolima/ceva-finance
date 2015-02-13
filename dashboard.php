@@ -26,10 +26,11 @@ if ($_SESSION['log_username']) {
 	);
 
 	//Loading avatar picture
-	$file = new Files();
-	$file->loadSingle('id=' . $_SESSION['log_file_id']);
-	if($file->affected>0){
-		$avatar = $file->uri;
+
+	$db = DataConnection::readOnly();
+	$file = $db->files[$_SESSION['log_file_id']];
+	if($file){
+		$avatar = $file['uri'];
 	}
 
 	// Twig Base

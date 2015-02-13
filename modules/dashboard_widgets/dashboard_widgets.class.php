@@ -1,54 +1,9 @@
 <?php
 /**
  * All methods in this class are protected
- * @access protected
+ * access protected
  */
-class DashboardWidgets Extends DataManager {
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadSingle($search_str) {
-        parent::dmLoadSingle("dashboard_widgets", $search_str);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadList($output, $search_str) {
-        parent::dmLoadList("dashboard_widgets", $output, $search_str);
-        return $this;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function insert() {
-        parent::dmInsert("dashboard_widgets", $this);
-        $this->id = $this->dbid;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function update($upd_rule) {
-        parent::dmUpdate("dashboard_widgets", $upd_rule, $this);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function remove($rec_key) {
-        parent::dmRemove("dashboard_widgets", $rec_key);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadCustomList($query, $output, $count) {
-        parent::dmLoadCustomList($query, $output, $count);
-    }
-    //End of database access
+class DashboardWidgets {
 
     /**
     * Method to create a new dashboard_widgets
@@ -60,23 +15,23 @@ class DashboardWidgets Extends DataManager {
     * 
     * @access public
     */
-    function create($request_data) {
+    public function create($request_data) {
         //Validating data from the API call
         $this->_validate($request_data, "insert");
-
-        $dashboard_widgets = new DashboardWidgets();
+				$data = array();
         foreach ($request_data as $key => $value) {
-            if ($key != "key") {
-                $dashboard_widgets->$key = $value;
+            if ($key != "key" && $key != "id") {
+                $data[$key] = $value;
             }
-        }
-        $dashboard_widgets->insert();
-        if ($dashboard_widgets->affected > 0) {
+				}
+
+				$db = DataConnection::readWrite();
+				$affected = $db->dashboard_widgets()->insert($data);
+        if ($affected) {
             //Preparing response
             $response = array();
-            $response['code'] = 201;
-            $response['message'] = 'DashboardWidgets has been created!';
-            $response['id'] = $dashboard_widgets->id;
+            $response['message'] = 'Dashboard Widget have been created!';
+            $response['id'] = $db->dashboard_widgets()->insert_id();
             return $response;
         } else {
             throw new Luracast\Restler\RestException(500, 'DashboardWidgets could not be created!');
@@ -90,7 +45,6 @@ class DashboardWidgets Extends DataManager {
     * by ID
     *
     * @url GET byID/{id}
-    * @url POST byID
     * @smart-auto-routing false
     * 
     * @access public
@@ -98,31 +52,26 @@ class DashboardWidgets Extends DataManager {
     * @param int $id DashboardWidgets to be fetched
     * @return mixed 
     */
-    function byID($id) {
+    public function byID($id) {
         //If id is null
         if (is_null($id)) {
             throw new Luracast\Restler\RestException(400, 'Parameter id is missing or invalid!');
         }
         
-        //Get object by id
-        $this->loadSingle("id='{$id}'");
-        //If object not found throw an error
-        if ($this->affected < 1) {
+				//Get object by id
+				$db = DataConnection::readOnly();
+				$widget = $db->dashboard_widgets[$id];
+
+        if (!$widget) {
             throw new Luracast\Restler\RestException(404, 'DashboardWidgets not found!');
         }
         
-        //Unset restler
-        unset($this->restler);
-        unset($this->errorcode);
-        unset($this->error);
-        unset($this->dbid);
-        unset($this->data);
-        unset($this->affected);
-        $resultdata = (array) $this;
-        $result['code'] = 200;
-        $result['data'] = $resultdata;
-        //Return response
-        return $result;
+				$res = array();
+				foreach ($widget as $key => $value){
+					$res[$key] = $value ;
+					$this->{$key} = $value;
+				}
+        return $res;
     }
 
     /**
@@ -131,29 +80,24 @@ class DashboardWidgets Extends DataManager {
     * Fech all records from the database
     *
     * @url GET loadAll
-    * @url POST loadAll
     * @smart-auto-routing false
     * 
     * @access public
     * @throws 404 DashboardWidgets not found
     * @return mixed 
     */
-    function loadAll() {
-        $this->loadList("ASSOC", 'id>0');
-        unset($this->restler);
-        //parent::dm_load_list("dashboard_widgets", "ASSOC", "id>'0'");
-        unset($this->errorcode);
-        unset($this->error);
-        unset($this->dbid);
-        if ($this->affected < 1) {
+    public function loadAll() {
+				$res = array();
+				
+				$db = DataConnection::readOnly();
+				$widgets = $db->dashboard_widgets();
+        if (count($widgets) < 1) {
             throw new Luracast\Restler\RestException(404, 'No items found!');
         }
 
-        $resultdata = (array) $this;
-        $result['code'] = 200;
-        $result['data'] = $this->data;
-        //Return response
-        return $result;
+				$res = array_map('iterator_to_array', iterator_to_array($widgets));
+
+        return $res;
     }
 
     /**
@@ -161,40 +105,31 @@ class DashboardWidgets Extends DataManager {
     *
     * Update dashboard_widgets on database
     *
-    * @url GET put
-    * @url POST put
+    * @url PUT update
     * @smart-auto-routing false
     *
     * @access public
     * @throws 404 DashboardWidgets not found
     * @return mixed 
     */
-    function put($request_data) {
+    function update($request_data) {
         $this->_validate($request_data, "update");
-        //Loading the object from the database
-        $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->loadSingle("id='" . $request_data['id'] . "'");
-        unset($dashboard_widgets->errorcode);
-        unset($dashboard_widgets->error);
-        unset($dashboard_widgets->dbid);
-        unset($dashboard_widgets->data);
-        unset($dashboard_widgets->affected);
-        //Assigning variables
-        foreach ($request_data as $key => $value) {
-            if ($key == "key" || $key == "id") {
-                //Skipp
-            } else {
-                $dashboard_widgets->$key = $value;
-            }
-        }
-        //Updating table with the new information
-        $dashboard_widgets->update("id='" . $request_data['id'] . "'");
-        if ($dashboard_widgets->affected > 0) {
-            //Preparing response
-            $response = array();
-            $response['code'] = 200;
-            $response['message'] = 'DashboardWidgets has been updated!';
-            return $response;
+
+				$id = $request_data['id'];
+
+				$db = DataConnection::readWrite();
+				$widget = $db->dashboard_widgets[$id];
+
+				if($widget){
+					unset($request_data['key']);
+					unset($request_data['id']);
+
+					$widget->update($request_data);
+					$widget = $db->dashboard_widgets[$id];
+					foreach ($widget as  $key => $value ){
+							$res[$key] = $value;
+					}
+					return $res;
         } else {
             //Could not update database table, maybe the record is the same?
             throw new Luracast\Restler\RestException(500, 'DashboardWidgets could not be updated!');
@@ -206,34 +141,34 @@ class DashboardWidgets Extends DataManager {
     *
     * Delete dashboard_widgets from database
     *
-    * @url GET delete
-    * @url POST delete
+    * @url DELETE delete
     * @smart-auto-routing false
     *
-    * @access public
+		* @access public
+		* @param $id Id of dashboard widget to be deleted
     * @throws 404 DashboardWidgets not found
     * @return mixed 
     */
-    function delete($request_data) {
-        $this->_validate($request_data, "delete");
-        $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->loadSingle("id='" . $request_data['id'] . "'");
-        if ($dashboard_widgets->affected < 1) {
+    function delete($id) {
+        $this->_validate($id, "delete");
+
+				$db = DataConnection::readWrite();
+				$widget = $db->dashboard_widgets[$id];
+				$affected = $widget->delete();
+
+        if ($affected > 0) {
+        		$response['message'] = 'DashboardWidgets has been removed!';
+       			 return $response;
+				}else{
             throw new Luracast\Restler\RestException(404, 'Item not found!');
-        }
-        $dashboard_widgets->remove("id='" . $request_data['id'] . "'");
-        $response = array();
-        $response['code'] = 200;
-        $response['message'] = 'DashboardWidgets has been removed!';
-        return $response;
+				}
     }
     /**
     * @smart-auto-routing false
     * @access private
     */
     function _validate($data, $type, $from_api = true) {
-        //If the method called is an update, check if the id exists, otherwise return error
-        if ($type == "update" || $type == "delete") {
+        if ($type == "update") {
             if (!$data['id']) {
               throw new Luracast\Restler\RestException(404, 'Parameter ID is required!');
             }
@@ -243,9 +178,9 @@ class DashboardWidgets Extends DataManager {
          * Add more fields as needed
          */
 
-        if ($type != "delete") {
-            if (!$data['title']) {
-              $error[] = 'Field title is required!';
+        if ($type == "delete") {
+            if ($data == null && $data < 0) {
+              throw new Luracast\Restler\RestException(404, 'Parameter ID is required!');
             }
         }
 

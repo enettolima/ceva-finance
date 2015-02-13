@@ -3,7 +3,7 @@
  * All methods in this class are protected
  * @access protected
  */
-class Module Extends DataManager {
+class Module {
     /**
     * @smart-auto-routing false
     * @access private
@@ -11,6 +11,7 @@ class Module Extends DataManager {
     function loadSingle($search_str) {
         parent::dmLoadSingle("module", $search_str);
     }
+
     /**
     * @smart-auto-routing false
     * @access private
@@ -19,6 +20,7 @@ class Module Extends DataManager {
         parent::dmLoadList("module", $output, $search_str);
         return $this;
     }
+
     /**
     * @smart-auto-routing false
     * @access private

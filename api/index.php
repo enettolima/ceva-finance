@@ -12,8 +12,8 @@ $r = new Restler(true, true);
 $r->addAPIClass('Luracast\\Restler\\Resources'); 
 $r->setSupportedFormats('JsonFormat');
 $r->addAuthenticationClass('SimpleAuth');
-$r->addAPIClass('Book');
 $r->addAPIClass('User');
-$r->addAPIClass('Cars');
+$r->addAPIClass('Menu');
+$r->addAPIClass('DashboardWidgets');
 $r->handle();
 ?>

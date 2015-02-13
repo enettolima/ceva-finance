@@ -3,61 +3,14 @@
  * All methods in this class are protected
  * @access protected
  */
-class Menu Extends DataManager {
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadSingle($search_str) {
-        parent::dmLoadSingle("menu", $search_str);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadList($output, $search_str) {
-        parent::dmLoadList("menu", $output, $search_str);
-        return $this;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function insert() {
-        parent::dmInsert("menu", $this);
-        $this->id = $this->dbid;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function update($upd_rule) {
-        parent::dmUpdate("menu", $upd_rule, $this);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function remove($rec_key) {
-        parent::dmRemove("menu", $rec_key);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadCustomList($query, $output, $count) {
-        parent::dmLoadCustomList($query, $output, $count);
-    }
-    //End of database access
-
-		/**
+class Menu {
+	/**
 	 * Method to fecth Menu list by level
 	 *
 	 * Fech a list of menus 
 	 * by level
 	 *
 	 * @url GET byLevel/{level}
-	 * @url POST byLevel
 	 * @smart-auto-routing false
 	 * 
 	 * @access public
@@ -66,20 +19,26 @@ class Menu Extends DataManager {
 	 * @return mixed 
 	 */
   public function byLevel($menu_name = 'main', $level) {
-    parent::dmLoadList('menu'  , 'ASSOC', 'status = 1 AND menu_name LIKE "'.$menu_name.'" ORDER BY position');
-    if ($this->affected) {
+		$db = DataConnection::readOnly();
+		$m = $db->menu()
+					->select("*")
+					->where("status", 1)
+					->and("menu_name LIKE ?", $menu_name)
+					->order("position ASC");
+	
+		if(count($m)>0){
       $links = array();
-      foreach ($this->data as $key => $item) {
-        // Test permission.
-        if ($this->menuPermission($item, $level)) {
-          $links[$item['id']] = $item;
+			foreach ($m as $id => $menu){
+        if ($this->menuPermission($menu, $level)) {
+					 foreach ($menu as $column => $data) {
+						 $links[$id][$column] = $data ;
+					 }   
         }
-      }
+			}
+		}
       $tree = $this->menuBuildTree($links);
-      return $tree;
-    }
+		  return $tree;
   }
-  
   
   
   /**
@@ -101,10 +60,8 @@ class Menu Extends DataManager {
           $link['children'] = $children;
         }
         $branch[$link['id']] = $link;
-        //unset($links[$link['id']]);
       }
     }
-  
     return $branch;
   }
   
@@ -179,14 +136,16 @@ class Menu Extends DataManager {
             if ($key != "key") {
                 $menu->$key = $value;
             }
-        }
-        $menu->insert();
-        if ($menu->affected > 0) {
+				}
+				$db = DataConnection::ReadWrite();
+				$db->menu()->insert($menu);
+
+        if ($db->menu()->insert_id() >= 0) {
             //Preparing response
             $response = array();
             $response['code'] = 201;
             $response['message'] = 'Menu has been created!';
-            $response['id'] = $menu->id;
+            $response['id'] = $db->menu()->insert_id();
             return $response;
         } else {
             throw new Luracast\Restler\RestException(500, 'Menu could not be created!');
@@ -200,7 +159,6 @@ class Menu Extends DataManager {
     * by ID
     *
     * @url GET byID/{id}
-    * @url POST byID
     * @smart-auto-routing false
     * 
     * @access public
@@ -215,21 +173,18 @@ class Menu Extends DataManager {
         }
         
         //Get object by id
-        $this->loadSingle("id='{$id}'");
+				$db = DataConnection::readOnly();
+				$menu = $db->menu[$id];
+
         //If object not found throw an error
-        if ($this->affected < 1) {
+        if (count($result) < 1) {
             throw new Luracast\Restler\RestException(404, 'Menu not found!');
         }
         
-        //Unset restler
-        unset($this->restler);
-        unset($this->errorcode);
-        unset($this->error);
-        unset($this->dbid);
-        unset($this->data);
-        unset($this->affected);
-        
-        $resultdata = (array) $this;
+				$resultdata = array();
+				foreach ($menu as $column => $data) {
+					$resultdata[$column]=$data ;
+			  }   
         $result['code'] = 200;
         $result['data'] = $resultdata;
         //Return response
@@ -242,7 +197,6 @@ class Menu Extends DataManager {
     * Fech all records from the database
     *
     * @url GET loadAll
-    * @url POST loadAll
     * @smart-auto-routing false
     * 
     * @access public
@@ -250,19 +204,23 @@ class Menu Extends DataManager {
     * @return mixed 
     */
     function loadAll() {
-        $this->loadList("ASSOC", 'id>0');
-        unset($this->restler);
-        //parent::dm_load_list("menu", "ASSOC", "id>'0'");
-        unset($this->errorcode);
-        unset($this->error);
-        unset($this->dbid);
-        if ($this->affected < 1) {
+
+				$db = DataConnection::readOnly();
+				$menus = $db->menu();
+
+        if (count($menus) > 0) {
             throw new Luracast\Restler\RestException(404, 'No items found!');
         }
+	
+				$resultdata = array();
+				foreach ($menus as $id => $menu){
+					foreach ($menu as $column => $data) {
+						$resultdata[$id][$column] = $data ;
+        	}
+				}
 
-        $resultdata = (array) $this;
         $result['code'] = 200;
-        $result['data'] = $this->data;
+        $result['data'] = $resultdata;
         //Return response
         return $result;
     }
@@ -272,8 +230,7 @@ class Menu Extends DataManager {
     *
     * Update menu on database
     *
-    * @url GET put
-    * @url POST put
+    * @url PUT update
     * @smart-auto-routing false
     *
     * @access public
@@ -282,25 +239,21 @@ class Menu Extends DataManager {
     */
     function put($request_data) {
         $this->_validate($request_data, "update");
-        //Loading the object from the database
-        $menu = new Menu();
-        $menu->loadSingle("id='" . $request_data['id'] . "'");
-        unset($menu->errorcode);
-        unset($menu->error);
-        unset($menu->dbid);
-        unset($menu->data);
-        unset($menu->affected);
-        //Assigning variables
+				
+				$db = DataConnection::ReadWrite();
+				$menu = $db->menu[$request_data['id']];
+
         foreach ($request_data as $key => $value) {
             if ($key == "key" || $key == "id") {
                 //Skipp
             } else {
-                $menu->$key = $value;
+                $menu[$key] = $value;
             }
-        }
-        //Updating table with the new information
-        $menu->update("id='" . $request_data['id'] . "'");
-        if ($menu->affected > 0) {
+				}
+
+				$affected = $menu->update();
+
+        if ($affected > 0) {
             //Preparing response
             $response = array();
             $response['code'] = 200;
@@ -317,8 +270,7 @@ class Menu Extends DataManager {
     *
     * Delete menu from database
     *
-    * @url GET delete
-    * @url POST delete
+    * @url DELETE delete
     * @smart-auto-routing false
     *
     * @access public
@@ -327,12 +279,15 @@ class Menu Extends DataManager {
     */
     function delete($request_data) {
         $this->_validate($request_data, "delete");
-        $menu = new Menu();
-        $menu->loadSingle("id='" . $request_data['id'] . "'");
+
+				$db = DataConnection::readWrite();
+				$menu = $db->menu[$request_data['id']];
+				$affected = $menu->delete();
+
         if ($menu->affected < 1) {
             throw new Luracast\Restler\RestException(404, 'Item not found!');
         }
-        $menu->remove("id='" . $request_data['id'] . "'");
+
         $response = array();
         $response['code'] = 200;
         $response['message'] = 'Menu has been removed!';

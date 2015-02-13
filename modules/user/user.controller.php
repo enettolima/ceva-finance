@@ -7,58 +7,60 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 	// Row Id for update only row
 	if (!empty($row_id)) {
-		$row_id = 'u.id = ' . $row_id;
+		$row_id = 'id = ' . $row_id;
 	} else {
-		$row_id = 'u.id != 0';
-	}
-
-	// Search
-	if (!empty($search)) {
-		$search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.username');
-		$exceptions = array();
-		$search_query = build_search_query($search, $search_fields, $exceptions);
-	}
-	else {
-		$search_query = '';
+		$row_id = 'id != 0';
 	}
 
 	// Sort
 	if (empty($sort)) {
-		$sort = 'u.first_name ASC';
+		$sort = 'first_name ASC';
 	}
 
 	$limit = PAGER_LIMIT; // PAGER_LIMIT
-	$start = ($page * $limit) - $limit;
-
-	// Dial List Table Object
-	$user = new DataManager();
-	$user->dmLoadCustomList("SELECT u.*
-		FROM " . "user u
-		WHERE $row_id $search_query
-		ORDER BY  $sort
-		LIMIT  $start, $limit", 'ASSOC', TRUE);
+	$offset = ($page * $limit) - $limit;
 	
-	if ($user->affected > 0) {
+	$db = DataConnection::readOnly();
+	
+	// Search
+	if (!empty($search)) {
+		$search_fields = array('id', 'first_name', 'last_name', 'username');
+		$exceptions = array();
+		$search_query = build_search_query($search, $search_fields, $exceptions);
+
+		$users = $db->user()
+						->where($row_id)
+						->and($search_query)
+						->order($sort)
+						->limit($limit, $offset);
+	} else {
+		$users = $db->user()
+						->where($row_id)
+						->order($sort)
+						->limit($limit, $offset);
+	}
+
+	if (count($users) > 0) {
 		// Building the header with sorter
-		$headers[] = array('display' => 'Id', 'field' => 'u.id');
-		$headers[] = array('display' => 'First Name', 'field' => 'u.first_name');
-		$headers[] = array('display' => 'Last Name', 'field' => 'u.last_name');
-		$headers[] = array('display' => 'Username', 'field' => 'u.username');
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
+		$headers[] = array('display' => 'Username', 'field' => 'username');
 		$headers[] = array('display' => 'Edit', 'field' => NULL);
 		$headers[] = array('display' => 'Delete', 'field' => NULL);
 		$headers = build_sort_header('user_list', 'user', $headers, $sort);
 
-		for ($i = 0; $i < $user->affected; $i++) {
-			$j = $i + 1;
-			//This is important for the row update
-			$rows[$j]['row_id'] 		= $user->data[$i]['id'];
-			//////////////////////////////////////
-			$rows[$j]['id'] 				= $user->data[$i]['id'];
-			$rows[$j]['first_name']	= $user->data[$i]['first_name'];
-			$rows[$j]['last_name'] 	= $user->data[$i]['last_name'];
-			$rows[$j]['username'] 	= $user->data[$i]['username'];
-			$rows[$j]['edit'] 			= theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-			$rows[$j]['delete'] 		= theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+		$i = 0;
+		foreach( $users as $user ){
+				//This is important for the row update
+			$rows[$i]['row_id'] 		= $user['id'];
+			$rows[$i]['id'] 				= $user['id'];
+			$rows[$i]['first_name']	= $user['first_name'];
+			$rows[$i]['last_name'] 	= $user['last_name'];
+			$rows[$i]['username'] 	= $user['username'];
+			$rows[$i]['edit'] 			= theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
+			$rows[$i]['delete'] 		= theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+			$i++;	
 		}
 	}
 
@@ -68,7 +70,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No user found!'),
 		'table_prefix' => theme_link_process_information(translate('Create New User'), 'user_create_form', 'user_create_form', 'user', array('response_type' => 'modal')),
-		'pager_items' => build_pager('user_list', 'user', $user->total_records, $limit, $page),
+		'pager_items' => build_pager('user_list', 'user', count($users), $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
@@ -90,12 +92,17 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
  */
 function user_create_form() {
 	$frm = new DbForm();
-  // Select the properly levels
-	$access_levels = new DataManager();
-	$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-	if ($access_levels->affected) {
+
+
+  // Select the proper levels
+	$db = DataConnection::readOnly();
+	$access_levels = $db->acl_levels()
+												->select('description, level')
+												->where('level <= ? ',  $_SESSION['log_access_level']);
+
+	if (count($access_levels) > 0) {
 		$items = array();
-		foreach ($access_levels->data as $access_level) {
+		foreach ($access_levels as $access_level) {
 			$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
 		}
 		$frm->access_level_options = implode(';', $items);
@@ -157,14 +164,18 @@ function user_edit_form($user_id) {
   if ($user->affected > 0) {
     $frm = new DbForm();
     // Select the properly levels
-    $access_levels = new DataManager();
-    $access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-    if ($access_levels->affected) {
-      $items = array();
-      foreach ($access_levels->data as $access_level) {
-        $items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
-      }
-      $user->access_level_options = implode(';', $items);
+  	$db = DataConnection::readOnly();
+		$access_levels = $db->acl_levels()
+												->select('description, level')
+												->where('level <= ? ',  $_SESSION['log_access_level']);
+
+		if (count($access_levels) > 0) {
+			$items = array();
+			foreach ($access_levels as $access_level) {
+				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
+			}
+			
+			$user->access_level_options = implode(';', $items);
     }
 		// Testing chekboxes
 		$user->user_race = array('caucasian', 'asian', 'indian');

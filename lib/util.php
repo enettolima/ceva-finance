@@ -53,10 +53,22 @@ function sec2hms($sec) {
  * Convert all strings to a different language
  */
 function translate($string, $lang = 'en') {
-    $lg = new Language();
-    $lg->loadSingle("original='{$string}' AND lang='{$lang}'");
-    if ($lg->affected > 0) {
-        return $lg->translate;
+	
+		if($lang == 'en' || $lang == null){
+			/**
+				* Language is either default or missing so no translation
+				* is necessary :D
+			 */
+			return $string;	
+		}
+
+	  $db = DataConnection::readOnly();
+		$lg = $db->language()
+							->where('original', $string)
+							->and('lang', $lang)
+							->fetch();
+    if ($lg) {
+        return $lg['translate'];
     } else {
         return $string;
     }

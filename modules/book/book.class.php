@@ -3,52 +3,7 @@
  * All methods in this class are protected
  * @access protected
  */
-class Book Extends DataManager {
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadSingle($search_str) {
-        parent::dmLoadSingle("book", $search_str);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadList($output, $search_str) {
-        parent::dmLoadList("book", $output, $search_str);
-        return $this;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function insert() {
-        parent::dmInsert("book", $this);
-        $this->id = $this->dbid;
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function update($upd_rule) {
-        parent::dmUpdate("book", $upd_rule, $this);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function remove($rec_key) {
-        parent::dmRemove("book", $rec_key);
-    }
-    /**
-    * @smart-auto-routing false
-    * @access private
-    */
-    function loadCustomList($query, $output, $count) {
-        parent::dmLoadCustomList($query, $output, $count);
-    }
-    //End of database access
+class Book {
 
     /**
     * Method to create a new book

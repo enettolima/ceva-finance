@@ -7,60 +7,63 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
     $view = new ListView();
     // Row Id for update only row
     if (!empty($row_id)) {
-      $row_id = 'b.id = ' . $row_id;
+      $row_id = 'id = ' . $row_id;
     } else {
-      $row_id = 'b.id != 0';
-    }
-    
-    // Search
-    if (!empty($search)) {
-        $search_fields = array('b.id', 'b.title', 'b.description');
-        $exceptions = array();
-        $search_query = build_search_query($search, $search_fields, $exceptions);
-    } else {
-        $search_query = '';
+      $row_id = 'id != 0';
     }
 
-    // Sort
+		// Sort
     if (empty($sort)) {
-        $sort = 'b.id ASC';
+        $sort = 'id ASC';
     }
 
     $limit = PAGER_LIMIT;
-    $start = ($page * $limit) - $limit;
-    
-    // Dial List Table Object
-    $dashboard_widgets = new DataManager();
-    $dashboard_widgets->dmLoadCustomList("SELECT b.*
-    FROM " . "dashboard_widgets b
-    WHERE $row_id  $search_query
-    ORDER BY  $sort 
-    LIMIT  $start, $limit", 'ASSOC', TRUE);
-    
-    if ($dashboard_widgets->affected > 0) {
+    $offset = ($page * $limit) - $limit;
+
+		$db = DataConnection::readOnly();
+	  
+    // Search
+    if (!empty($search)) {
+        $search_fields = array('id', 'title', 'description');
+        $exceptions = array();
+        $search_query = build_search_query($search, $search_fields, $exceptions);
+
+				$dashboard_widgets = $db->dashboard_widgets()
+									->where($row_id)
+									->and($search_query)
+									->order($sort)
+									->limit($limit, $offset);
+		} else {
+				$dashboard_widgets = $db->dashboard_widgets()
+									->where($row_id)
+									->order($sort)
+									->limit($limit, $offset);
+		}
+
+
+    if (count($dashboard_widgets) > 0) {
         // Building the header with sorter
-        $headers[] = array('display' => 'Id', 'field' => 'b.id');
-        $headers[] = array('display' => 'Title', 'field' => 'b.title');
-        $headers[] = array('display' => 'Description', 'field' => 'b.description');
+        $headers[] = array('display' => 'Id', 'field' => 'id');
+        $headers[] = array('display' => 'Title', 'field' => 'title');
+        $headers[] = array('display' => 'Description', 'field' => 'description');
         $headers[] = array('display' => 'Edit', 'field' => NULL);
         $headers[] = array('display' => 'Delete', 'field' => NULL);
         $headers = build_sort_header('dashboard_widgets_list', 'dashboard_widgets', $headers, $sort);
 
-        for ($i = 0; $i < $dashboard_widgets->affected; $i++) {
-            $j = $i + 1;
-            //This is important for the row update/delete
-            $rows[$j]['row_id'] = $dashboard_widgets->data[$i]['id'];
-            /////////////////////////////////////////////
-            $rows[$j]['id']     = $dashboard_widgets->data[$i]['id'];
-            $rows[$j]['title']   = $dashboard_widgets->data[$i]['title'];
-            if(strlen($dashboard_widgets->data[$i]['description'])>50){
-                $rows[$j]['description'] = substr($dashboard_widgets->data[$i]['description'], 0, 50).'...';    
+				$i = 0;
+        foreach($dashboard_widgets as $widget) {
+            $rows[$i]['row_id'] = $widget['id'];
+            $rows[$i]['id']     = $widget['id'];
+            $rows[$i]['title']   = $widget['title'];
+            if(strlen($widget['description'])>50){
+                $rows[$i]['description'] = substr($widget['description'], 0, 50).'...';    
             }else{
-                $rows[$j]['description'] = $dashboard_widgets->data[$i]['description'];    
+                $rows[$i]['description'] = $widget['description'];    
             }
-            $rows[$j]['edit']   = theme_link_process_information('', 'dashboard_widgets_edit_form', 'dashboard_widgets_edit_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $dashboard_widgets->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
-            $rows[$j]['delete'] = theme_link_process_information('', 'dashboard_widgets_delete_form', 'dashboard_widgets_delete_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $dashboard_widgets->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
-        }
+            $rows[$i]['edit']   = theme_link_process_information('', 'dashboard_widgets_edit_form', 'dashboard_widgets_edit_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $widget['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
+            $rows[$i]['delete'] = theme_link_process_information('', 'dashboard_widgets_delete_form', 'dashboard_widgets_delete_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $widget['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
+					$i++;
+				}
     }
     
     $options = array(
@@ -69,7 +72,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
         'page_subtitle' => translate('Manage Dashboard Widgetss'),
         'empty_message' => translate('No dashboard widgets found!'),
         'table_prefix' => theme_link_process_information(translate('Create New Dashboard Widget'), 'dashboard_widgets_create_form', 'dashboard_widgets_create_form', 'dashboard_widgets', array('response_type' => 'modal')),
-        'pager_items' => build_pager('dashboard_widgets_list', 'dashboard_widgets', $dashboard_widgets->total_records, $limit, $page),
+        'pager_items' => build_pager('dashboard_widgets_list', 'dashboard_widgets', count($dashboard_widgets), $limit, $page),
         'page' => $page,
         'sort' => $sort,
         'search' => $search,
@@ -126,7 +129,7 @@ function dashboard_widgets_create_form_submit($data) {
  */
 function dashboard_widgets_edit_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->loadSingle('id='.$data['dashboard_widgets_id']);
+    $dashboard_widgets->byId($data['dashboard_widgets_id']);
     $frm = new DbForm();
     $frm->build('dashboard_widgets_edit_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
@@ -143,7 +146,7 @@ function dashboard_widgets_edit_form_submit($data) {
         return FALSE;
     } else {
         $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->loadSingle("id='" . $data['id'] . "'");
+        $dashboard_widgets->byId($data['id'] . "'");
         foreach ($data as $field => $value) {
             if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
                 $dashboard_widgets->$field = $value;
@@ -162,14 +165,9 @@ function dashboard_widgets_edit_form_submit($data) {
  */
 function dashboard_widgets_delete_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->loadSingle('id='.$data['dashboard_widgets_id']);
-    if($dashboard_widgets->affected>0){
-        $frm = new DbForm();
-        $frm->build('dashboard_widgets_delete_form', $dashboard_widgets, $_SESSION['log_access_level']);
-    }else{
-        natural_set_message('Problems loading dashboard_widgets ' . $user_id, 'error');
-        return FALSE;   
-    }
+    $dashboard_widgets->byId($data['dashboard_widgets_id']);
+    $frm = new DbForm();
+    return $frm->build('dashboard_widgets_delete_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
 
 /*
@@ -226,27 +224,28 @@ function dashboard_widgets_load_droplets(){
 }
 
 function dashboard_widgets($dashboard_type) {
+	  $dash = array();
     $user = new User();
-    $user->loadSingle('id = ' . $_SESSION['log_id']);
+    $user->byId($_SESSION['log_id']);
     $dash_type = 'dashboard_' . $dashboard_type;
-    global $twig;
+		global $twig;
     if ($user->$dash_type) {
         // Build the dashboard accordingly the dashboard type and if there is something recorded in his desktop
         $user_widgets = $user->$dash_type;
-        if ($user_widgets) {
+				if ($user_widgets) {
+						$db = DataConnection::readOnly();
+						$widgets = $db->dashboard_widgets();
             for ($i = 0; $i < count($user_widgets); $i++) {
                 for ($x = 0; $x < count($user_widgets[$i]); $x++) {
-                    $widget = new DashboardWidgets();
-                    $widget->loadSingle('id = ' . $user_widgets[$i][$x]);
-                    if ($widget->enabled) {
-                        $widgets[$i] .= $twig->render('dashboard-widget.html',
-                            array(
-                                'icon' => $widget->icon,
-                                'widget_id' => $widget->id,
-                                'widget_title' => $widget->title,
-                                'widget_function' => $widget->widget_function,
-                            )
-                        );
+									  $widget =  $widgets[$user_widgets[$i][$x]];
+                    if ($widget['enabled']) {
+                        $dash[$i] .= $twig->render('dashboard-widget.html',
+																										array(
+																												'icon' => $widget['icon'],
+																												'widget_id' => $widget['id'],
+																												'widget_title' => $widget['title'],
+																												'widget_function' => $widget['widget_function']
+																										));
                     }
                 }
             }
@@ -256,12 +255,11 @@ function dashboard_widgets($dashboard_type) {
         //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
     }
     $content = $twig->render('dashboard-droplets.html',
-        array(
-            'dashboard_type' => $dashboard_type,
-            'dash1' => $widgets[0],
-            'dash2' => $widgets[1],
-        )
-    );
+															array(
+																	'dashboard_type' => $dashboard_type,
+																	'dash1' => $dash[0],
+																	'dash2' => $dash[1]
+															));
     return $content;
 }
 
@@ -271,19 +269,22 @@ function dashboard_widgets($dashboard_type) {
 function dashboard_setup_form() {
     // Get the Dashboard Type
     $dashboard_type = 1; //$_SESSION['dash_type'];
-    $widgets = new DashboardWidgets();
-    $widgets->loadList('ASSOC', 'enabled = 1 AND dashboard_type = ' . $dashboard_type);
-   
-    if ($widgets->affected) {
+
+		$db = DataConnection::readOnly();
+		$widgets = $db->dashboard_widgets()
+									->where('enabled',1)
+									->and('dashboard_type', $dashboard_type);
+
+    if (count($widgets) > 0) {
         // Retrieve the widgets already selected by the user
         $user = new User();
-        $user->loadSingle('id = ' . $_SESSION['log_id']);
+        $user->byId($_SESSION['log_id']);
         $dash_type = 'dashboard_' . $dashboard_type;
         if ($user->$dash_type) {
             $user_widgets = $user->$dash_type;
         }
         $checked = '';
-	foreach ($widgets->data as $id => $widget) {
+		foreach ($widgets as $id => $widget) {
                 if ($user_widgets) {
                     if (in_array($widget['id'], $user_widgets[0]) || in_array($widget['id'], $user_widgets[1]) || in_array($widget['id'], $user_widgets[2])) {
                         $checked = 'checked="checked"';
@@ -312,7 +313,7 @@ function dashboard_setup_form() {
 
 function dashboard_setup($data) {
     $user = new User();
-    $user->loadSingle('id = ' . $_SESSION['log_id']);
+    $user->byId($_SESSION['log_id']);
     $dash_type = 'dashboard_' . $data['dashboard_type'];
     $user_widgets = $user->$dash_type;
     $nlist = array();
@@ -389,7 +390,7 @@ function dashboard_update_list($data) {
     }
   }
   $user = new User();
-	$user->loadSingle('id = ' . $_SESSION['log_id']);
+	$user->byId($_SESSION['log_id']);
   $dashboard_type = 'dashboard_' . $data['dashboard_type'];
   $user->$dashboard_type = $positions;
   $user->update('id = ' . $_SESSION['log_id']);
