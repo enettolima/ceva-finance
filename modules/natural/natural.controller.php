@@ -4,42 +4,35 @@
  * Just to show the form example
  */
 function natural_form_example(){
-		$frm = new DbForm();
-		
-		$frm->first_name = "System";
-		$frm->last_name = "Administrator";
-		$frm->username = "admin";
-		$frm->password = null;
-		
-		//Select the properly levels to show an example of the listbox
-		$access_levels = new DataManager();
-		$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-		if ($access_levels->affected) {
-			$items = array();
-			foreach ($access_levels->data as $access_level) {
-				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
-			}
-			$frm->access_level_options = implode(';', $items);
+	$frm = new DbForm();
+	
+	$frm->first_name = "System";
+	$frm->last_name = "Administrator";
+	$frm->username = "admin";
+	$frm->password = null;
+	
+	//Select the properly levels to show an example of the listbox
+	//Please check the table field_templates where form_reference = natural_example_form for this example
+	$db = DataConnection::readOnly();
+	$access_levels = $db->acl_levels()
+	->select("description, level")
+	->where("level <= ?",$_SESSION['log_access_level'])
+	->order("description");
+	
+	if (count($access_levels)) {
+		$items = array();
+		foreach ($access_levels as $access_level) {
+			$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
 		}
-		
-		//Select the hobbies to show one example of multiple select
-		$access_levels = new DataManager();
-		$access_levels->dmLoadCustomList('SELECT al.description, al.level FROM acl_levels al WHERE al.level <= ' . $_SESSION['log_access_level'], 'ASSOC');
-		if ($access_levels->affected) {
-			$items = array();
-			foreach ($access_levels->data as $access_level) {
-				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
-			}
-			$frm->access_level_options = implode(';', $items);
-		}
-		
-		/*$user = new User();
-		$user->load_single('username="admin"');
-		$user->password = null;
-		$user->access_level_options = implode(';', $items);*/
-		$frm->build('natural_example_form', $frm, $_SESSION['log_access_level'], FALSE);
+		//Override the options and pass an array to the form class (lib/classes/forms.class.php)
+		$frm->access_level_options = implode(';', $items);
+	}
+	$frm->build('natural_example_form', $frm, $_SESSION['log_access_level'], FALSE);
 }
 
+/*
+ *Just to show how the data gets to the controller after a form submit
+ */
 function natural_form_example_submit($data){
 		echo 'Data from the form is:<br>';
 		print_debug($data);
@@ -54,74 +47,89 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		
 		// Row Id for update only row
 		if (!empty($row_id)) {
-			$row_id = 'm.id = ' . $row_id;
+			$row_id = 'id = ' . $row_id;
 		}
 		else {
-			$row_id = 'm.id != 0'; 
+			$row_id = 'id != 0'; 
 		}
-	
-		// Search
-		if (!empty($search)) {
-			$search_fields = array('m.module', 'm.label', 'm.id');
-			$exceptions = array();
-			$search_query = build_search_query($search, $search_fields, $exceptions);
-		}
-		else {
-			$search_query = '';
-		}
-	
+		
 		// Sort
 		if (empty($sort)) {
-			$sort = 'm.label ASC';
+			$sort = 'label ASC';
 		}
 		
-		$limit = PAGER_LIMIT; // PAGER_LIMIT
-		$start = ($page * $limit) - $limit;
-    // Module Object
-    $modules = new DataManager();
-    $modules->dmLoadCustomList("SELECT m.*
-		FROM " . "module m
-		WHERE $row_id $search_query
-		ORDER BY  $sort
-		LIMIT  $start, $limit", 'ASSOC', TRUE);
+		//Setting limits for the pagination
+		$limit = PAGER_LIMIT;
+    $offset = ($page * $limit) - $limit;
+		//Openning the DB Connection
+		$db = DataConnection::readOnly();
 		
-    if ($modules->affected > 0) {
-        // Building the header with sorter
-				$headers[] = array('display' => 'Id', 'field' => 'm.id');
-				$headers[] = array('display' => 'Module', 'field' => 'm.module');
-				$headers[] = array('display' => 'Label', 'field' => 'm.label');
-				$headers[] = array('display' => 'Delete', 'field' => NULL);
-				$headers = build_sort_header('module_list', 'natural', $headers, $sort);
+		//Search On listview
+		if (!empty($search)) {
+			$search_fields = array('module', 'label', 'id');
+			$exceptions = array();
+			$search_query = build_search_query($search, $search_fields, $exceptions);
+			
+			$modules = $db->module()
+      ->where($row_id)
+      ->and($search_query)
+      ->order($sort)
+      ->limit($limit, $offset);
+		}
+		else {
+			//If not a search, get everyting from table
+			$modules = $db->module()
+			->where($row_id)
+			->order($sort)
+			->limit($limit, $offset);
+		}
+		$i = 0;
+    if (count($modules)) {
+			// Building the header with sorter
+			$headers[] = array('display' => 'Id', 'field' => 'id');
+			$headers[] = array('display' => 'Module', 'field' => 'module');
+			$headers[] = array('display' => 'Label', 'field' => 'label');
+			$headers[] = array('display' => 'Delete', 'field' => NULL);
+			$headers = build_sort_header('module_list', 'natural', $headers, $sort);
 		
-        $total = 0;
-        for ($i = 0; $i < $modules->affected; $i++) {
-            $j = $i + 1;
-						//This is important for the row update/delete
-            $rows[$j]['row_id'] = $modules->data[$i]['id'];
-            /////////////////////////////////////////////
-            $rows[$j]['id'] = $modules->data[$i]['id'];
-            $rows[$j]['module'] = $modules->data[$i]['module'];
-            $rows[$j]['label'] = $modules->data[$i]['label'];
-						$rows[$j]['delete'] = theme_link_process_information('', 'module_delete_form', 'module_delete_form', 'natural', array('extra_value' => 'id|' . $modules->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
-				}
+			foreach( $modules as $module ){
+        $j = $i + 1;
+        //This is important for the row update/delete
+        $rows[$j]['row_id'] = $module['id'];
+        /////////////////////////////////////////////
+        $rows[$j]['id']     = $module['id'];
+        $rows[$j]['module'] = $module['module'];
+        $rows[$j]['label'] 	= $module['label'];
+        $rows[$j]['delete'] = theme_link_process_information('',
+            'module_delete_form',
+            'module_delete_form',
+            'natural', array('extra_value' => 'id|' . $module['id'],
+                'response_type' => 'modal',
+                'icon' => NATURAL_REMOVE_ICON));
+        $i++;
+      }
     }
-
-    $options = array(
-		'show_headers' => TRUE,
-		'page_title' => translate('Module List'),
-		'page_subtitle' => translate('Manage Module'),
-		'empty_message' => translate('No module found!'),
-		'table_prefix' => theme_link_process_information(translate('Create New Module'), 'module_create_form', 'module_create_form', 'natural', array('response_type' => 'modal')),
-		'pager_items' => build_pager('module_list', 'natural', $module->total_records, $limit, $page),
-		'page' => $page,
-		'sort' => $sort,
-		'search' => $search,
-		'show_search' => TRUE,
-		'function' => 'module_list',
-		'module' => 'natural',
-		'update_row_id' => '',
-	  'table_form_id' => '',
-		'table_form_process' => '',
+	$options = array(
+	'show_headers' => TRUE,
+	'page_title' => translate('Module List'),
+	'page_subtitle' => translate('Manage Module'),
+	'empty_message' => translate('No module found!'),
+	'table_prefix' => theme_link_process_information(translate('Create New Module'),
+		'module_create_form',
+		'module_create_form',
+		'natural', array('response_type' => 'modal')),
+	'pager_items' => build_pager('module_list',
+		'natural',
+		count($modules), $limit, $page),
+	'page' => $page,
+	'sort' => $sort,
+	'search' => $search,
+	'show_search' => TRUE,
+	'function' => 'module_list',
+	'module' => 'natural',
+	'update_row_id' => '',
+	'table_form_id' => '',
+	'table_form_process' => '',
 	);
 
   $listview = $view->build($rows, $headers, $options);
@@ -130,23 +138,59 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 }
 
 function module_create_form() {
-    //Checking if license is expired
-    $frm = new DbForm();
-    $module = new Module();
-    $query = "SHOW TABLES FROM " . NATURAL_DBNAME . " ";
-    $module_opt = new DataManager();
-    $module_opt->dmLoadCustomList($query, 'ASSOC');
-    $items = array();
-    //$items[] = 'Skipp table selection=0';
-    if ($module_opt->affected) {
-        foreach ($module_opt->data as $k => $v) {
-            foreach ($v as $key => $value) {
-                $items[] = $value . '=' . $value;
-            }
-        }
-        $module->table_list = implode(';', $items);
-    }
+  $module = new Module();
+	
+	
+	//$query = 'SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.'.$table_name;
+	
+	$db = DataConnection::readOnly();
+	/*$modules = $db->form_templates()
+		->where("form_name","user_create1_form")
+		->or("form_name","user_edit1_form")
+		->or("form_name","user_delete1_form")
+		->order("form_id")
+		->limit(1);
+	*/
+	
+	$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+	$q = $pdo->prepare('SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.user');
+	$q->execute();
+	$db_tables = $q->fetchAll(PDO::FETCH_COLUMN);
+	
+	print_debug($db_tables);
+	if(count($db_tables)>0){
+		echo "found";
+	}else{
+		echo "not found";
+	}
+	//print_debug($modules);
+	/*foreach($modules as $md){
+		echo "value is ".$md."<br>";
+		if($md[0]>0){
+			echo "found";
+		}else{
+			echo "not found";
+		}
+	}*/
+	//Openning the DB Connection
+	$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+	$q = $pdo->prepare("SHOW TABLES");
+	$q->execute();
+	$db_tables = $q->fetchAll(PDO::FETCH_COLUMN);
+	
+	$items = array();
+	if (count($db_tables) > 0) {
+		foreach ($db_tables as $table => $value) {
+			$items[] = $value . '=' . $value;
+		}
+		$module->table_list = implode(';', $items);
+		
+		//Load form
+		$frm = new DbForm();
 		$frm->build('module_create_form', $module, $_SESSION['log_access_level']);
+	}else{
+		natural_set_message("No table found or schema table is unreachable!", 'error');
+	}
 }
 
 function module_create_form_submit($data) {
@@ -158,28 +202,31 @@ function module_create_form_submit($data) {
     $data['field_label_2'] 	= 'Author';
 		$data['module'] 				= $data['label'];
     if (is_numeric($data['table_name'])) {
-        $class_name = str_replace("_", " ", $data['module']);
-        $data['module_name'] = $data['module'];
-        $data['module'] = str_replace(" ", "_", strtolower($data['module']));
+			$class_name = str_replace("_", " ", $data['module']);
+			$data['module_name'] = $data['module'];
+			$data['module'] = str_replace(" ", "_", strtolower($data['module']));
     } else {
-        $class_name = str_replace("_", " ", $data['table_name']);
-        $data['module_name'] = $data['table_name'];
-        $data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
-
-        $query = "DESCRIBE " . "" . $data['table_name'] . "";
-
-        $fields = new DataManager();
-        $fields->dmLoadCustomList($query, 'ASSOC');
-        if ($fields->affected > 0) {
-            for ($i = 1; $i < 3; $i++) {
-                $key = 'field_' . $i;
-                $keylabel = 'field_label_' . $i;
-                //$data[key] = 'b.name';
-                $data[$key] = $fields->data[$i]['Field'];
-                //$data[$keylabel] = 'Name';
-                $data[$keylabel] = ucwords(str_replace("_", " ", strtolower($fields->data[$i]['Field'])));
-            }
-        }
+			$class_name = str_replace("_", " ", $data['table_name']);
+			$data['module_name'] = $data['table_name'];
+			$data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
+			
+			$query = "DESCRIBE " . "" . $data['table_name'] . "";
+			
+			$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+			$q = $pdo->prepare($query);
+			$q->execute();
+			$columns = $q->fetchAll(PDO::FETCH_COLUMN);
+			
+			if (count($columns) > 0) {
+				for ($i = 1; $i < 3; $i++) {
+					$key = 'field_' . $i;
+					$keylabel = 'field_label_' . $i;
+					//$data[key] = 'b.name';
+					$data[$key] = $columns[$i];
+					//$data[$keylabel] = 'Name';
+					$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($columns[$i])));
+				}
+			}
     }
     $class_name = ucwords($class_name);
     $data['class_name'] = str_replace(" ", "", $class_name);
@@ -360,27 +407,43 @@ function validate_module_info($data, $edit = false) {
         return 'The directory <i>' . $data['module'] . '</i> already exists!<br>Please try a different name or remove the current module!';
 		}
 		$module = new Module();
-		$module->loadSingle('module="'.$data['module'].'" LIMIT 1');
-		if($module->affected>0){
+		//$module->loadSingle('module="'.$data['module'].'" LIMIT 1');
+		$response = $module->byName($data['module']);
+		if($response['code']==200){
 				return 'Module <i>' . $data['module'] . '</i> already exists!';
 		}
+		
+		//Setup database connection
+		$db = DataConnection::readOnly();
     if ($data['create_forms'] == 1) {
-        $query = "SELECT * FROM " . "form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
-            OR form_id = '" . $data['table_name'] . "_edit' 
-            OR form_id = '" . $data['table_name'] . "_view'";
-        $form = new DataManager();
-        $form->dmLoadCustomList($query, 'ASSOC');
-        if ($form->affected > 0) {
-						return 'The form for the module <i>' . $data['module'] . '</i> already exists!';
-		    }
+			/*$query = "SELECT * FROM " . "form_parameters WHERE form_id = '" . $data['table_name'] . "_new' 
+			OR form_id = '" . $data['table_name'] . "_edit' 
+			OR form_id = '" . $data['table_name'] . "_view'";
+			*/
+			
+			//$modules = $db->form_parameters()
+      $modules = $db->form_templates()
+			->where("form_name",$data['table_name'] ."_create_form")
+			->or("form_name",$data['table_name'] ."_edit_form")
+			->or("form_name",$data['table_name'] ."_delete_form")
+			->order("form_id")
+			->limit(1);
+			if (count($modules) > 0) {
+				return 'The form for the module <i>' . $data['module'] . '</i> already exists!';
+			}
     }
     if ($data['create_menu'] == 1) {
-        $query = "SELECT * FROM " . "menu WHERE element_name = '" . $data['module'] . "_main'";
-        $form = new DataManager();
-        $form->dmLoadCustomList($query, 'ASSOC');
-        if ($form->affected > 0) {
-            return 'Menu for the module <i>' . $data['module'] . '</i> already exists!';
-		    }
+			//$query = "SELECT * FROM " . "menu WHERE element_name = '" . $data['module'] . "_main'";
+			//$form = new DataManager();
+			//$form->dmLoadCustomList($query, 'ASSOC');
+			
+			$menus = $db->menu()
+			->where("element_name",$data['module'] ."_main")
+			->order("element_name")
+			->limit(1);
+			if (count($menus) > 0) {
+				return 'Menu for the module <i>' . $data['module'] . '</i> already exists!';
+			}
     }
 		return false;
 }
@@ -867,142 +930,242 @@ function class_creator($table_name){
 }
 
 function create_form($table_name) {
-    $ft = new DataManager;
-    $ff = new DataManager;
-    $param = "";
-    $fnm = "";
+	//$ft = new DataManager;
+	//$ff = new DataManager;
+	$db = DataConnection::readOnly();
+	$form = new DbForm();
+	$param = "";
+	$fnm = "";
 
-    $param['form_method'] = "POST";
-		$form_add 		= $table_name.'_create_form';
-		$form_edit 		= $table_name.'_edit_form';
-		$form_delete 	= $table_name.'_delete_form';
-		
-    //Saving form parameters for the create form
-    $param['form_id'] 		= $form_add;
-    $param['form_name'] 	= $form_add;
-    $param['form_title'] 	= 'Add New '.ucwords(str_replace("_", " ", strtolower($table_name)));
-    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
-    $ft->dmInsert("" . FORM_TABLE, $param);
-		$form_add_id = $ft->dbid;
-    
-    //Saving form parameters for edit form
-    $param['form_id'] 		= $form_edit;
-    $param['form_name'] 	= $form_edit;
-    $param['form_title'] 	= 'Edit '.ucwords(str_replace("_", " ", strtolower($table_name)));
-    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
-    $ft->dmInsert("" . FORM_TABLE, $param);
-		$form_edit_id = $ft->dbid;
-    
-    //Saving form parameters for delete form
-    $param['form_id'] 		= $form_delete;
-    $param['form_name'] 	= $form_delete;
-    $param['form_title'] 	= 'Delete '.ucwords(str_replace("_", " ", strtolower($table_name)));
-    $param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
-    $ft->dmInsert("" . FORM_TABLE, $param);
-		$form_delete_id = $ft->dbid;
+	$param['form_method'] = "POST";
+	$form_add 		= $table_name.'_create_form';
+	$form_edit 		= $table_name.'_edit_form';
+	$form_delete 	= $table_name.'_delete_form';
+	
+	//Saving form parameters for the create form
+	$param['form_id'] 		= $form_add;
+	$param['form_name'] 	= $form_add;
+	$param['form_title'] 	= 'Add New '.ucwords(str_replace("_", " ", strtolower($table_name)));
+	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
+	//$ft->dmInsert("" . FORM_TABLE, $param);
+	$create = $form->create($param);
+	$form_add_id = $create['id'];
+	
+	//Saving form parameters for edit form
+	$param['form_id'] 		= $form_edit;
+	$param['form_name'] 	= $form_edit;
+	$param['form_title'] 	= 'Edit '.ucwords(str_replace("_", " ", strtolower($table_name)));
+	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
+	//$ft->dmInsert("" . FORM_TABLE, $param);
+	$edit = $form->create($param);
+	$form_edit_id = $edit['id'];
+	
+	//Saving form parameters for delete form
+	$param['form_id'] 		= $form_delete;
+	$param['form_name'] 	= $form_delete;
+	$param['form_title'] 	= 'Delete '.ucwords(str_replace("_", " ", strtolower($table_name)));
+	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
+	//$ft->dmInsert("" . FORM_TABLE, $param);
+	$delete = $form->create($param);
+	$form_delete_id = $delete['id'];
 
-    $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+	//$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
 
-    if (!$dblink) {
-        //die('Could not connect: ' . mysql_error());
-				natural_set_message('Failed to connect with the database '.NATURAL_DBNAME.'!', 'error');		
-    }
-    $today = date("m-d-Y H:i:s");
-    $now = date("M-D-Y");
-    $query = 'SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.'.$table_name;
-    $query_result = mysql_query($query, $dblink);
-    $i = 0;
-    if ($query_result) {
-        while ($row = mysql_fetch_assoc($query_result)) {
-
-            $label = "";
-            $nam_ar = explode("_", $row['Field']);
-            if (is_array($nam_ar)) {
-                for ($x = 0; $x < count($nam_ar); $x++) {
-                    if ($nam_ar[$x] != "id") {
-                        $label .= ucfirst($nam_ar[$x]) . " ";
-                    }
-                }
-                $label = substr($label, 0, -1);
-            } else {
-                $label = ucfirst($row['Field']);
-            }
-            $field['form_reference'] = $form_add;
-						$field['form_template_id'] = $form_add_id;
-            $field['field_id'] = $row['Field'];
-            $field['field_name'] = $row['Field'];
-            $field['form_field_order'] = $i;
-            if ($row['Field'] == "id") {
-                $field['html_type'] = "hidden";
-            } else {
-                $field['html_type'] = "text";
-            }
-            $field['def_val'] = "";
-            $field['def_label'] = $label;
-
-            //Insert template new
-            $ff->dmInsert("" . FIELD_TABLE, $field);
-
-            //Insert template edit
-            $field['form_reference'] = $form_edit;
-						$field['form_template_id'] = $form_edit_id;
-            $field['def_val'] = "{$row['Field']}";
-            $ff->dmInsert("" . FIELD_TABLE, $field);
-
-						if($row['Field']=='id'){
-								//Insert delete id
-								$field['form_reference'] 	= $form_delete;
-								$field['form_template_id']= $form_delete_id;
-								$field['def_val'] 				= "{$row['Field']}";
-								$field['html_type'] 			= "hidden";
-								$field['def_label'] 			= 'ID';
-								$ff->dmInsert("" . FIELD_TABLE, $field);		
-						}
-						if($i==1){
-								//Insert delete message
-								$field['form_reference'] 	= $form_delete;
-								$field['form_template_id']= $form_delete_id;
-								$field['field_id'] 				= 'message';
-								$field['field_name'] 			= 'message';
-				        $field['form_field_order']= $i;
-								$field['def_label'] 			= '';
-								$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
-								$field['html_type'] 			= 'message';
-								$ff->dmInsert("" . FIELD_TABLE, $field);
-								
-								//Insert delete object
-								$field['form_reference'] 	= $form_delete;
-								$field['form_template_id']= $form_delete_id;
-								$field['field_id'] 				= "{$row['Field']}";
-								$field['field_name'] 			= "{$row['Field']}";
-				        $field['form_field_order']= $i + 1;
-								$field['def_label'] 			= '';
-								$field['def_val'] 				= "{$row['Field']}";
-								$field['html_type'] 			= 'message';
-								$ff->dmInsert("" . FIELD_TABLE, $field);		
-						}
-            $i++;
-        }
-
-        $field['form_reference'] 	= $form_add;
-				$field['form_template_id']= $form_add_id;
-        $field['field_id'] 				= "sub";
-        $field['field_name'] 			= "sub";
-        $field['form_field_order']= $i;
-				$field['def_label'] 			= '';
-				$field['def_val'] 				= '';
-        $field['html_type'] 			= 'submit';
-        $ff->dmInsert("" . FIELD_TABLE, $field);
-				
-				$field['form_reference'] 	= $form_edit;
-				$field['form_template_id']= $form_edit_id;
-        $ff->dmInsert("" . FIELD_TABLE, $field);
-				
+	/*if (!$dblink) {
+			//die('Could not connect: ' . mysql_error());
+			natural_set_message('Failed to connect with the database '.NATURAL_DBNAME.'!', 'error');		
+	}*/
+	$today = date("m-d-Y H:i:s");
+	$now = date("M-D-Y");
+	$query = 'SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.'.$table_name;
+	$query_result = mysql_query($query, $dblink);
+	
+	
+	$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+	$q = $pdo->prepare('SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.'.$table_name);
+	$q->execute();
+	$columns = $q->fetchAll(PDO::FETCH_COLUMN);
+	$i = 0;
+	if(count($columns)>0){
+	
+		/*while ($row = mysql_fetch_assoc($query_result)) {
+		}*/
+		foreach($columns as $key => $val){
+			$label = "";
+			$nam_ar = explode("_", $val);
+			if (is_array($nam_ar)) {
+				for ($x = 0; $x < count($nam_ar); $x++) {
+					if ($nam_ar[$x] != "id") {
+						$label .= ucfirst($nam_ar[$x]) . " ";
+					}
+				}
+				$label = substr($label, 0, -1);
+			} else {
+				$label = ucfirst($val);
+			}
+			$field['form_reference'] = $form_add;
+			$field['form_template_id'] = $form_add_id;
+			$field['field_id'] = $val;
+			$field['field_name'] = $val;
+			$field['form_field_order'] = $i;
+			if ($val == "id") {
+					$field['html_type'] = "hidden";
+			} else {
+					$field['html_type'] = "text";
+			}
+			$field['def_val'] = "";
+			$field['def_label'] = $label;
+			//Insert template new
+			$ff->dmInsert("" . FIELD_TABLE, $field);
+			//Insert template edit
+			$field['form_reference'] = $form_edit;
+			$field['form_template_id'] = $form_edit_id;
+			$field['def_val'] = "{$val}";
+			$ff->dmInsert("" . FIELD_TABLE, $field);
+			if($val=='id'){
+				//Insert delete id
 				$field['form_reference'] 	= $form_delete;
 				$field['form_template_id']= $form_delete_id;
-        $ff->dmInsert("" . FIELD_TABLE, $field);
-    }
-		natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');		
+				$field['def_val'] 				= "{$val}";
+				$field['html_type'] 			= "hidden";
+				$field['def_label'] 			= 'ID';
+				$ff->dmInsert("" . FIELD_TABLE, $field);		
+			}
+			if($i==1){
+				//Insert delete message
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+				$field['field_id'] 				= 'message';
+				$field['field_name'] 			= 'message';
+				$field['form_field_order']= $i;
+				$field['def_label'] 			= '';
+				$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
+				$field['html_type'] 			= 'message';
+				$ff->dmInsert("" . FIELD_TABLE, $field);
+				
+				//Insert delete object
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+				$field['field_id'] 				= "{$val}";
+				$field['field_name'] 			= "{$val}";
+				$field['form_field_order']= $i + 1;
+				$field['def_label'] 			= '';
+				$field['def_val'] 				= "{$val}";
+				$field['html_type'] 			= 'message';
+				$ff->dmInsert("" . FIELD_TABLE, $field);		
+			}
+			$i++;
+		}
+		
+
+		$field['form_reference'] 	= $form_add;
+		$field['form_template_id']= $form_add_id;
+		$field['field_id'] 				= "sub";
+		$field['field_name'] 			= "sub";
+		$field['form_field_order']= $i;
+		$field['def_label'] 			= '';
+		$field['def_val'] 				= '';
+		$field['html_type'] 			= 'submit';
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+		
+		$field['form_reference'] 	= $form_edit;
+		$field['form_template_id']= $form_edit_id;
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+		
+		$field['form_reference'] 	= $form_delete;
+		$field['form_template_id']= $form_delete_id;
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+	}
+	natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');	
+	
+	
+	/*if ($query_result) {
+		while ($row = mysql_fetch_assoc($query_result)) {
+			$label = "";
+			$nam_ar = explode("_", $row['Field']);
+			if (is_array($nam_ar)) {
+				for ($x = 0; $x < count($nam_ar); $x++) {
+					if ($nam_ar[$x] != "id") {
+						$label .= ucfirst($nam_ar[$x]) . " ";
+					}
+				}
+				$label = substr($label, 0, -1);
+			} else {
+				$label = ucfirst($row['Field']);
+			}
+			$field['form_reference'] = $form_add;
+			$field['form_template_id'] = $form_add_id;
+			$field['field_id'] = $row['Field'];
+			$field['field_name'] = $row['Field'];
+			$field['form_field_order'] = $i;
+			if ($row['Field'] == "id") {
+					$field['html_type'] = "hidden";
+			} else {
+					$field['html_type'] = "text";
+			}
+			$field['def_val'] = "";
+			$field['def_label'] = $label;
+			//Insert template new
+			$ff->dmInsert("" . FIELD_TABLE, $field);
+			//Insert template edit
+			$field['form_reference'] = $form_edit;
+			$field['form_template_id'] = $form_edit_id;
+			$field['def_val'] = "{$row['Field']}";
+			$ff->dmInsert("" . FIELD_TABLE, $field);
+			if($row['Field']=='id'){
+				//Insert delete id
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+				$field['def_val'] 				= "{$row['Field']}";
+				$field['html_type'] 			= "hidden";
+				$field['def_label'] 			= 'ID';
+				$ff->dmInsert("" . FIELD_TABLE, $field);		
+			}
+			if($i==1){
+				//Insert delete message
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+				$field['field_id'] 				= 'message';
+				$field['field_name'] 			= 'message';
+				$field['form_field_order']= $i;
+				$field['def_label'] 			= '';
+				$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
+				$field['html_type'] 			= 'message';
+				$ff->dmInsert("" . FIELD_TABLE, $field);
+				
+				//Insert delete object
+				$field['form_reference'] 	= $form_delete;
+				$field['form_template_id']= $form_delete_id;
+				$field['field_id'] 				= "{$row['Field']}";
+				$field['field_name'] 			= "{$row['Field']}";
+				$field['form_field_order']= $i + 1;
+				$field['def_label'] 			= '';
+				$field['def_val'] 				= "{$row['Field']}";
+				$field['html_type'] 			= 'message';
+				$ff->dmInsert("" . FIELD_TABLE, $field);		
+			}
+			$i++;
+		}
+
+		$field['form_reference'] 	= $form_add;
+		$field['form_template_id']= $form_add_id;
+		$field['field_id'] 				= "sub";
+		$field['field_name'] 			= "sub";
+		$field['form_field_order']= $i;
+		$field['def_label'] 			= '';
+		$field['def_val'] 				= '';
+		$field['html_type'] 			= 'submit';
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+		
+		$field['form_reference'] 	= $form_edit;
+		$field['form_template_id']= $form_edit_id;
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+		
+		$field['form_reference'] 	= $form_delete;
+		$field['form_template_id']= $form_delete_id;
+		$ff->dmInsert("" . FIELD_TABLE, $field);
+	}
+	natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');		*/
 }
 
 

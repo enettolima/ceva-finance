@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
   define('NATURAL_ROOT_PATH', dirname(__FILE__));
   if (file_exists(NATURAL_ROOT_PATH . '/bootstrap.dev.php')) {
     require(NATURAL_ROOT_PATH . '/bootstrap.dev.php');
@@ -45,13 +46,15 @@
   //PLATFORM NAME
   define('NATURAL_PLATFORM', 'Natural');
 
+	//DEFINE PROJECT DATABASE NAME
+	define('NATURAL_DBNAME', 'natural_framework');
+	
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
-
-  define('NATURAL_PDO_DSN_READ', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
+  define('NATURAL_PDO_DSN_READ', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_READ', 'root');
   define('NATURAL_PDO_PASS_READ', '123456');
 
-  define('NATURAL_PDO_DSN_WRITE', 'mysql:dbname=natural_framework;host=127.0.0.1;port=3306');
+  define('NATURAL_PDO_DSN_WRITE', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_WRITE', 'root');
   define('NATURAL_PDO_PASS_WRITE', '123456');
 
@@ -71,7 +74,7 @@
   define('NATURAL_VERSION', 'Natural 2.0b');
 
   //SET DEFAULT ICONS
-  define('NATURAL_EDIT_ICON', 'fa fa-pencil');
+  define("NATURAL_EDIT_ICON", "fa fa-pencil");
   define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
   
 

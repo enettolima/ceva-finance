@@ -7,56 +7,71 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     $view = new ListView();
     // Row Id for update only row
     if (!empty($row_id)) {
-      $row_id = 'b.id = ' . $row_id;
+      $row_id = 'id = ' . $row_id;
     } else {
-      $row_id = 'b.id != 0';
+      $row_id = 'id != 0';
     }
+    
+    // Sort
+    if (empty($sort)) {
+      $sort = 'id ASC';
+    }
+    
+    $limit = PAGER_LIMIT;
+    $offset = ($page * $limit) - $limit;
+    $db = DataConnection::readOnly();
     
     // Search
     if (!empty($search)) {
-        $search_fields = array('b.id', 'b.name', 'b.author');
-        $exceptions = array();
-        $search_query = build_search_query($search, $search_fields, $exceptions);
+      $search_fields = array('id', 'name', 'author');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      
+      $books = $db->book()
+      ->where($row_id)
+      ->and($search_query)
+      ->order($sort)
+      ->limit($limit, $offset);
     } else {
-        $search_query = '';
+      $books = $db->book()
+      ->where($row_id)
+      ->order($sort)
+      ->limit($limit, $offset);
     }
-
-    // Sort
-    if (empty($sort)) {
-        $sort = 'b.id ASC';
-    }
-
-    $limit = PAGER_LIMIT;
-    $start = ($page * $limit) - $limit;
     
-    // Dial List Table Object
-    $book = new DataManager();
-    $book->dmLoadCustomList("SELECT b.*
-    FROM " . "book b
-    WHERE $row_id  $search_query
-    ORDER BY  $sort 
-    LIMIT  $start, $limit", 'ASSOC', TRUE);
-    
-    if ($book->affected > 0) {
-        // Building the header with sorter
-        $headers[] = array('display' => 'Id', 'field' => 'b.id');
-        $headers[] = array('display' => 'Name', 'field' => 'b.name');
-        $headers[] = array('display' => 'Author', 'field' => 'b.author');
-        $headers[] = array('display' => 'Edit', 'field' => NULL);
-        $headers[] = array('display' => 'Delete', 'field' => NULL);
-        $headers = build_sort_header('book_list', 'book', $headers, $sort);
+    $i = 0;
+    if (count($books)) {
+      // Building the header with sorter
+      $headers[] = array('display' => 'Id', 'field' => 'id');
+      $headers[] = array('display' => 'Name', 'field' => 'name');
+      $headers[] = array('display' => 'Author', 'field' => 'author');
+      $headers[] = array('display' => 'Edit', 'field' => NULL);
+      $headers[] = array('display' => 'Delete', 'field' => NULL);
+      $headers = build_sort_header('book_list', 'book', $headers, $sort);
 
-        for ($i = 0; $i < $book->affected; $i++) {
-            $j = $i + 1;
-            //This is important for the row update/delete
-            $rows[$j]['row_id'] = $book->data[$i]['id'];
-            /////////////////////////////////////////////
-            $rows[$j]['id']     = $book->data[$i]['id'];
-            $rows[$j]['name']   = $book->data[$i]['name'];
-            $rows[$j]['author'] = $book->data[$i]['author'];
-            $rows[$j]['edit']   = theme_link_process_information('', 'book_edit_form', 'book_edit_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-            $rows[$j]['delete'] = theme_link_process_information('', 'book_delete_form', 'book_delete_form', 'book', array('extra_value' => 'book_id|' . $book->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
-        }
+      foreach( $books as $book ){
+        $j = $i + 1;
+        //This is important for the row update/delete
+        $rows[$j]['row_id'] = $book['id'];
+        /////////////////////////////////////////////
+        $rows[$j]['id']     = $book['id'];
+        $rows[$j]['name']   = $book['name'];
+        $rows[$j]['author'] = $book['author'];
+        $rows[$j]['edit']   = theme_link_process_information('',
+            'book_edit_form',
+            'book_edit_form',
+            'book',
+            array('extra_value' => 'id|' . $book['id'],
+                'response_type' => 'modal',
+                'icon' => NATURAL_EDIT_ICON));
+        $rows[$j]['delete'] = theme_link_process_information('',
+            'book_delete_form',
+            'book_delete_form',
+            'book', array('extra_value' => 'id|' . $book['id'],
+                'response_type' => 'modal',
+                'icon' => NATURAL_REMOVE_ICON));
+        $i++;
+      }
     }
     
     $options = array(
@@ -64,8 +79,12 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
         'page_title' => translate('Users List'),
         'page_subtitle' => translate('Manage Books'),
         'empty_message' => translate('No book found!'),
-        'table_prefix' => theme_link_process_information(translate('Create New Book'), 'book_create_form', 'book_create_form', 'book', array('response_type' => 'modal')),
-        'pager_items' => build_pager('book_list', 'book', $book->total_records, $limit, $page),
+        'table_prefix' => theme_link_process_information(translate('Create New Book'),
+            'book_create_form',
+            'book_create_form',
+            'book',
+                array('response_type' => 'modal')),
+        'pager_items' => build_pager('book_list', 'book', count($books), $limit, $page),
         'page' => $page,
         'sort' => $sort,
         'search' => $search,
@@ -102,14 +121,16 @@ function book_create_form_submit($data) {
     }
     $book = new Book();
     foreach ($data as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
+        if ($field != 'fn') {
             $book->$field = $value;
+            $submit[$field] = $value;
         }
     }
-    $book->insert();
-    if ($book->affected > 0 ) {
+    //$book->insert();
+    $response = $book->create($submit);
+    if ( $response['id'] > 0 ) {
         natural_set_message('Book has been created!', 'success');
-        return book_list($book->id);
+        return book_list($response['id']);
     } else {
         natural_set_message('Could not save this Book at this time', 'error');
         return false;
@@ -121,7 +142,7 @@ function book_create_form_submit($data) {
  */
 function book_edit_form($data) {
     $book = new Book();
-    $book->loadSingle('id='.$data['book_id']);
+    $book->byID($data['id']);
     $frm = new DbForm();
     $frm->build('book_edit_form', $book, $_SESSION['log_access_level']);
 }
@@ -130,26 +151,19 @@ function book_edit_form($data) {
  * Update table
  */
 function book_edit_form_submit($data) {
-    $error = book_validate($data);
-    if (!empty($error)) {
-        foreach($error as $msg) {
-          natural_set_message($msg, 'error');
-        }
-        return FALSE;
-    } else {
-        $book = new Book();
-        $book->loadSingle("id='" . $data['id'] . "'");
-        foreach ($data as $field => $value) {
-            if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
-                $book->$field = $value;
-            }
-        }
-        $book->update("id='" . $data['id'] . "'");
-        if ($book->affected > 0) {
-            natural_set_message('Book updated successfully!', 'success');
-        }
-        return book_list($data['id']);
+  $error = book_validate($data);
+  if (!empty($error)) {
+    foreach($error as $msg) {
+      natural_set_message($msg, 'error');
     }
+    return FALSE;
+  } else {
+    $book = new Book();
+    $update = $book->update($data);
+    if ($update['code']==200) {
+      return book_list($data['id']);
+    }
+  }
 }
 
 /*
@@ -157,12 +171,13 @@ function book_edit_form_submit($data) {
  */
 function book_delete_form($data) {
     $book = new Book();
-    $book->loadSingle('id='.$data['book_id']);
+    $book->byID($data['id']);
+    //$book->loadSingle('id='.$data['book_id']);
     if($book->affected>0){
         $frm = new DbForm();
         $frm->build('book_delete_form', $book, $_SESSION['log_access_level']);
     }else{
-        natural_set_message('Problems loading book ' . $user_id, 'error');
+        natural_set_message('Problems loading book ' . $data['id'], 'error');
         return FALSE;   
     }
 }
@@ -172,14 +187,12 @@ function book_delete_form($data) {
  */
 function book_delete_form_submit($data) {
     $book = new Book();
-    $book->remove('id=' . $data['id']);
-    if ($book->affected > 0) {
-        //return "ERROR||Could not remove!";
-        $book->remove('id=' . $data['id']);
+    $delete = $book->delete($data['id']);
+    if ($delete['code']==200) {
         natural_set_message('Book has been removed successfully!', 'success');
         return $data['id'];
     } else {
-        natural_set_message('Problems loading user ' . $user_id, 'error');
+        natural_set_message('Problems loading book ' . $data['id'], 'error');
         return FALSE;
     }
 }

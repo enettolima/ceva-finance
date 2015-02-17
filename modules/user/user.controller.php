@@ -40,6 +40,10 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 						->limit($limit, $offset);
 	}
 
+	//echo "Count row is ".count($users);
+	//$count = $db->count("*");
+	//echo "count is ".$count;
+	//print_debug(get_defined_constants());
 	if (count($users) > 0) {
 		// Building the header with sorter
 		$headers[] = array('display' => 'Id', 'field' => 'id');
@@ -52,24 +56,46 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 		$i = 0;
 		foreach( $users as $user ){
-				//This is important for the row update
+			$class = "";
+			if($user['username'] == "admin"){
+				$class = "disabled";
+			}
+			//This is important for the row update
 			$rows[$i]['row_id'] 		= $user['id'];
 			$rows[$i]['id'] 				= $user['id'];
 			$rows[$i]['first_name']	= $user['first_name'];
 			$rows[$i]['last_name'] 	= $user['last_name'];
 			$rows[$i]['username'] 	= $user['username'];
-			$rows[$i]['edit'] 			= theme_link_process_information('', 'user_edit_form', 'user_edit_form', 'user', array('extra_value' => 'user_id|' . $user['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-			$rows[$i]['delete'] 		= theme_link_process_information('', 'user_delete_form', 'user_delete_form', 'user', array('extra_value' => 'user_id|' . $user['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
+			$rows[$i]['edit'] 			= theme_link_process_information('',
+				'user_edit_form',
+				'user_edit_form',
+				'user',
+				array('extra_value' => 'user_id|' . $user['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_EDIT_ICON")));
+			$rows[$i]['delete'] 		= theme_link_process_information('',
+				'user_delete_form',
+				'user_delete_form',
+				'user',
+				array('extra_value' => 'user_id|' . $user['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_REMOVE_ICON"),
+					'class' => $class));
 			$i++;	
 		}
 	}
 
+	//count($users)
 	$options = array(
 		'show_headers' => TRUE,
 		'page_title' => translate('Users List'),
 		'page_subtitle' => translate('Manage Users'),
 		'empty_message' => translate('No user found!'),
-		'table_prefix' => theme_link_process_information(translate('Create New User'), 'user_create_form', 'user_create_form', 'user', array('response_type' => 'modal')),
+		'table_prefix' => theme_link_process_information(translate('Create New User'),
+			'user_create_form',
+			'user_create_form',
+			'user',
+			array('response_type' => 'modal')),
 		'pager_items' => build_pager('user_list', 'user', count($users), $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
@@ -82,7 +108,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'table_form_process' => '',
 	);
 
-  $listview = $view->build($rows, $headers, $options);
+	$listview = $view->build($rows, $headers, $options);
 
   return $listview;
 }
@@ -93,12 +119,11 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 function user_create_form() {
 	$frm = new DbForm();
 
-
   // Select the proper levels
 	$db = DataConnection::readOnly();
 	$access_levels = $db->acl_levels()
-												->select('description, level')
-												->where('level <= ? ',  $_SESSION['log_access_level']);
+		->select('description, level')
+		->where('level <= ? ',  $_SESSION['log_access_level']);
 
 	if (count($access_levels) > 0) {
 		$items = array();
@@ -138,13 +163,15 @@ function user_create_form_submit($data) {
 		}else{
 			$gen_pass = true;
 		}
-
+		
+		
 		$res = $user->create(false, $gen_pass, $data);
-
-    if ($res) {
+		
+		//print_debug($res);
+		if ($res) {
 	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
 	  }
-	  return user_list($user->id);
+	  return user_list($res->id);
 	}
 }
 
@@ -153,14 +180,14 @@ function user_create_form_submit($data) {
  */
 function user_edit_form($user_id) {
   $user = new User();
-  $user->byId($user_id);
+  $user->byID($user_id);
   if ($user->affected > 0) {
     $frm = new DbForm();
     // Select the properly levels
   	$db = DataConnection::readOnly();
 		$access_levels = $db->acl_levels()
-												->select('description, level')
-												->where('level <= ? ',  $_SESSION['log_access_level']);
+			->select('description, level')
+			->where('level <= ? ',  $_SESSION['log_access_level']);
 
 		if (count($access_levels) > 0) {
 			$items = array();
@@ -188,8 +215,8 @@ function user_edit_form($user_id) {
  * User Edit Form Submit.
  */
 function user_edit_form_submit($data) {
-  $user = new User();
-  $user->loadSingle('id = ' . $data['id']);
+	$user = new User();
+	$user->byID($data['id']);
   // Validate User Fields
 	$error = user_validate_fields($data);
   if (!empty($error)) {
@@ -200,16 +227,20 @@ function user_edit_form_submit($data) {
   }
 	else {
 		foreach ($user as $field => $value) {
-			if($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id') {
+			if($field != 'dashboard_1' && $field != 'dashboard_2' && $field != 'id') {
 				$user->$field = $data[$field];
 			}
 		}
-		$user->update('id = ' . $data['id']);
-		if ($user->affected > 0) {
+		$user->dashboard_1 = $user->dashboard_1;
+		$user->dashboard_2 = $user->dashboard_2;
+		$update = $user->update($data['id']);
+		if ($update['code']==200) {
 		  natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was updated successfully!', 'success');
+			return user_list($data['id']);
+		}else{
+			natural_set_message($update['message'], 'error');
 		}
-		return user_list($data['id']);
-  }
+	}
 }
 
 /**
@@ -241,8 +272,8 @@ function user_validate_fields($fields) {
  * User Delete Form Builder.
  */
 function user_delete_form($user_id) {
-  $user = new User();
-  $user->loadSingle('id = ' . $user_id);
+	$user = new User();
+  $user->byID($user_id);
   if ($user->affected > 0) {
     $frm = new DbForm();
 		$user->first_last_name = $user->first_name . ' ' . $user->last_name;
@@ -258,11 +289,13 @@ function user_delete_form($user_id) {
  * User Delete Form Submit.
  */
 function user_delete_form_submit($data) {
-  $user = new User();
-  $user->loadSingle('id = ' . $data['id']);
+  //$user = new User();
+  //$user->loadSingle('id = ' . $data['id']);
+	$user = new User();
+  $user->byID($data['id']);
   if ($user->affected > 0) {
     // Remove user
-    $user->remove('id = ' . $data['id']);
+    $user->delete($data['id']);
     natural_set_message('User ' . $user->first_name . ' ' . $user->last_name . ' was removed successfully!', 'success');
     return $data['id'];
   }

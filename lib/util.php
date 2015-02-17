@@ -105,9 +105,12 @@ function theme_link_process_information($text, $formname, $func, $module, $optio
   $render_options = '';
 
   // Add an icon.
-  if (!empty($options['icon'])) {
+  /*if (!empty($options['icon'])) {
     $text = '<i class="' . $options['icon'] . '">' . $text . '</i>';
-  }
+  }*/
+	if(isset($options['icon'])){
+		$text = '<i class="' . $options['icon'] . '">' . $text . '</i>';
+	}
 
   // Set the javascript properties for the function.
   foreach($process_information_options as $key) {

@@ -6,7 +6,7 @@
  */
 session_start();
 require_once('../../bootstrap.php');
-require_once('book.controller.php');
+require_once('template_book.controller.php');
 if (!$_SESSION['logged']) {
     //Checing session to force logout
     //Processed by process_information on lib/js/controller.js
@@ -14,13 +14,11 @@ if (!$_SESSION['logged']) {
     exit(0);
 }
 
-//Getting function from the jquery call
-$fn = $_GET['fn'];
-
 /*
  * Sending calls to the view
+ * Call functions on {yourmodule}.controller.php
  */
-switch ($fn) {
+switch ($_GET['fn']) {
     case 'book_list':
         echo book_list($_GET['row_id']);
         break;

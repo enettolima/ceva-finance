@@ -39,24 +39,24 @@ class DbForm {
         $query_field_name = $this->_getSessionVar($field['data_query']);
         $field['data_query'] = str_replace("s{{$query_field_name}}", "{$_SESSION[$query_field_name]}", $field['data_query']);
       }
-
-
+      
       $query_select = ($field['data_value'] == $field['data_label']) ? $field['data_value'] : "{$field['data_value']},{$field['data_label']}";
-			$db = DataConnection::readOnly();
+      
+      $db = DataConnection::readOnly();
 		  $field_options = $db->{$field['data_table']}()
 													->select($query_select)
 													->where($field['data_query'])
-													->order($field['data_sort']);	
-		
-
+													->order($field['data_sort']);
+                          
       $data_value = explode(',', $field['data_value']);
       $data_label = explode(',', $field['data_label']);
       for ($dvf = 0; $dvf < count($data_value); $dvf++) {
         $value = $data_value[$dvf];
         $label = $data_label[$dvf];
 
-        foreach ($field_options as $field_option) {
-					$data = array_map('iterator_to_array', iterator_to_array($field_option));
+        //foreach ($field_options as $field_option) {
+        for ($y = 0; $y < count($field_options); $y++) {
+					$data = array_map('iterator_to_array', iterator_to_array($field_options));
           if ($data[$y][$value] == $prev_value && $data[$y][$label] == $prev_label)
             continue;
 
@@ -140,13 +140,13 @@ class DbForm {
 		$db = DataConnection::readOnly();
 
 		$form_param = $db->{FORM_TABLE}()
-											->where('form_id', $form_name)
-											->limit(1)
-											->fetch();
-
+    ->where('form_id', $form_name)
+    ->limit(1)
+    ->fetch();
+    
 		$form_fields = $db->{FIELD_TABLE}()
-												->where('form_template_id', $form_param['id'])
-												->order('form_field_order asc');
+    ->where('form_template_id', $form_param['id'])
+    ->order('form_field_order asc');
 
     $fields = array();
     $hidden_fields = array();
@@ -292,42 +292,33 @@ class DbForm {
           $submit_text = $form_field['def_val'];
           break;
       }
-
       // Fieldset
       if (!empty($form_field['fieldset_name'])) {
         $fieldsets[$form_field['fieldset_name']]['fields'][] = $form_field;
       }
-
     }
-
+    
     // Get Fieldset information
     $fieldset_clause = array();
     if (!empty($fieldsets)) {
       foreach ($fieldsets as $key => $fieldset) {
         $fieldset_clause[] = "'" . $key . "'";
       }
-    }
-
-		$fsets = $db->{FIELDSET_TABLE}()
-							->where('name IN ( ? )', implode(', ', $fieldset_clause))
-							->order('position');
-
-    foreach($fsets as $fs) {
-      $fieldsets[$fs['name']]['id'] = $fs['id'];
-      $fieldsets[$fs['name']]['name'] = $fs['name'];
-      $fieldsets[$fs['name']]['label'] = $fs['label'];
-      $fieldsets[$fs['name']]['css_class'] = $fs['css_class'];
-    }
-
-    // Adding the hidden fields
-    /*if (!empty($form_fields->data)) {
-      $fieldsets['blank']['fields'] = $form_fields->data + $hidden_fields;
-    }*/
-
+      $fsets = $db->{FIELDSET_TABLE}()
+      ->where('name IN ( ? )', implode(', ', $fieldset_clause))
+      ->order('position');
+      
+      foreach($fsets as $fs) {
+        $fieldsets[$fs['name']]['id'] = $fs['id'];
+        $fieldsets[$fs['name']]['name'] = $fs['name'];
+        $fieldsets[$fs['name']]['label'] = $fs['label'];
+        $fieldsets[$fs['name']]['css_class'] = $fs['css_class'];
+      }
+      $fieldsets['blank']['fields'] = $hidden_fields;
+    }else{
       $fieldsets['blank']['fields'] = $form_fields;
-      $fieldsets['hidden']['fields'] = $hidden_fields;
-
-    // Render Array
+    }
+		// Render Array
     $render = array(
       'page_title' => !empty($form_param['form_title']) ? $form_param['form_title'] : '',
       'form' => $form_param,
@@ -338,6 +329,219 @@ class DbForm {
 
     $template = $twig->loadTemplate('form.html');
     $template->display($render);
+  }
+  
+  /**
+  * Method to create a new form
+  *
+  * Add a new form
+  *
+  * @url POST create
+  * @smart-auto-routing false
+  * 
+  * @access public
+  */
+  function create($request_data) {
+    //Validating data from the API call
+    $this->_validate($request_data, "insert");
+    $book = new DbForm();
+    $db = DataConnection::readWrite();
+    //$u = $db->user();
+    $data = array();
+    foreach ($request_data as $key => $value) {
+      if ($key != "key") {
+        $book->$key = $value;
+        $data[$key] = $value;
+      }
+    }
+    //$book->insert();
+    $result = $db->form_templates()->insert($data);
+    if ($result) {
+      //Preparing response
+      $response = array();
+      $response['code'] = 201;
+      $response['message'] = 'Form has been created!';
+      $response['id'] = $result['id'];
+      return $response;
+    } else {
+      throw new Luracast\Restler\RestException(500, 'Form could not be created!');
+    }
+  }
+
+  /**
+  * Method to fecth Form Record by ID
+  *
+  * Fech a record for a specific form
+  * by ID
+  *
+  * @url GET byID/{id}
+  * @smart-auto-routing false
+  * 
+  * @access public
+  * @throws 404 User not found for requested id  
+  * @param int $id Form to be fetched
+  * @return mixed 
+  */
+  function byID($id) {
+    //If id is null
+    if (is_null($id)) {
+      $error_message = 'Parameter id is missing or invalid!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(400, $error_message);
+    }
+    //Get object by id
+    //$this->loadSingle("id='{$id}'");
+    $db = DataConnection::readOnly();
+    $q = $db->form_templates[$id];
+    //If object not found throw an error
+    if(count($q) > 0) {
+      $result['code'] = 200;
+      foreach($q as $key => $value){
+        $result[$key] = $value;
+        $this->$key = $value;
+      }
+      $this->affected 		 = 1;
+      return $result;
+    }else{
+      $error_message = 'Form not found!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(404, $error_message);
+    }
+  }
+
+  /**
+  * Method to fecth All Books
+  *
+  * Fech all records from the database
+  *
+  * @url GET fetchAll
+  * @smart-auto-routing false
+  * 
+  * @access public
+  * @throws 404 Book not found
+  * @return mixed 
+  */
+  function fetchAll() {
+    $db = DataConnection::readOnly();
+    $q = $db->form_templates();
+    if(count($q) > 0) {
+      foreach($q as $id => $q){
+        if(count($columns)<1){
+          $columns = $db->book[$q['id']];
+        }
+        //setting response for api calls
+        foreach($columns as $k => $v){
+          $res[$id][$k] = $q[$k];
+        }
+      }
+      return $res;
+    }else{
+      throw new Luracast\Restler\RestException(404, 'Form not found');
+    }
+  }
+
+  /**
+  * Method to Update book information
+  *
+  * Update book on database
+  *
+  * @url PUT update
+  * @smart-auto-routing false
+  * 
+  * @access public
+  * @return mixed 
+  */
+  function update($request_data) {
+    $this->_validate($request_data, "update");
+    $response = array();
+    $db = DataConnection::readWrite();
+    $id = $request_data['id'];
+    $q  = $db->form_templates[$id];
+    unset($request_data['fn']);
+    foreach ($request_data as $key => $value) {
+      $this->$key = $value;
+    }
+    
+    if($q){
+      if($q->update($request_data)){
+        $response['code'] = 200;
+        $response['message'] = 'Form has been updated!';
+        natural_set_message($response['message'], 'success');
+      }else{
+        //Could not update record! maybe the data is the same.
+        $response['code'] = 500;
+        $response['message'] = 'Could not update Form at this time!';
+        natural_set_message($response['message'], 'error');
+        throw new Luracast\Restler\RestException($response['code'], $response['message']);
+      }
+      return $response;
+    }else{
+      throw new Luracast\Restler\RestException(404, 'Form not found');
+    }
+  }
+
+  /**
+  * Method to delete a book
+  *
+  * Delete book from database
+  *
+  * @url DELETE delete
+  * @smart-auto-routing false
+  *
+  * @access public
+  * @throws 404 Book not found
+  * @return mixed 
+  */
+  function delete($id) {
+    $data['id'] = $id;
+    $this->_validate($data, "delete");
+    $db = DataConnection::readWrite();
+    $q = $db->form_templates[$id];
+    
+    $response = array();
+    if($q && $q->delete()){
+      $response['code'] = 200;
+      $response['message'] = 'Form has been removed!';
+      return $response;
+    }else{
+      $response['code'] = 404;
+      $response['message'] = 'Form not found!';
+      throw new Luracast\Restler\RestException($response['code'], $response['message']);
+      return $response;
+    }
+  }
+  
+  /**
+  * @smart-auto-routing false
+  * @access private
+  */
+  function _validate($data, $type, $from_api = true) {
+    //If the method called is an update, check if the id exists, otherwise return error
+    $error_code = 400;
+    if ($type == "update" || $type == "delete") {
+      if (!$data['id']) {
+        $error[] = 'Parameter ID is required!';
+      }
+    }
+    /*
+     * check if field is empty
+     * Add more fields as needed
+     */
+    
+    if ($type != "delete") {
+      if (!$data['name']) {
+        $error[] = 'Field name is required!';
+      }
+    }
+
+    //If error exists return or throw exception if the call has been made from the API
+    if (!empty($error)) {
+      if ($from_api) {
+        throw new Luracast\Restler\RestException($error_code, $error[0]);
+      }
+      return $error;
+      exit(0);
+    }
   }
 }
 

@@ -129,7 +129,7 @@ function dashboard_widgets_create_form_submit($data) {
  */
 function dashboard_widgets_edit_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->byId($data['dashboard_widgets_id']);
+    $dashboard_widgets->byID($data['dashboard_widgets_id']);
     $frm = new DbForm();
     $frm->build('dashboard_widgets_edit_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
@@ -146,7 +146,7 @@ function dashboard_widgets_edit_form_submit($data) {
         return FALSE;
     } else {
         $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->byId($data['id'] . "'");
+        $dashboard_widgets->byID($data['id'] . "'");
         foreach ($data as $field => $value) {
             if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
                 $dashboard_widgets->$field = $value;
@@ -165,7 +165,7 @@ function dashboard_widgets_edit_form_submit($data) {
  */
 function dashboard_widgets_delete_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->byId($data['dashboard_widgets_id']);
+    $dashboard_widgets->byID($data['dashboard_widgets_id']);
     $frm = new DbForm();
     return $frm->build('dashboard_widgets_delete_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
@@ -226,7 +226,7 @@ function dashboard_widgets_load_droplets(){
 function dashboard_widgets($dashboard_type) {
 	  $dash = array();
     $user = new User();
-    $user->byId($_SESSION['log_id']);
+    $user->byID($_SESSION['log_id']);
     $dash_type = 'dashboard_' . $dashboard_type;
 		global $twig;
     if ($user->$dash_type) {
@@ -268,7 +268,7 @@ function dashboard_widgets($dashboard_type) {
  */
 function dashboard_setup_form() {
     // Get the Dashboard Type
-    $dashboard_type = 1; //$_SESSION['dash_type'];
+    $dashboard_type = $_SESSION['dash_type'];
 
 		$db = DataConnection::readOnly();
 		$widgets = $db->dashboard_widgets()
@@ -278,7 +278,7 @@ function dashboard_setup_form() {
     if (count($widgets) > 0) {
         // Retrieve the widgets already selected by the user
         $user = new User();
-        $user->byId($_SESSION['log_id']);
+        $user->byID($_SESSION['log_id']);
         $dash_type = 'dashboard_' . $dashboard_type;
         if ($user->$dash_type) {
             $user_widgets = $user->$dash_type;
@@ -313,7 +313,7 @@ function dashboard_setup_form() {
 
 function dashboard_setup($data) {
     $user = new User();
-    $user->byId($_SESSION['log_id']);
+    $user->byID($_SESSION['log_id']);
     $dash_type = 'dashboard_' . $data['dashboard_type'];
     $user_widgets = $user->$dash_type;
     $nlist = array();
@@ -373,7 +373,7 @@ function dashboard_setup($data) {
     }
     //array_unshift($new_list, $widget);
     $user->$dash_type = $new_list;
-    $user->update('id = ' . $_SESSION['log_id']);
+    $user->update($_SESSION['log_id']);
     return dashboard_widgets($data['dashboard_type']);
 }
 
@@ -390,9 +390,9 @@ function dashboard_update_list($data) {
     }
   }
   $user = new User();
-	$user->byId($_SESSION['log_id']);
+	$user->byID($_SESSION['log_id']);
   $dashboard_type = 'dashboard_' . $data['dashboard_type'];
   $user->$dashboard_type = $positions;
-  $user->update('id = ' . $_SESSION['log_id']);
+  $user->update($_SESSION['log_id']);
 }
 ?>

@@ -7,7 +7,6 @@ nbprojects/
 #Ignore default Natural files
 bootstrap.dev.php
 compilation_cache/
-files/
 
 #Ignore komodo files
 Natural.komodoproject

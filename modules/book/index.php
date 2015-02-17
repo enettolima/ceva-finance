@@ -15,13 +15,11 @@ if (!$_SESSION['logged']) {
     exit(0);
 }
 
-//Getting function from the jquery call
-$fn = $_GET['fn'];
-
 /*
  * Sending calls to the view
+ * Call functions on {yourmodule}.controller.php
  */
-switch ($fn) {
+switch ($_GET['fn']) {
     case 'book_list':
         print book_list($_GET['row_id']);
         break;

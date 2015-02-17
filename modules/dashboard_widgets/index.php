@@ -8,7 +8,9 @@ session_start();
 require_once('../../bootstrap.php');
 require_once('dashboard_widgets.controller.php');
 require_once('dashboard_widgets_blocks.php');
-if (!$_SESSION['logged']) {
+
+$islogged = array_key_exists('logged', $_SESSION) ? $_SESSION['logged'] : false;
+if (!$islogged) {
     //Checing session to force logout
     //Processed by process_information on lib/js/controller.js
     echo "LOGOUT";

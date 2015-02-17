@@ -14,6 +14,8 @@ $r->setSupportedFormats('JsonFormat');
 $r->addAuthenticationClass('SimpleAuth');
 $r->addAPIClass('User');
 $r->addAPIClass('Menu');
+$r->addAPIClass('Book');
+$r->addAPIClass('Module');
 $r->addAPIClass('DashboardWidgets');
 $r->handle();
 ?>

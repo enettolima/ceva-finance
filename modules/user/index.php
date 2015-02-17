@@ -1,9 +1,8 @@
 <?php
-
 /**
- * HIVE - Copyleft Open Source Mind, GP
- * Last Modified: Date: 07-18-2009 19:15:01 -0500 (Jul-Sat-2009) $ @ Revision: $Rev: 11 $
- * @package Hive
+ * NATURAL - Copyright Open Source Mind, LLC
+ * Last Modified: Date: 02-15-2015 19:15:01 -0500
+ * @package Natural Framework
  */
 session_start();
 require_once('../../bootstrap.php');
@@ -14,12 +13,10 @@ if (!$_SESSION['logged']) {
   exit(0);
 }
 
-$user_id = $_GET['user_id'];
-
 /*
- * Declare objects here
+ * Sending calls to the view
+ * Call functions on {yourmodule}.controller.php
  */
-$user = new User();
 switch ($_GET['fn']) {
   case 'user_list':
     print user_list($_GET['row_id']);

@@ -18,7 +18,7 @@ class User {
 	 * @return mixed 
 	 */
 
-	public function authenticate($username,$password) {
+	public function authenticate($username,$password, $api_call=false) {
 	  $db = DataConnection::readOnly();
 	  $user = $db->user()
     		->where("username", $username)
@@ -44,12 +44,16 @@ class User {
 
 				return $res;
 			}else{
-			$this->granted = false;
-			throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');	
+				$this->granted = false;
+				if($api_call){
+					throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');	
+				}
 			}
 	  }else{
 			$this->granted = false;
-			throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');	
+			if($api_call){
+				throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');
+			}
 	  }
 	}
 	
@@ -98,7 +102,7 @@ class User {
 	 * Fech a record for a specific Natural user
 	 * by database Id
 	 *
-	 * @url GET byId/{userid}
+	 * @url GET byID/{id}
 	 * @smart-auto-routing false
 	 * 
 	 * @access public
@@ -107,9 +111,9 @@ class User {
 	 * @return mixed 
 	 */
 
-	public function byId($userid) {		
+	public function byID($id) {		
 		$db = DataConnection::readOnly();
-		$u = $db->user[$userid];
+		$u = $db->user[$id];
 	
 		if(count($u) > 0) {
 				//setting object properties for in app use
@@ -199,12 +203,19 @@ class User {
 	}	
 	
 	/**
-	* @smart-auto-routing false
-	* @access private
-	*/
+	 * Method to create a  User Record
+	 *
+	 * Create a new User
+	 *
+	 * @url POST create
+	 * @smart-auto-routing false
+	 * 
+	 * @access public
+	 * @return mixed 
+	 */
 	public function create($show_password=false, $auto_gen_pass=true, $data = null){
 			if($auto_gen_pass){
-				$temp_password = parent::dmRandom(true, 6);
+				$temp_password = generate_random_str(6, 'abcdefghijklmnopqrstuvwxyz1234567890');
 			}else{
 				$temp_password = $this->password;
 			}
@@ -240,55 +251,87 @@ class User {
 					$data['language'] = 'en';
 			}
 
-			$data['password'] = $hashed_password;
+			$data['password'] = $hashed_pass;
 
-			$affected = $u->insert($data);
-
+			unset($data['fn']);
+			//print_debug($data);
+			$result = $u->insert($data);
 			foreach($data as $key => $value){
 				$this->{$key} = $value;
 			}
 
-			$this->id = $u->insert_id();
+			$this->id = $result['id'];
 			if($show_password){
-				$this->temp_password = $temp_password;
+				$this->temp_password = $hashed_password;
 			}
-			return $affected;
+			return $this;
     }
 	
 	/**
-	* @smart-auto-routing false
-	* @access private
-	*/
-	public function update($upd_rule){
-			$NATURAL_key = NATURAL_MAGIC_KEY;
-
+	 * Method to update a User Record
+	 *
+	 * Update an User record
+	 *
+	 * @url PUT update
+	 * @smart-auto-routing false
+	 * 
+	 * @access public
+	 * @return mixed 
+	 */
+	public function update($id){
+			$response = array();
 			$db = DataConnection::readWrite();
-			$u = $db->user()->where($upd_rule);
+			$u = $db->user[$id];
 			if($u){
 				$data = array('file_id'      => $this->file_id,
-										  'first_name'   => $this->first_name,
-											'last_name'    => $this->last_name,
-											'username'     => $this->username,
-											'email'        => $this->email,
-											'access_level' => $this->access_level,
-											'status'       => $this->status,
-											'language'     => $this->preferred_language,
-											'dashboard_1'  => serialize($this->dashboard_1),
-											'dashboard_2'  => serialize($this->dashboard_2));
-				$affected = $u->update($data);
+				'first_name'   => $this->first_name,
+				'last_name'    => $this->last_name,
+				'username'     => $this->username,
+				'email'        => $this->email,
+				'access_level' => $this->access_level,
+				'status'       => $this->status,
+				'language'     => $this->preferred_language,
+				'dashboard_1'  => serialize($this->dashboard_1),
+				'dashboard_2'  => serialize($this->dashboard_2));
+				if($u->update($data)){
+					$response['code'] = 200;
+					$response['message'] = 'User has been updated!';
+				}else{
+					$response['code'] = 500;
+					$response['message'] = 'Could not update User at this time!';
+				}
+				return $response;
+			}else{
+				throw new Luracast\Restler\RestException(404, 'User not found');
 			}
     }
 	
 	/**
-	* @smart-auto-routing false
-	* @access private
-	*/
-	public function remove($rec_key){
-			$db = DataConnection::readWrite();
-			$u = $db->user[$rec_key];
-			if($u && $u->delete()){
-				//print_debug('User deleted succesfuly');
-			}
+    * Method to delete a user
+    *
+    * Delete user from database
+    *
+    * @url DELETE delete
+    * @smart-auto-routing false
+    *
+    * @access public
+    * @throws 404 User not found
+    * @return mixed 
+    */
+	public function delete($id){
+		$this->affected 		 = 0;
+		$db = DataConnection::readWrite();
+		$u = $db->user[$id];
+		if($u && $u->delete()){
+			//print_debug('User deleted succesfuly');
+			$this->affected 		 = 1;
+			$response = array();
+			$response['code'] = 200;
+			$response['message'] = 'User has been removed!';
+			return $response;
+		}else{
+			throw new Luracast\Restler\RestException(404, 'User not found');
+		}
 	}
 	
 	/**
