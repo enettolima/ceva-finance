@@ -21,6 +21,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
     $offset = ($page * $limit) - $limit;
 
 		$db = DataConnection::readOnly();
+		$total_records = 0;
 	  
     // Search
     if (!empty($search)) {
@@ -40,6 +41,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
 									->limit($limit, $offset);
 		}
 
+		$total_records = $db->dashboard_widgets()->count("*");
 
     if (count($dashboard_widgets) > 0) {
         // Building the header with sorter
@@ -60,8 +62,22 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
             }else{
                 $rows[$i]['description'] = $widget['description'];    
             }
-            $rows[$i]['edit']   = theme_link_process_information('', 'dashboard_widgets_edit_form', 'dashboard_widgets_edit_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $widget['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
-            $rows[$i]['delete'] = theme_link_process_information('', 'dashboard_widgets_delete_form', 'dashboard_widgets_delete_form', 'dashboard_widgets', array('extra_value' => 'dashboard_widgets_id|' . $widget['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
+            $rows[$i]['edit']   = theme_link_process_information('',
+							'dashboard_widgets_edit_form',
+							'dashboard_widgets_edit_form',
+							'dashboard_widgets',
+							array('extra_value' => 'id|' . $widget['id'],
+								'response_type' => 'modal',
+								'icon' => NATURAL_EDIT_ICON,
+								'class' => $disabled));
+            $rows[$i]['delete'] = theme_link_process_information('',
+							'dashboard_widgets_delete_form',
+							'dashboard_widgets_delete_form',
+							'dashboard_widgets',
+							array('extra_value' => 'id|' . $widget['id'],
+								'response_type' => 'modal',
+								'icon' => NATURAL_REMOVE_ICON,
+								'class' => $disabled));
 					$i++;
 				}
     }
@@ -71,8 +87,12 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
         'page_title' => translate('Users List'),
         'page_subtitle' => translate('Manage Dashboard Widgetss'),
         'empty_message' => translate('No dashboard widgets found!'),
-        'table_prefix' => theme_link_process_information(translate('Create New Dashboard Widget'), 'dashboard_widgets_create_form', 'dashboard_widgets_create_form', 'dashboard_widgets', array('response_type' => 'modal')),
-        'pager_items' => build_pager('dashboard_widgets_list', 'dashboard_widgets', count($dashboard_widgets), $limit, $page),
+        'table_prefix' => theme_link_process_information(translate('Create New Dashboard Widget'),
+					'dashboard_widgets_create_form',
+					'dashboard_widgets_create_form',
+					'dashboard_widgets',
+					array('response_type' => 'modal')),
+        'pager_items' => build_pager('dashboard_widgets_list', 'dashboard_widgets', $total_records, $limit, $page),
         'page' => $page,
         'sort' => $sort,
         'search' => $search,
@@ -100,28 +120,23 @@ function dashboard_widgets_create_form() {
  * Insert on table
  */
 function dashboard_widgets_create_form_submit($data) {
-    $dashboard_widgets_val = new DashboardWidgets();
-    $error    = $dashboard_widgets_val->_validate($data, false, false);
-    if (!empty($error)) {
-      foreach($error as $msg) {
-        natural_set_message($msg, 'error');
-      }
-      return FALSE;
+	$error = dashboard_widgets_validate($data);
+  if (!empty($error)) {
+    return FALSE;
+  }
+  $dash = new DashboardWidgets();
+  foreach ($data as $field => $value) {
+    if ($field != 'fn') {
+      $dash->$field = $value;
+      $submit[$field] = $value;
     }
-    $dashboard_widgets = new DashboardWidgets();
-    foreach ($data as $field => $value) {
-        if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
-            $dashboard_widgets->$field = $value;
-        }
-    }
-    $dashboard_widgets->insert();
-    if ($dashboard_widgets->affected > 0 ) {
-        natural_set_message('DashboardWidgets has been created!', 'success');
-        return dashboard_widgets_list($dashboard_widgets->id);
-    } else {
-        natural_set_message('Could not save this DashboardWidgets at this time', 'error');
-        return false;
-    }
+  }
+  $response = $dash->create($submit);
+  if ( $response['id'] > 0 ) {
+    return dashboard_widgets_list($response['id']);
+  } else {
+    return false;
+  }
 }
 
 /*
@@ -129,7 +144,7 @@ function dashboard_widgets_create_form_submit($data) {
  */
 function dashboard_widgets_edit_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->byID($data['dashboard_widgets_id']);
+    $dashboard_widgets->byID($data['id']);
     $frm = new DbForm();
     $frm->build('dashboard_widgets_edit_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
@@ -138,26 +153,16 @@ function dashboard_widgets_edit_form($data) {
  * Update table
  */
 function dashboard_widgets_edit_form_submit($data) {
-    $error = dashboard_widgets_validate($data);
-    if (!empty($error)) {
-        foreach($error as $msg) {
-          natural_set_message($msg, 'error');
-        }
-        return FALSE;
-    } else {
-        $dashboard_widgets = new DashboardWidgets();
-        $dashboard_widgets->byID($data['id'] . "'");
-        foreach ($data as $field => $value) {
-            if ($field != 'affected' && $field != 'errorcode' && $field != 'data' && $field != 'dbid' && $field != 'id' && $field != 'fn') {
-                $dashboard_widgets->$field = $value;
-            }
-        }
-        $dashboard_widgets->update("id='" . $data['id'] . "'");
-        if ($dashboard_widgets->affected > 0) {
-            natural_set_message('DashboardWidgets updated successfully!', 'success');
-        }
-        return dashboard_widgets_list($data['id']);
+	$error = dashboard_widgets_validate($data);
+  if (!empty($error)) {
+    return FALSE;
+  } else {
+    $dash = new DashboardWidgets();
+    $update = $dash->update($data);
+    if ($update['code']==200) {
+      return dashboard_widgets_list($data['id']);
     }
+  }
 }
 
 /*
@@ -165,7 +170,7 @@ function dashboard_widgets_edit_form_submit($data) {
  */
 function dashboard_widgets_delete_form($data) {
     $dashboard_widgets = new DashboardWidgets();
-    $dashboard_widgets->byID($data['dashboard_widgets_id']);
+    $dashboard_widgets->byID($data['id']);
     $frm = new DbForm();
     return $frm->build('dashboard_widgets_delete_form', $dashboard_widgets, $_SESSION['log_access_level']);
 }
@@ -174,36 +179,50 @@ function dashboard_widgets_delete_form($data) {
  * Remove from table
  */
 function dashboard_widgets_delete_form_submit($data) {
-    $dashboard_widgets = new DashboardWidgets();
+	
+	$dash = new DashboardWidgets();
+  $delete = $dash->delete($data['id']);
+  if ($delete['code']==200) {
+    return $data['id'];
+  } else {
+    return FALSE;
+  }
+    
+		/*$dashboard_widgets = new DashboardWidgets();
     $dashboard_widgets->remove('id=' . $data['id']);
     if ($dashboard_widgets->affected > 0) {
         //return "ERROR||Could not remove!";
         $dashboard_widgets->remove('id=' . $data['id']);
-        natural_set_message('DashboardWidgets has been removed successfully!', 'success');
+        natural_set_message('Dashboard Widget has been removed successfully!', 'success');
         return $data['id'];
     } else {
         natural_set_message('Problems loading user ' . $user_id, 'error');
         return FALSE;
-    }
+    }*/
 }
 
 /*
  * Validate data
  */
 function dashboard_widgets_validate($data) {
-    $dashboard_widgets = new DashboardWidgets();
-    $edit = false;
-    if (stripos("edit", $words)) {
-        $edit = true;
-    }
-    return $dashboard_widgets->_validate($data, $edit, false);
+  $dashboard_widgets = new DashboardWidgets();
+  if (strpos($data['fn'], "edit")) {
+    $type = "edit";
+  }
+  if (strpos($data['fn'], "delete")) {
+    $type = "delete";
+  }
+  if (strpos($data['fn'], "create")) {
+    $type = "create";
+  }
+  return $dashboard_widgets->_validate($data, $type, false);
 }
 
 function dashboard_widgets_load_droplets_wrapper(){
-    global $twig;
-    // Twig Base
-    $template = $twig->loadTemplate('content.html');
-    $template->display(array(
+	global $twig;
+	// Twig Base
+	$template = $twig->loadTemplate('content.html');
+	$template->display(array(
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
@@ -212,15 +231,15 @@ function dashboard_widgets_load_droplets_wrapper(){
 }
 
 function dashboard_widgets_load_droplets(){
-    // Dashboard Configuration according logged user personal preferences
-    global $twig;
-    $content = $twig->render('dashboard-content.html',
-        array(
-            'setup_form' => dashboard_setup_form(),
-            'widgets' => dashboard_widgets($_SESSION['dash_type'])
-        )
-    );
-    return $content;
+	// Dashboard Configuration according logged user personal preferences
+	global $twig;
+	$content = $twig->render('dashboard-content.html',
+		array(
+			'setup_form' => dashboard_setup_form(),
+			'widgets' => dashboard_widgets($_SESSION['dash_type'])
+		)
+	);
+	return $content;
 }
 
 function dashboard_widgets($dashboard_type) {

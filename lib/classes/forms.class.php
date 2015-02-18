@@ -33,6 +33,7 @@ class DbForm {
 
   function _getFieldOptions($field) {
     $options = array();
+    
     if ($field['data_table'] != '') {
       $query_field_name = '';
       while (strpos($field['data_query'], "s{") > 0) {
@@ -44,22 +45,59 @@ class DbForm {
       
       $db = DataConnection::readOnly();
 		  $field_options = $db->{$field['data_table']}()
-													->select($query_select)
-													->where($field['data_query'])
-													->order($field['data_sort']);
-                          
+      ->select($query_select)
+      ->where($field['data_query'])
+      ->order($field['data_sort']);
       $data_value = explode(',', $field['data_value']);
       $data_label = explode(',', $field['data_label']);
+      
       for ($dvf = 0; $dvf < count($data_value); $dvf++) {
         $value = $data_value[$dvf];
         $label = $data_label[$dvf];
-
+        //echo "value is ".$value." -- label is ".$label."<br>";
+        
+        foreach ($field_options as $field_option) {
+        //for ($y = 0; $y < count($field_options); $y++) {
+					//$data = array_map('iterator_to_array', iterator_to_array($field_option));
+          //$data = $field_options;
+          
+          //if ($data[$y][$value] == $prev_value && $data[$y][$label] == $prev_label)
+            //continue;
+          switch($field['html_type']) {
+            case 'list':
+              $status = ($field_option[$data_value[$dvf]] == $field['def_val'] ? 'selected' : '');
+              break;
+            case 'checkbox':
+            case 'radio':
+              // For Multiple Checkbox Values
+              if (is_array($field['def_val'])) {
+                $status = (in_array($field_option[$data_value[$dvf]], $field['def_val']) ? 'checked' : '');
+              }
+              else {
+                $status = ($field_option[$data_value[$dvf]] == $field['def_val'] ? 'checked' : '');
+              }
+              break;
+          }
+          $options[] = array('value' => $field_option[$value], 'label' => $field_option[$label], 'status' => $status);
+          $prev_value = $field_option[$value];
+          $prev_label = $field_option[$label];
+        }
+      }
+      //print_debug($options);
+      
+      /*for ($dvf = 0; $dvf < count($data_value); $dvf++) {
+        $value = $data_value[$dvf];
+        $label = $data_label[$dvf];
+        //echo "value is ".$value." -- label is ".$label;
+        
         //foreach ($field_options as $field_option) {
         for ($y = 0; $y < count($field_options); $y++) {
 					$data = array_map('iterator_to_array', iterator_to_array($field_options));
-          if ($data[$y][$value] == $prev_value && $data[$y][$label] == $prev_label)
-            continue;
-
+          //$data = $field_options;
+          
+          
+          //if ($data[$y][$value] == $prev_value && $data[$y][$label] == $prev_label)
+            //continue;
           switch($field['html_type']) {
             case 'list':
               $status = ($data[$y][$data_value[$dvf]] == $field['def_val'] ? 'selected' : '');
@@ -75,12 +113,12 @@ class DbForm {
               }
               break;
           }
-
           $options[] = array('value' => $data[$y][$value], 'label' => $data[$y][$label], 'status' => $status);
           $prev_value = $data[$y][$value];
           $prev_label = $data[$y][$label];
         }
-      }
+      }*/
+      
 
       if ($field['field_values']) {
         $opt = explode(';', $field['field_values']);
@@ -410,7 +448,7 @@ class DbForm {
   }
 
   /**
-  * Method to fecth All Books
+  * Method to fecth All Forms
   *
   * Fech all records from the database
   *
@@ -476,14 +514,15 @@ class DbForm {
       }
       return $response;
     }else{
+      natural_set_message('Form not found', 'error');
       throw new Luracast\Restler\RestException(404, 'Form not found');
     }
   }
 
   /**
-  * Method to delete a book
+  * Method to delete a form
   *
-  * Delete book from database
+  * Delete form from database
   *
   * @url DELETE delete
   * @smart-auto-routing false
@@ -502,10 +541,12 @@ class DbForm {
     if($q && $q->delete()){
       $response['code'] = 200;
       $response['message'] = 'Form has been removed!';
+      natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
       $response['message'] = 'Form not found!';
+      natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;
     }
@@ -529,13 +570,17 @@ class DbForm {
      */
     
     if ($type != "delete") {
-      if (!$data['name']) {
-        $error[] = 'Field name is required!';
+      if (!$data['form_name']) {
+        $error[] = 'Form name is required!';
+      }
+      if (!$data['form_id']) {
+        $error[] = 'Form ID is required!';
       }
     }
 
     //If error exists return or throw exception if the call has been made from the API
     if (!empty($error)) {
+      natural_set_message($error[0], 'error');
       if ($from_api) {
         throw new Luracast\Restler\RestException($error_code, $error[0]);
       }

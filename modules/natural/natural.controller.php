@@ -63,6 +63,7 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     $offset = ($page * $limit) - $limit;
 		//Openning the DB Connection
 		$db = DataConnection::readOnly();
+		$total_records=0;
 		
 		//Search On listview
 		if (!empty($search)) {
@@ -83,6 +84,8 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			->order($sort)
 			->limit($limit, $offset);
 		}
+		
+		$total_records = $db->module()->count("*");
 		$i = 0;
     if (count($modules)) {
 			// Building the header with sorter
@@ -118,9 +121,7 @@ function module_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		'module_create_form',
 		'module_create_form',
 		'natural', array('response_type' => 'modal')),
-	'pager_items' => build_pager('module_list',
-		'natural',
-		count($modules), $limit, $page),
+	'pager_items' => build_pager('module_list', 'natural', $total_records, $limit, $page),
 	'page' => $page,
 	'sort' => $sort,
 	'search' => $search,
@@ -151,18 +152,28 @@ function module_create_form() {
 		->order("form_id")
 		->limit(1);
 	*/
-	
+	/*$menus = $db->menu()
+	->select("*")
+	->where("element_name", "testing_elementsssssss")
+	->and("id != ?",73)
+	->limit(1);
+	if(count($menus)>0){
+		echo "found";
+	}else{
+		echo "not found";
+	}
+	*/
 	$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
 	$q = $pdo->prepare('SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.user');
 	$q->execute();
 	$db_tables = $q->fetchAll(PDO::FETCH_COLUMN);
 	
-	print_debug($db_tables);
+	/*print_debug($db_tables);
 	if(count($db_tables)>0){
 		echo "found";
 	}else{
 		echo "not found";
-	}
+	}*/
 	//print_debug($modules);
 	/*foreach($modules as $md){
 		echo "value is ".$md."<br>";
@@ -194,111 +205,115 @@ function module_create_form() {
 }
 
 function module_create_form_submit($data) {
-    $data['project_path'] 	= NATURAL_WEB_ROOT;
-    $data['project_name'] 	= NATURAL_PLATFORM;
-    $data['field_1'] 				= 'b.name';
-    $data['field_label_1'] 	= 'Name';
-    $data['field_2'] 				= 'b.author';
-    $data['field_label_2'] 	= 'Author';
-		$data['module'] 				= $data['label'];
-    if (is_numeric($data['table_name'])) {
-			$class_name = str_replace("_", " ", $data['module']);
-			$data['module_name'] = $data['module'];
-			$data['module'] = str_replace(" ", "_", strtolower($data['module']));
-    } else {
-			$class_name = str_replace("_", " ", $data['table_name']);
-			$data['module_name'] = $data['table_name'];
-			$data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
-			
-			$query = "DESCRIBE " . "" . $data['table_name'] . "";
-			
-			$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
-			$q = $pdo->prepare($query);
-			$q->execute();
-			$columns = $q->fetchAll(PDO::FETCH_COLUMN);
-			
-			if (count($columns) > 0) {
-				for ($i = 1; $i < 3; $i++) {
-					$key = 'field_' . $i;
-					$keylabel = 'field_label_' . $i;
-					//$data[key] = 'b.name';
-					$data[$key] = $columns[$i];
-					//$data[$keylabel] = 'Name';
-					$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($columns[$i])));
-				}
+	/*
+	 * Validating information on the Database
+	 */
+	$error = validate_module_info($data);
+	if ($error) {
+		natural_set_message($error, 'error');
+		return FALSE;
+		exit(0);
+	}
+	$data['project_path'] 	= NATURAL_WEB_ROOT;
+	$data['project_name'] 	= NATURAL_PLATFORM;
+	$data['field_1'] 				= 'b.name';
+	$data['field_label_1'] 	= 'Name';
+	$data['field_2'] 				= 'b.author';
+	$data['field_label_2'] 	= 'Author';
+	$data['module'] 				= $data['label'];
+	if (is_numeric($data['table_name'])) {
+		$class_name = str_replace("_", " ", $data['module']);
+		$data['module_name'] = $data['module'];
+		$data['module'] = str_replace(" ", "_", strtolower($data['module']));
+	} else {
+		$class_name = str_replace("_", " ", $data['table_name']);
+		$data['module_name'] = $data['table_name'];
+		$data['module'] = str_replace(" ", "_", strtolower($data['table_name']));
+		
+		$query = "DESCRIBE " . "" . $data['table_name'] . "";
+		
+		$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+		$q = $pdo->prepare($query);
+		$q->execute();
+		$columns = $q->fetchAll(PDO::FETCH_COLUMN);
+		
+		if (count($columns) > 0) {
+			for ($i = 1; $i < 3; $i++) {
+				$key = 'field_' . $i;
+				$keylabel = 'field_label_' . $i;
+				//$data[key] = 'b.name';
+				$data[$key] = $columns[$i];
+				//$data[$keylabel] = 'Name';
+				$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($columns[$i])));
 			}
-    }
-    $class_name = ucwords($class_name);
-    $data['class_name'] = str_replace(" ", "", $class_name);
-    //$data['path'] = NATURAL_WEB_ROOT . "modules/" . $data['module'] . "/";
-    $data['path'] = '../'.$data['module'].'/';
-		/*
-     * Validating information on the Database
-     */
-		$error = validate_module_info($data);
-		if ($error) {
-				natural_set_message($error, 'error');
-        return FALSE;
-				exit(0);
 		}
-		//Creating directory for the module
-    create_module_structure($data);
-    if ($data['create_api'] == 1) {
-        create_module_api($data);
-    }
-    if ($data['create_forms'] == 1) {
-        //calling function on natural module module/natural/natural.func.php
-        create_form($data['module_name']);
-    }
-    if ($data['create_class']) {
-        //create_module_class($data);
-    }
-    if ($data['create_menu'] == 1) {
-        create_module_menu($data);
-    }
+	}
+	$class_name = ucwords($class_name);
+	$data['class_name'] = str_replace(" ", "", $class_name);
+	//$data['path'] = NATURAL_WEB_ROOT . "modules/" . $data['module'] . "/";
+	$data['path'] = '../'.$data['module'].'/';
+	
+	//Creating directory for the module
+	create_module_structure($data);
+	if ($data['create_api'] == 1) {
+		create_module_api($data);
+	}
+	if ($data['create_forms'] == 1) {
+		//calling function on natural module module/natural/natural.func.php
+		create_form($data['module_name']);
+	}
+	if ($data['create_class']) {
+		//create_module_class($data);
+	}
+	if ($data['create_menu'] == 1) {
+		create_module_menu($data);
+	}
 
-    //Saving information to the Natural Database
-    $module 									= new Module();
-    $module->version 					= 1;
-    $module->module 					= strtolower(str_replace(" ", "_", $data['module']));
-    $module->label 						= ucwords($data['label']);
-    $module->description 			= ucwords($data['label']);
-    $module->license_quantity = 0;
-    $module->last_update 			= date("Y-m-d H:i:s");
-    $module->status 					= 1;
-    $module->insert();
-		if($module->affected){
-				natural_set_message('Module '.$data['module'].' created successfully!', 'success');	
-				return module_list($module->id);
-		}else{
-				natural_set_message('Could not save this Module at this time', 'error');
-        return false;
-		}
+	//Saving information to the Natural Database
+	$module 										= new Module();
+	$submit['version'] 					= 1;
+	$submit['module'] 					= strtolower(str_replace(" ", "_", $data['module']));
+	$submit['label'] 						= ucwords($data['label']);
+	$submit['description'] 			= ucwords($data['label']);
+	$submit['license_quantity']	= 0;
+	$submit['last_update'] 			= date("Y-m-d H:i:s");
+	$submit['status'] 					= 1;
+	$response = $module->create($submit);
+	
+	if ( $response['id'] > 0 ) {
+		return module_list($response['id']);
+	} else {
+		return false;
+	}
+	if($module->affected){
+		natural_set_message('Module '.$data['module'].' created successfully!', 'success');	
+		return module_list($module->id);
+	}else{
+		natural_set_message('Could not save this Module at this time', 'error');
+		return false;
+	}
 }
 
 function module_delete_form($data){
-		$module = new Module();
-    $module->loadSingle('id='.$data['id']);
-		if($module->affected>0){
-        $frm = new DbForm();
-        $frm->build('module_delete_form', $module, $_SESSION['log_access_level']);
-    }else{
-        natural_set_message('Problems loading module ' . $data['id'], 'error');
-        return FALSE;   
-    }
+	$module = new Module();
+	//$module->loadSingle('id='.$data['id']);
+	$module->byID($data['id']);
+	if($module->affected>0){
+		$frm = new DbForm();
+		$frm->build('module_delete_form', $module, $_SESSION['log_access_level']);
+	}else{
+		return FALSE;   
+	}
 }
 
 function module_delete_form_submit($data){
-		$module = new Module();
-    $module->loadSingle('id='.$data['id']);
-    if ($module->affected > 0) {
-        $module->remove('id='.$data['id']);
-        natural_set_message('Module has been removed successfully!', 'success');
-        return $data['id'];
-    } else {
-        natural_set_message('Problems loading user ' . $data['id'], 'error');
-        return FALSE;
-    }
+	$module = new Module();
+	$delete = $module->delete($data['id']);
+  if ($delete['code']==200) {
+    return $data['id'];
+  } else {
+    return FALSE;
+  }
 }
 
 /*
@@ -306,9 +321,17 @@ function module_delete_form_submit($data){
  */
 
 function create_module_menu($data) {
-    //Building array of data to pass to the table
-		$mn = new Menu();
-		$mn->loadSingle('id>0 ORDER BY position DESC LIMIT 1');
+    
+		$db = DataConnection::readOnly();
+		$menus = $db->menu()
+		->select("*")
+		->where("id > ?", 0)
+		->order("position DESC")
+		->limit(1);
+		
+		foreach($menus as $menu){
+			$last_position = $menu['position'];
+		}
 		
 		if (is_numeric($data['table_name'])) {
         $name = $data['module'];
@@ -317,19 +340,20 @@ function create_module_menu($data) {
     }
 		
 		$menu = new Menu();
-		$menu->pid 					= '';
-		$menu->menu_name 		= 'main';
-		$menu->position  		= $mn->position + 1;
-		$menu->element_name = $data['module'];
-		$menu->label 				= ucwords($data['module']);
-		$menu->title 				= ucwords($data['module']);
-		$menu->func 				= strtolower(str_replace(" ", "_", $name.'_list'));
-		$menu->module 			= $data['module'];
-		$menu->allow 				= 'all';
-		$menu->allow_value 	= '0';
-		$menu->status 			= '1';
-		$menu->icon_class 	= 'fa fa-edit';
-		$menu->insert();
+		//Building array of data to pass to the menu class
+		$submit['pid'] 					= '';
+		$submit['menu_name'] 		= 'main';
+		$submit['position']  		= $last_position + 1;
+		$submit['element_name'] = $data['module'];
+		$submit['label'] 				= ucwords($data['module']);
+		$submit['title'] 				= ucwords($data['module']);
+		$submit['func'] 				= strtolower(str_replace(" ", "_", $name.'_list'));
+		$submit['module'] 			= $data['module'];
+		$submit['allow'] 				= 'all';
+		$submit['allow_value'] 	= '0';
+		$submit['status'] 			= '1';
+		$submit['icon_class'] 	= 'fa fa-edit';
+		$menu->create($submit);
 }
 
 /*
@@ -363,6 +387,7 @@ function create_module_file($files, $data) {
         }
 				// Do tag replacements or whatever you want
         $file = str_replace("book", $name, $file);
+				$file = str_replace("template_book", $name, $file);
 				$file = str_replace("TemplateBook", $data['class_name'], $file);
         $file = str_replace("Book", $data['class_name'], $file);
 				$file = str_replace("name", $data['field_1'], $file);
@@ -492,77 +517,98 @@ function module_remove($data) {
  */
 
 function form_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
-		$view = new ListView();
-		
-		// Row Id for update only row
-		if (!empty($row_id)) {
-			$row_id = 'f.id = ' . $row_id;
-		}
-		else {
-			$row_id = 'f.id != 0'; 
-		}
+	$view = new ListView();
+	// Row Id for update only row
+	if (!empty($row_id)) {
+		$row_id = 'id = ' . $row_id;
+	} else {
+		$row_id = 'id != 0';
+	}
 	
-		// Search
-		if (!empty($search)) {
-			$search_fields = array('f.form_name', 'f.form_title', 'f.id');
-			$exceptions = array();
-			$search_query = build_search_query($search, $search_fields, $exceptions);
-		}
-		else {
-			$search_query = '';
-		}
+	// Sort
+	if (empty($sort)) {
+		$sort = 'form_name ASC';
+	}
 	
-		// Sort
-		if (empty($sort)) {
-			$sort = 'f.form_name ASC';
-		}
+	$limit = PAGER_LIMIT;
+	$offset = ($page * $limit) - $limit;
+	$db = DataConnection::readOnly();
+	$total_records = 0;
+	
+	// Search
+	if (!empty($search)) {
+		$search_fields = array('id', 'form_name', 'form_title');
+		$exceptions = array();
+		$search_query = build_search_query($search, $search_fields, $exceptions);
 		
-		$limit = PAGER_LIMIT; // PAGER_LIMIT
-		$start = ($page * $limit) - $limit;
-    // Module Object
-    $forms = new DataManager();
-    $forms->dmLoadCustomList("SELECT f.*
-		FROM " . "form_templates f
-		WHERE $row_id $search_query
-		ORDER BY  $sort
-		LIMIT  $start, $limit", 'ASSOC', TRUE);
-		
-    if ($forms->affected > 0) {
-        // Building the header with sorter
-				$headers[] = array('display' => 'Id', 'field' => 'f.id');
-				$headers[] = array('display' => 'Name', 'field' => 'f.form_name');
-				$headers[] = array('display' => 'Title', 'field' => 'f.form_title');
-				$headers[] = array('display' => 'Edit', 'field' => NULL);
-				$headers[] = array('display' => 'Delete', 'field' => NULL);
-				$headers = build_sort_header('form_list', 'natural', $headers, $sort);
-		
-        $total = 0;
-        for ($i = 0; $i < $forms->affected; $i++) {
-            $j = $i + 1;
-						//This is important for the row update
-            $rows[$j]['row_id'] = $forms->data[$i]['id'];
-            //////////////////////////////////////
-						$rows[$j]['id'] = $forms->data[$i]['id'];
-            $rows[$j]['form_name'] = $forms->data[$i]['form_name'];
-						$rows[$j]['form_title'] = $forms->data[$i]['form_title'];
-						
-						if($forms->data[$i]['system']==1){
-								$disabled = 'disabled';
-						}else{
-								$disabled = '';
-						}
-						$rows[$j]['edit']   = theme_link_process_information('', 'form_edit_form', 'form_edit_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON, 'class' => $disabled));
-						$rows[$j]['delete'] = theme_link_process_information('', 'form_delete_form', 'form_delete_form', 'natural', array('extra_value' => 'id|' . $forms->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON, 'class' => $disabled));
-				}
-    }
+		$forms = $db->form_templates()
+		->where($row_id)
+		->and($search_query)
+		->order($sort)
+		->limit($limit, $offset);
+	} else {
+		$forms = $db->form_templates()
+		->where($row_id)
+		->order($sort)
+		->limit($limit, $offset);
+	}
+	$total_records = $db->form_templates()->count("*");
+	$i = 0;
+	if (count($forms)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'Name', 'field' => 'form_name');
+		$headers[] = array('display' => 'Title', 'field' => 'form_title');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('form_list', 'natural', $headers, $sort);
 
-    $options = array(
+		$total = 0;
+		foreach( $forms as $form ){
+			$j = $i + 1;
+			//This is important for the row update
+			$rows[$j]['row_id'] = $form['id'];
+			//////////////////////////////////////
+			$rows[$j]['id'] = $form['id'];
+			$rows[$j]['form_name'] = $form['form_name'];
+			$rows[$j]['form_title'] = $form['form_title'];
+			
+			if($form['system']==1){
+					$disabled = 'disabled';
+			}else{
+					$disabled = '';
+			}
+			$rows[$j]['edit']   = theme_link_process_information('',
+				'form_edit_form',
+				'form_edit_form',
+				'natural',
+				array('extra_value' => 'id|' . $form['id'],
+					'response_type' => 'modal',
+					'icon' => NATURAL_EDIT_ICON,
+					'class' => $disabled));
+			$rows[$j]['delete'] = theme_link_process_information('',
+				'form_delete_form',
+				'form_delete_form',
+				'natural',
+				array('extra_value' => 'id|' . $form['id'],
+					'response_type' => 'modal',
+					'icon' => NATURAL_REMOVE_ICON,
+					'class' => $disabled));
+			$i++;
+		}
+	}
+
+  $options = array(
 		'show_headers' => TRUE,
 		'page_title' => translate('Form List'),
 		'page_subtitle' => translate('Manage Forms'),
 		'empty_message' => translate('No form found!'),
-		'table_prefix' => theme_link_process_information(translate('Create New Form'), 'form_create_form', 'form_create_form', 'natural', array('response_type' => 'modal')),
-		'pager_items' => build_pager('form_list', 'natural', $forms->total_records, $limit, $page),
+		'table_prefix' => theme_link_process_information(translate('Create New Form'),
+			'form_create_form',
+			'form_create_form',
+			'natural',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('form_list', 'natural', $total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
@@ -585,22 +631,49 @@ function form_create_form() {
 }
 
 function form_create_form_submit($data) {
-    $dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
+    //$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
     foreach ($data as $key => $value) {
-        if ($key != "fn") {
-            $query_fields .= ", {$key}='" . mysql_real_escape_string($value) . "'";
-        }
+			if ($key != "fn") {
+				//$query_fields .= ", {$key}='" . mysql_real_escape_string($value) . "'";
+				$submit[$key] = mysql_real_escape_string($value);
+			}
     }
-    //Try to find another Database with the same name.
+    /*//Try to find another Database with the same name.
     $check_query = "SELECT * FROM " . "" . FORM_TABLE . " WHERE form_name='{$data['form_name']}'";
     $query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $check_query);
     if (mysql_affected_rows()) {
 				natural_set_message('Sorry but this form name already exist, please try again with different name!', 'error');
         return false;
         exit(0);
-    }
+    }*/
+		
+		$db = DataConnection::readOnly();
+		$check = $db->form_templates()
+		->select("*")
+		->where("form_name", $data['form_name'])
+		->limit(1);
+		if(count($check)>0){
+			natural_set_message('Sorry but this form name already exist, please try again with different name!', 'error');
+			return false;
+			exit(0);
+		}
+		//$pdo = new PDO(NATURAL_PDO_DSN_WRITE, NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
+		//$q = $pdo->prepare('SHOW COLUMNS FROM ' . NATURAL_DBNAME . '.user');
+		//$q->execute();
+		//$db_tables = $q->fetchAll(PDO::FETCH_COLUMN);
 
-    $query_fields = substr($query_fields, 1);
+		$form = new DbForm();
+		//$save = $form->creat($submit);
+		$response = $form->create($submit);
+    if ( $response['id'] > 0 ) {
+			natural_set_message('Form '.$data['form_name'].' saved successfully!', 'success');
+			return form_list($response['id']);
+    } else {
+			natural_set_message('Form '.$data['form_name'].' could not be saved!', 'error');
+			return false;
+    }
+		
+    /*$query_fields = substr($query_fields, 1);
 
     $query = "INSERT INTO " . "" . FORM_TABLE . " SET {$query_fields}";
     $query_result = mysql_query($query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error() . "<br>" . $query . "<br>" . $query_fields);
@@ -612,140 +685,185 @@ function form_create_form_submit($data) {
 		}else{
 				natural_set_message('Form '.$data['form_name'].' could not be saved!', 'error');
 				return false;
-		}
+		}*/
 }
 
 function form_edit_form($data){
-		$form = new DataManager();
-		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
+		$form = new DbForm();
+		//$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
+		$form->byID($data['id']);
 		$frm = new DbForm();
     $frm->build("form_edit_form", $form, $_SESSION['log_access_level']);
 }
 
 function form_edit_form_submit($data){
-		$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
-    foreach ($data as $key => $value) {
-        if ($key=="fn" || $key=="id") {
-						//skip for the query
-				}else{
-            $query_fields .= ", {$key}='" . mysql_real_escape_string($value) . "'";
-        }
-    }
-		
-    $query_fields = substr($query_fields, 1);
-		//Updating form parameters.
-    $check_query = "UPDATE " . "" . FORM_TABLE . " SET {$query_fields} WHERE id='{$data['id']}'";
-		$query_check = mysql_query($check_query, $dblink) or die("ERROR|1011|We could not save this form at this time cause:" . mysql_error());
-    if (mysql_affected_rows()) {
-        natural_set_message('Form '.$data['form_name'].' saved successfully!', 'success');
-				return form_list($data['id']);
-    }
+	foreach ($data as $key => $value) {
+		if ($key != "fn") {
+			$submit[$key] = mysql_real_escape_string($value);
+		}
+	}
+	$form = new DbForm();
+	$response = $form->update($submit);
+	if($response['code']==200){
+		return form_list($data['id']);
+	}
 }
 
 function form_delete_form($data){
-		$form = new DataManager();
-    $form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
-    if($form->affected>0){
-        $frm = new DbForm();
-        $frm->build('form_delete_form', $form, $_SESSION['log_access_level']);
-    }else{
-        natural_set_message('Problems loading Form ' . $data['id'], 'error');
-        return FALSE;   
-    }
+	/*$form = new DbForm();
+	//$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
+	$form->byID($data['id']);
+	if($form->affected>0){
+		$frm = new DbForm();
+		$frm->build('form_delete_form', $form, $_SESSION['log_access_level']);
+	}else{
+		natural_set_message('Problems loading Form ' . $data['id'], 'error');
+		return FALSE;
+	}*/
+	
+	$form = new DbForm();
+	$form->byID($data['id']);
+	if($form->affected>0){
+		$frm = new DbForm();
+		$frm->build('form_delete_form', $form, $_SESSION['log_access_level']);
+	}else{
+		return FALSE;
+	}
+	/*
+  $delete = $form->delete($data['id']);
+  if ($delete['code']==200) {
+		return $data['id'];
+  } else {
+    return FALSE;
+  }*/
 }
 
 function form_delete_form_submit($data){
-		$form = new DataManager();
-		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
-		$name = $form->form_title;
-		$form->dmRemove("" . FORM_TABLE, 'id='.$data['id']);
+	/*$form = new DataManager();
+	$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['id']);
+	$name = $form->form_title;
+	$form->dmRemove("" . FORM_TABLE, 'id='.$data['id']);
+	
+	$fields = new DataManager();
+	$fields->dmRemove("" . FIELD_TABLE, 'form_template_id='.$data['id']);
+	if($form->affected>0){
+			natural_set_message('Form '.$name.' has been removed successfully!', 'success');
+			return $data['id'];
+	}else{
+			natural_set_message('Could not remove the form '.$name.'!', 'error');
+			return FALSE;
+	}
+	*/
+	$form = new DbForm();
+  $delete = $form->delete($data['id']);
+  if ($delete['code']==200) {
 		
-		$fields = new DataManager();
-		$fields->dmRemove("" . FIELD_TABLE, 'form_template_id='.$data['id']);
-		if($form->affected>0){
-				natural_set_message('Form '.$name.' has been removed successfully!', 'success');
-				return $data['id'];
-		}else{
-				natural_set_message('Could not remove the form '.$name.'!', 'error');
-				return FALSE;
-		}
+		$sql = "DELETE FROM ".FIELD_TABLE." WHERE form_template_id =  :formID";
+		$pdo = new PDO(NATURAL_PDO_DSN_WRITE, NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
+		$stmt = $pdo->prepare($sql);
+		$stmt->bindParam(':formID', $data['id'], PDO::PARAM_INT);   
+		$stmt->execute();
+		
+    return $data['id'];
+  } else {
+    return FALSE;
+  }
 }
 
 /*
  * FIELD MANAGEMENT
  */
 function field_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
-		$view = new ListView();
-		
-		// Row Id for update only row
-		if (!empty($row_id)) {
-			$row_id = 'f.id = ' . $row_id;
+	$view = new ListView();
+	// Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'id = ' . $row_id;
+  } else {
+    $row_id = 'id != 0';
+  }
+  
+  // Sort
+  if (empty($sort)) {
+    $sort = 'form_reference ASC';
+  }
+  
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $db = DataConnection::readOnly();
+  $total_records = 0;
+  
+  // Search
+  if (!empty($search)) {
+    $search_fields = array('id', 'field_name', 'form_reference', 'html_type', 'def_label');
+    $exceptions = array();
+    $search_query = build_search_query($search, $search_fields, $exceptions);
+    
+    $fields = $db->field_templates()
+    ->where($row_id)
+    ->and($search_query)
+    ->order($sort)
+    ->limit($limit, $offset);
+  } else {
+    $fields = $db->field_templates()
+    ->where($row_id)
+    ->order($sort)
+    ->limit($limit, $offset);
+  }
+  $total_records = $db->field_templates()->count("*");
+	$i = 0;
+  if (count($fields)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'Form Reference', 'field' => 'form_reference');
+		$headers[] = array('display' => 'Position', 'field' => 'form_field_order');
+		$headers[] = array('display' => 'Name', 'field' => 'field_name');
+		$headers[] = array('display' => 'HTML Type', 'field' => 'html_type');
+		$headers[] = array('display' => 'Label', 'field' => 'def_label');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('field_list', 'natural', $headers, $sort);
+
+		$total = 0;
+		foreach( $fields as $field ){
+			$j = $i + 1;
+			//This is important for the row update
+			$rows[$j]['row_id'] = $field['id'];
+			//////////////////////////////////////
+			$rows[$j]['id'] = $field['id'];
+			$rows[$j]['form_reference'] = $field['form_reference'];
+			$rows[$j]['form_field_order'] = $field['form_field_order'];
+			$rows[$j]['field_name'] = $field['field_name'];
+			$rows[$j]['html_type'] = $field['html_type'];
+			$rows[$j]['def_label'] = $field['def_label'];
+			$rows[$j]['edit']   = theme_link_process_information('',
+				'field_edit_form',
+				'field_edit_form',
+				'natural',
+				array('extra_value' => 'id|' . $field['id'],
+					'response_type' => 'modal',
+					'icon' => NATURAL_EDIT_ICON));
+			$rows[$j]['delete'] = theme_link_process_information('',
+				'field_delete_form',
+				'field_delete_form',
+				'natural',
+				array('extra_value' => 'id|' . $field['id'],
+					'response_type' => 'modal',
+					'icon' => NATURAL_REMOVE_ICON));
+			$i++;
 		}
-		else {
-			$row_id = 'f.id != 0'; 
-		}
-	
-		// Search
-		if (!empty($search)) {
-			$search_fields = array('f.form_reference', 'f.field_name', 'f.html_type', 'f.id', 'f.def_label');
-			$exceptions = array();
-			$search_query = build_search_query($search, $search_fields, $exceptions);
-		}
-		else {
-			$search_query = '';
-		}
-	
-		// Sort
-		if (empty($sort)) {
-			$sort = 'f.form_reference ASC';
-		}
-		
-		$limit = PAGER_LIMIT; // PAGER_LIMIT
-		$start = ($page * $limit) - $limit;
-    // Module Object
-    $field = new DataManager();
-    $field->dmLoadCustomList("SELECT f.*
-		FROM " . "field_templates f
-		WHERE $row_id $search_query
-		ORDER BY  $sort
-		LIMIT  $start, $limit", 'ASSOC', TRUE);
-		
-    if ($field->affected > 0) {
-        // Building the header with sorter
-				$headers[] = array('display' => 'Id', 'field' => 'f.id');
-				$headers[] = array('display' => 'Form Reference', 'field' => 'f.form_reference');
-				$headers[] = array('display' => 'Position', 'field' => 'f.form_field_order');
-				$headers[] = array('display' => 'Name', 'field' => 'f.field_name');
-				$headers[] = array('display' => 'HTML Type', 'field' => 'f.html_type');
-				$headers[] = array('display' => 'Label', 'field' => 'f.def_label');
-				$headers[] = array('display' => 'Edit', 'field' => NULL);
-				$headers[] = array('display' => 'Delete', 'field' => NULL);
-				$headers = build_sort_header('field_list', 'natural', $headers, $sort);
-		
-        $total = 0;
-        for ($i = 0; $i < $field->affected; $i++) {
-            $j = $i + 1;
-						//This is important for the row update
-            $rows[$j]['row_id'] = $field->data[$i]['id'];
-            //////////////////////////////////////
-						$rows[$j]['id'] = $field->data[$i]['id'];
-            $rows[$j]['form_reference'] = $field->data[$i]['form_reference'];
-						$rows[$j]['form_field_order'] = $field->data[$i]['form_field_order'];
-						$rows[$j]['field_name'] = $field->data[$i]['field_name'];
-						$rows[$j]['html_type'] = $field->data[$i]['html_type'];
-						$rows[$j]['def_label'] = $field->data[$i]['def_label'];
-						$rows[$j]['edit']   = theme_link_process_information('', 'field_edit_form', 'field_edit_form', 'natural', array('extra_value' => 'id|' . $field->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_EDIT_ICON));
-            $rows[$j]['delete'] = theme_link_process_information('', 'field_delete_form', 'field_delete_form', 'natural', array('extra_value' => 'id|' . $field->data[$i]['id'], 'response_type' => 'modal', 'icon' => NATURAL_REMOVE_ICON));
-				}
-    }
+	}
 
     $options = array(
 		'show_headers' => TRUE,
 		'page_title' => translate('Field List'),
 		'page_subtitle' => translate('Manage Fields'),
 		'empty_message' => translate('No field found!'),
-		'table_prefix' => theme_link_process_information(translate('Create New Field'), 'field_create_form', 'field_create_form', 'natural', array('response_type' => 'modal')),
-		'pager_items' => build_pager('field_list', 'natural', $field->total_records, $limit, $page),
+		'table_prefix' => theme_link_process_information(translate('Create New Field'),
+			'field_create_form',
+			'field_create_form',
+			'natural',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('field_list', 'natural', $total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,
@@ -763,95 +881,97 @@ function field_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 }
 
 function field_create_form(){
-		$frm = new DbForm();
-    $frm->build('field_create_form', $ref, $_SESSION['log_access_level']);
+	$frm = new DbForm();
+	$frm->build('field_create_form', null, $_SESSION['log_access_level']);
 }
 
 function field_create_form_submit($data){
-		$fields = new FieldTemplates();
-		$fields->loadList('ASSOC','form_template_id='.$data['form_reference']);
-		$affected = $fields->affected;
-		
-		$field = new FieldTemplates();
-		foreach ($data as $key => $value) {
-        if ($key != "fn") {
-            if ($key == "form_field_order") {
-                $field->$key = $affected;
-            } else {
-								if($key!="fieldset_name"){
-										$field->$key = mysql_real_escape_string($value);		
-								}
-            }
-        }
-    }
-		
-		$form = new DataManager();
-		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['form_reference']);
-		$field->form_reference = $form->form_name;
-		$field->form_template_id = $data['form_reference'];
-
-    $field->insert();
-		if($field->affected > 0){
-				natural_set_message('Field saved successfully!', 'success');
-				return field_list($field->id);
-		}else{
-				natural_set_message('Field could not be saved!', 'error');
-				return false;
+	//$fields = new FieldTemplates();
+	//$fields->loadList('ASSOC','form_template_id='.$data['form_reference']);
+	//$affected = $fields->affected;
+	
+	$field = new DbField();
+	
+	foreach ($data as $key => $value) {
+		if ($key != "fn") {
+			$submit[$key] = mysql_real_escape_string($value);
 		}
+	}
+	
+	//Getting form name
+	$form = new DbForm();
+	$form->byID($data['form_reference']);
+	$submit['form_reference'] = $form->form_name;
+	$submit['form_template_id'] = $data['form_reference'];
+	$response = $field->create($submit);
+  if ( $response['id'] > 0 ) {
+    natural_set_message('Field has been created!', 'success');
+    return field_list($response['id']);
+  } else {
+    natural_set_message('Could not save this Field at this time', 'error');
+    return false;
+  }
 }
 
 function field_edit_form($data){
-		$ff = new FieldTemplates();
-    $ff->loadSingle("id='{$data['id']}'");
+		$ff = new DbField();
+    $ff->byID($data['id']);
 		$ff->form_reference = $ff->form_template_id;
-    $form = new DbForm();
+		$form = new DbForm();
     $form->build("field_edit_form", $ff, $_SESSION['log_access_level']);
 }
 
 function field_edit_form_submit($data){
-		$ff = new FieldTemplates();
-    $ff->loadSingle("id='{$data['id']}'");
-		foreach ($data as $key => $value) {
-        //if ($key == "fn" || $key == "id") {
-				if ($key != 'affected' && $key != 'errorcode' && $key != 'data' && $key != 'dbid' && $key != 'id' && $key != 'fn' && $key!='fieldset_name') {
-						$ff->$key = mysql_real_escape_string($value);
-        }
-    }
-		
-		$form = new DataManager();
-		$form->dmLoadSingle("" . FORM_TABLE, 'id='.$data['form_reference']);
-		$ff->form_reference = $form->form_name;
-		$ff->form_template_id = $data['form_reference'];
-		
-		$ff->update("id='{$data['id']}'");
-		if($ff->affected > 0){
-				natural_set_message('Field saved successfully!', 'success');
-				return field_list($ff->id);
-		}else{
-				natural_set_message('Field could not be saved!', 'error');
-				return false;
+	//$ff = new FieldTemplates();
+	$ff = new DbField();
+	$ff->byID($data['id']);
+	foreach ($data as $key => $value) {
+		if ($key != 'fn' && $key!='fieldset_name') {
+			$ff->$key = mysql_real_escape_string($value);
+			$submit[$key] = mysql_real_escape_string($value);
 		}
+	}
+	
+	//Getting form name
+	$form = new DbForm();
+	$form->byID($data['form_reference']);
+	$submit['form_reference'] = $form->form_name;
+	$submit['form_template_id'] = $data['form_reference'];
+	
+	$field = new DbField();
+	$response = $field->update($submit);
+	if($response['code']==200){
+		return field_list($data['id']);
+	}
 }
 
 function field_delete_form($data){
-		$field = new FieldTemplates();
-		$field->loadSingle('id='.$data['id']);
-		$frm = new DbForm();
-    $frm->build('field_delete_form', $field, $_SESSION['log_access_level']);
+	$field = new DbField();
+	$field->byID($data['id']);
+	$frm = new DbForm();
+	$frm->build('field_delete_form', $field, $_SESSION['log_access_level']);
 }
 
 function field_delete_form_submit($data){
-		$field = new FieldTemplates();
-		$field->loadSingle('id='.$data['id']);
-		if($field->affected>0){
-				$name = $field->name;
-				$field->remove('id='.$data['id']);
-				natural_set_message('Field '.$name.' has been removed successfully!', 'success');
-        return $data['id'];
-    }else{
-        natural_set_message('Problems loading field ' . $data['id'], 'error');
-        return FALSE;   
-    }
+	$field = new DbField();
+  $delete = $field->delete($data['id']);
+  if ($delete['code']==200) {
+    return $data['id'];
+  } else {
+    return FALSE;
+  }
+	
+	/*$field = new FieldTemplates();
+	$field->loadSingle('id='.$data['id']);
+	if($field->affected>0){
+		$name = $field->name;
+		$field->remove('id='.$data['id']);
+		natural_set_message('Field '.$name.' has been removed successfully!', 'success');
+		return $data['id'];
+	}else{
+		natural_set_message('Problems loading field ' . $data['id'], 'error');
+		return FALSE;   
+	}*/
 }
 
 function class_form_creator_form(){
@@ -895,20 +1015,44 @@ function class_creator($table_name){
     $data['field_2'] = 'b.author';
     $data['field_label_2'] = 'Author';
 
-		$query = "DESCRIBE " . "" . $table_name . "";
-		$fields = new DataManager();
-		$fields->dmLoadCustomList($query, 'ASSOC');
-		if ($fields->affected > 0) {
-				for ($i = 1; $i < 3; $i++) {
-						$key = 'field_' . $i;
-						$keylabel = 'field_label_' . $i;
-						//$data[key] = 'b.name';
-						$data[$key] = $fields->data[$i]['Field'];
-						//$data[$keylabel] = 'Name';
-						$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($fields->data[$i]['Field'])));
-				}
-		}
+		//$query = "DESCRIBE " . "" . $table_name . "";
+		//$fields = new DataManager();
+		//$fields->dmLoadCustomList($query, 'ASSOC');
 		
+		$query = "DESCRIBE " . "" . $table_name . "";
+			
+		$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+		$q = $pdo->prepare($query);
+		$q->execute();
+		$columns = $q->fetchAll(PDO::FETCH_COLUMN);
+		
+		if (count($columns) > 0) {
+			for ($i = 1; $i < 3; $i++) {
+				//$key = 'field_' . $i;
+				//$keylabel = 'field_label_' . $i;
+				////$data[key] = 'b.name';
+				//$data[$key] = $columns[$i];
+				////$data[$keylabel] = 'Name';
+				//$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($columns[$i])));
+				$key = 'field_' . $i;
+				$keylabel = 'field_label_' . $i;
+				//$data[key] = 'b.name';
+				$data[$key] = $columns[$i];
+				$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($columns[$i])));
+			}
+		}
+			
+		/*if ($fields->affected > 0) {
+			for ($i = 1; $i < 3; $i++) {
+				$key = 'field_' . $i;
+				$keylabel = 'field_label_' . $i;
+				//$data[key] = 'b.name';
+				$data[$key] = $fields->data[$i]['Field'];
+				//$data[$keylabel] = 'Name';
+				$data[$keylabel] = ucwords(str_replace("_", " ", strtolower($fields->data[$i]['Field'])));
+			}
+		}
+		*/
 		$name = $table_name;
 		$class_name = str_replace("_", " ", $table_name);
     
@@ -919,6 +1063,7 @@ function class_creator($table_name){
     $file = file_get_contents("template/book.class.php");
 		// Do tag replacements or whatever you want
 		$file = str_replace("book", $name, $file);
+		$file = str_replace("template_book", $name, $file);
 		$file = str_replace("Book", $data['class_name'], $file);
 		$file = str_replace("name", $data['field_1'], $file);
 		$file = str_replace("Name", $data['field_label_1'], $file);
@@ -933,9 +1078,10 @@ function create_form($table_name) {
 	//$ft = new DataManager;
 	//$ff = new DataManager;
 	$db = DataConnection::readOnly();
-	$form = new DbForm();
-	$param = "";
-	$fnm = "";
+	$dbform = new DbForm();
+	$dbfield= new DbField();
+	$param= "";
+	$fnm 	= "";
 
 	$param['form_method'] = "POST";
 	$form_add 		= $table_name.'_create_form';
@@ -948,7 +1094,7 @@ function create_form($table_name) {
 	$param['form_title'] 	= 'Add New '.ucwords(str_replace("_", " ", strtolower($table_name)));
 	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_create_form\', \'" . $table_name . "_create_form_submit\', \'" . $table_name . "\', null, null, null, null, \'create_row\')\;";
 	//$ft->dmInsert("" . FORM_TABLE, $param);
-	$create = $form->create($param);
+	$create = $dbform->create($param);
 	$form_add_id = $create['id'];
 	
 	//Saving form parameters for edit form
@@ -957,7 +1103,7 @@ function create_form($table_name) {
 	$param['form_title'] 	= 'Edit '.ucwords(str_replace("_", " ", strtolower($table_name)));
 	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_edit_form\', \'" . $table_name . "_edit_form_submit\', \'" . $table_name . "\', null, null, null, null, \'edit_row\')\;";
 	//$ft->dmInsert("" . FORM_TABLE, $param);
-	$edit = $form->create($param);
+	$edit = $dbform->create($param);
 	$form_edit_id = $edit['id'];
 	
 	//Saving form parameters for delete form
@@ -966,7 +1112,7 @@ function create_form($table_name) {
 	$param['form_title'] 	= 'Delete '.ucwords(str_replace("_", " ", strtolower($table_name)));
 	$param['form_action'] = "javascript:process_information(\'" . $table_name . "_delete_form\', \'" . $table_name . "_delete_form_submit\', \'" . $table_name . "\', null, null, null, null, \'delete_row\')\;";
 	//$ft->dmInsert("" . FORM_TABLE, $param);
-	$delete = $form->create($param);
+	$delete = $dbform->create($param);
 	$form_delete_id = $delete['id'];
 
 	//$dblink = mysql_connect(NATURAL_DBHOST, NATURAL_DBUSER, NATURAL_DBPASS);
@@ -1016,12 +1162,14 @@ function create_form($table_name) {
 			$field['def_val'] = "";
 			$field['def_label'] = $label;
 			//Insert template new
-			$ff->dmInsert("" . FIELD_TABLE, $field);
+			//$ff->dmInsert("" . FIELD_TABLE, $field);
+			$dbfield->create($field);
+			//$form_add_id = $create['id'];
 			//Insert template edit
 			$field['form_reference'] = $form_edit;
 			$field['form_template_id'] = $form_edit_id;
 			$field['def_val'] = "{$val}";
-			$ff->dmInsert("" . FIELD_TABLE, $field);
+			$dbfield->create($field);
 			if($val=='id'){
 				//Insert delete id
 				$field['form_reference'] 	= $form_delete;
@@ -1029,7 +1177,7 @@ function create_form($table_name) {
 				$field['def_val'] 				= "{$val}";
 				$field['html_type'] 			= "hidden";
 				$field['def_label'] 			= 'ID';
-				$ff->dmInsert("" . FIELD_TABLE, $field);		
+				$dbfield->create($field);
 			}
 			if($i==1){
 				//Insert delete message
@@ -1041,7 +1189,7 @@ function create_form($table_name) {
 				$field['def_label'] 			= '';
 				$field['def_val'] 				= 'Are you sure you want to delete this '.$table_name.'?';
 				$field['html_type'] 			= 'message';
-				$ff->dmInsert("" . FIELD_TABLE, $field);
+				$dbfield->create($field);
 				
 				//Insert delete object
 				$field['form_reference'] 	= $form_delete;
@@ -1052,7 +1200,7 @@ function create_form($table_name) {
 				$field['def_label'] 			= '';
 				$field['def_val'] 				= "{$val}";
 				$field['html_type'] 			= 'message';
-				$ff->dmInsert("" . FIELD_TABLE, $field);		
+				$dbfield->create($field);
 			}
 			$i++;
 		}
@@ -1066,15 +1214,15 @@ function create_form($table_name) {
 		$field['def_label'] 			= '';
 		$field['def_val'] 				= '';
 		$field['html_type'] 			= 'submit';
-		$ff->dmInsert("" . FIELD_TABLE, $field);
+		$dbfield->create($field);
 		
 		$field['form_reference'] 	= $form_edit;
 		$field['form_template_id']= $form_edit_id;
-		$ff->dmInsert("" . FIELD_TABLE, $field);
+		$dbfield->create($field);
 		
 		$field['form_reference'] 	= $form_delete;
 		$field['form_template_id']= $form_delete_id;
-		$ff->dmInsert("" . FIELD_TABLE, $field);
+		$dbfield->create($field);
 	}
 	natural_set_message('Done creating the form for the table '.$table_name.'!', 'success');	
 	

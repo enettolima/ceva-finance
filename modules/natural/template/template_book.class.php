@@ -3,8 +3,8 @@
  * All methods in this class are protected
  * @access protected
  */
-class TemplateBook Extends DataManager {
-    /**
+class TemplateBook {
+  /**
   * Method to create a new book
   *
   * Add a new book
@@ -16,11 +16,13 @@ class TemplateBook Extends DataManager {
   */
   function create($request_data) {
     //Validating data from the API call
-    $this->_validate($request_data, "insert");
+    $this->_validate($request_data, "create");
     $book = new Book();
     $db = DataConnection::readWrite();
     //$u = $db->user();
     $data = array();
+    unset($request_data['fn']);
+    unset($request_data['id']);
     foreach ($request_data as $key => $value) {
       if ($key != "key") {
         $book->$key = $value;
@@ -35,9 +37,12 @@ class TemplateBook Extends DataManager {
       $response['code'] = 201;
       $response['message'] = 'Book has been created!';
       $response['id'] = $result['id'];
+      natural_set_message($response['message'], 'success');
       return $response;
     } else {
-      throw new Luracast\Restler\RestException(500, 'Book could not be created!');
+      $error_message = 'Book could not be created!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(500, $error_message);
     }
   }
 
@@ -66,10 +71,6 @@ class TemplateBook Extends DataManager {
     //$this->loadSingle("id='{$id}'");
     $db = DataConnection::readOnly();
     $q = $db->book[$id];
-    //Get table columns
-    if(count($columns)<1){
-      $columns = $db->book[$q['id']];
-    }
     //If object not found throw an error
     if(count($q) > 0) {
       $result['code'] = 200;
@@ -100,9 +101,9 @@ class TemplateBook Extends DataManager {
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
-    $books = $db->book();
-    if(count($books) > 0) {
-      foreach($books as $id => $q){
+    $q = $db->book();
+    if(count($q) > 0) {
+      foreach($q as $id => $q){
         if(count($columns)<1){
           $columns = $db->book[$q['id']];
         }
@@ -113,6 +114,7 @@ class TemplateBook Extends DataManager {
       }
       return $res;
     }else{
+      natural_set_message('Book not found', 'error');
       throw new Luracast\Restler\RestException(404, 'Book not found');
     }
   }
@@ -129,7 +131,7 @@ class TemplateBook Extends DataManager {
   * @return mixed 
   */
   function update($request_data) {
-    $this->_validate($request_data, "update");
+    $this->_validate($request_data, "edit");
     $response = array();
     $db = DataConnection::readWrite();
     $id = $request_data['id'];
@@ -153,6 +155,7 @@ class TemplateBook Extends DataManager {
       }
       return $response;
     }else{
+      natural_set_message('Book not found', 'error');
       throw new Luracast\Restler\RestException(404, 'Book not found');
     }
   }
@@ -179,10 +182,12 @@ class TemplateBook Extends DataManager {
     if($q && $q->delete()){
       $response['code'] = 200;
       $response['message'] = 'Book has been removed!';
+      natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
       $response['message'] = 'Book not found!';
+      natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;
     }
@@ -209,8 +214,10 @@ class TemplateBook Extends DataManager {
         $error[] = 'Field name is required!';
       }
     }
+
     //If error exists return or throw exception if the call has been made from the API
     if (!empty($error)) {
+      natural_set_message($error[0], 'error');
       if ($from_api) {
         throw new Luracast\Restler\RestException($error_code, $error[0]);
       }

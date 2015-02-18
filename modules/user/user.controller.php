@@ -19,8 +19,8 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
 	$limit = PAGER_LIMIT; // PAGER_LIMIT
 	$offset = ($page * $limit) - $limit;
-	
 	$db = DataConnection::readOnly();
+	$total_records = 0;
 	
 	// Search
 	if (!empty($search)) {
@@ -29,21 +29,18 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 		$search_query = build_search_query($search, $search_fields, $exceptions);
 
 		$users = $db->user()
-						->where($row_id)
-						->and($search_query)
-						->order($sort)
-						->limit($limit, $offset);
+		->where($row_id)
+		->and($search_query)
+		->order($sort)
+		->limit($limit, $offset);
 	} else {
 		$users = $db->user()
-						->where($row_id)
-						->order($sort)
-						->limit($limit, $offset);
+		->where($row_id)
+		->order($sort)
+		->limit($limit, $offset);
 	}
 
-	//echo "Count row is ".count($users);
-	//$count = $db->count("*");
-	//echo "count is ".$count;
-	//print_debug(get_defined_constants());
+	$total_records = $db->user()->count("*");
 	if (count($users) > 0) {
 		// Building the header with sorter
 		$headers[] = array('display' => 'Id', 'field' => 'id');
@@ -96,7 +93,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 			'user_create_form',
 			'user',
 			array('response_type' => 'modal')),
-		'pager_items' => build_pager('user_list', 'user', count($users), $limit, $page),
+		'pager_items' => build_pager('user_list', 'user', $total_records, $limit, $page),
 		'page' => $page,
 		'sort' => $sort,
 		'search' => $search,

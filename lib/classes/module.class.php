@@ -14,29 +14,28 @@ class Module {
     * @access public
     */
     function create($request_data) {
-        //Validating data from the API call
-        $this->_validate($request_data, "insert");
-
-        $module = new Module();
-        $db = DataConnection::readWrite();
-        foreach ($request_data as $key => $value) {
-            if ($key != "key") {
-                $module->$key = $value;
-                $data[$key] = $value;
-            }
+      //Validating data from the API call
+      $this->_validate($request_data, "insert");
+      $db = DataConnection::readWrite();
+      foreach ($request_data as $key => $value) {
+        if ($key != "key") {
+          $data[$key] = $value;
         }
-        //$module->insert();
-        $result = $db->module()->insert($data);
-        if ($result) {
-            //Preparing response
-            $response = array();
-            $response['code']    = 201;
-            $response['message'] = 'Module has been created!';
-            $response['id']      = $result['id'];
-            return $response;
-        } else {
-            throw new Luracast\Restler\RestException(500, 'Module could not be created!');
-        }
+      }
+      $result = $db->module()->insert($data);
+      if ($result) {
+        //Preparing response
+        $response = array();
+        $response['code']    = 201;
+        $response['message'] = 'Module has been created!';
+        $response['id']      = $result['id'];
+        natural_set_message($response['message'], 'success');
+        return $response;
+      } else {
+        $error_message = 'Module could not be created!';
+        natural_set_message($error_message, 'error');
+        throw new Luracast\Restler\RestException(500, $error_message);
+      }
     }
 
   /**
@@ -104,8 +103,16 @@ class Module {
     //Get object by id
     //$this->loadSingle("id='{$id}'");
     $db = DataConnection::readOnly();
-    $q = $db->module->where("module",$module_name)->fetch();
+    //$q = $db->module->where("module",$module_name)->fetch();
     
+    $q = $db->module()
+    ->select("*")
+    ->where("module", $module_name)
+    ->limit(1);
+    //if($this->affected>0){
+    //if(count($books)){
+    //  $error[] = 'This book name already exists!';
+    //}
     //If object not found throw an error
     if(count($q) > 0) {
       $result['code'] = 200;
@@ -116,9 +123,12 @@ class Module {
       $this->affected 		 = 1;
       return $result;
     }else{
-      $error_message = 'Module not found!';
-      natural_set_message($error_message, 'error');
-      throw new Luracast\Restler\RestException(404, $error_message);
+      $result['code'] = 404;
+      $this->affected = 0;
+      return $result;
+      //$error_message = 'Module not found!';
+      //natural_set_message($error_message, 'error');
+      //throw new Luracast\Restler\RestException(404, $error_message);
     }
   }
   /**
@@ -214,10 +224,12 @@ class Module {
     if($q && $q->delete()){
       $response['code'] = 200;
       $response['message'] = 'Module has been removed!';
+      natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
       $response['message'] = 'Module not found!';
+      natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;
     }
@@ -239,12 +251,13 @@ class Module {
     * Add more fields as needed
     */
     if ($type != "delete") {
-      if (!$data['version']) {
-        $error[] = 'Field version is required!';
+      if (!$data['label']) {
+        $error[] = 'Label is required!';
       }
     }
     //If error exists return or throw exception if the call has been made from the API
     if (!empty($error)) {
+      natural_set_message($error[0], 'error');
       if ($from_api) {
         throw new Luracast\Restler\RestException($error_code, $error[0]);
       }
