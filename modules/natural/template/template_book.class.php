@@ -24,10 +24,8 @@ class TemplateBook {
     unset($request_data['fn']);
     unset($request_data['id']);
     foreach ($request_data as $key => $value) {
-      if ($key != "key") {
-        $book->$key = $value;
-        $data[$key] = $value;
-      }
+      $book->$key = $value;
+      $data[$key] = $value;
     }
     //$book->insert();
     $result = $db->book()->insert($data);
@@ -104,13 +102,7 @@ class TemplateBook {
     $q = $db->book();
     if(count($q) > 0) {
       foreach($q as $id => $q){
-        if(count($columns)<1){
-          $columns = $db->book[$q['id']];
-        }
-        //setting response for api calls
-        foreach($columns as $k => $v){
-          $res[$id][$k] = $q[$k];
-        }
+        $res[$id] = $q;
       }
       return $res;
     }else{
@@ -210,8 +202,8 @@ class TemplateBook {
      * Add more fields as needed
      */
     if ($type != "delete") {
-      if (!$data['name']) {
-        $error[] = 'Field name is required!';
+      if (!$data['_name_']) {
+        $error[] = 'Field _name_ is required!';
       }
     }
 

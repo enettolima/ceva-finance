@@ -72,10 +72,10 @@ class User {
 
 	public function fetchAll() {		
 		$db = DataConnection::readOnly();
-		$users = $db->user();
+		$q = $db->user();
 
-		if(count($users) > 0) {
-			foreach($users as $id => $u){
+		if(count($q) > 0) {
+			/*foreach($users as $id => $u){
 				//setting response for api calls
 				$res[$id]= array( 'id'			 => $u['id'], 
 											'file_id'      => $u['file_id'],
@@ -90,6 +90,18 @@ class User {
 											'dashboard_2'  => unserialize($u['dashboard_2']));
 			}
 			return $res;
+			*/
+			foreach($q as $id => $val){
+				//Doing this loop to make sure we unserialize the dashboard widget fields
+				foreach($val as $k => $v){
+					if($k=="dashboard_1" || $k=="dashboard_2"){
+						$v = unserialize($v);
+					}
+					$arr[$k] = $v;
+				}
+				$res[$id] = $arr;
+			}
+      return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
 		}

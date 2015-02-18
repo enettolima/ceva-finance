@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # http://code.google.com/p/sequel-pro/
 #
-# Host: dev.opensourcemind.us (MySQL 5.5.37-0ubuntu0.14.04.1)
+# Host: 172.16.1.139 (MySQL 5.5.31-0ubuntu0.12.04.1)
 # Database: natural_framework
-# Generation Time: 2014-10-13 21:33:12 +0000
+# Generation Time: 2015-02-18 19:55:26 +0000
 # ************************************************************
 
 
@@ -97,7 +97,7 @@ LOCK TABLES `dashboard_widgets` WRITE;
 
 INSERT INTO `dashboard_widgets` (`id`, `title`, `description`, `subject`, `widget_function`, `enabled`, `class`, `dashboard_type`, `icon`)
 VALUES
-	(1,'Donut','Example of a donut ','','donut_example',1,'ui-state-default',1,'fa fa-circle-o-notch'),
+	(1,'Donut test','Example of a donut ','','donut_example',1,'ui-state-default',1,'fa fa-circle-o-notch'),
 	(2,'Area Graph','This is a ticket report that shows tickets with more than 24 hours of public update','','area_graph_example',1,'ui-state-default',1,'fa fa-stumbleupon'),
 	(3,'Line Chart','Line Chart Example','','line_chart_example',1,'ui-state-default',1,'fa fa-th'),
 	(4,'Period Chart','Example of period chart','','period_chart_example',1,'ui-state-default',1,'fa fa-desktop'),
@@ -142,7 +142,7 @@ CREATE TABLE `field_templates` (
   `suffix` varchar(255) NOT NULL,
   `fieldset_name` varchar(50) NOT NULL,
   `tooltip` text NOT NULL,
-  `condition` varchar(255) NOT NULL,
+  `field_condition` varchar(255) NOT NULL DEFAULT '',
   `required` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -150,14 +150,13 @@ CREATE TABLE `field_templates` (
 LOCK TABLES `field_templates` WRITE;
 /*!40000 ALTER TABLE `field_templates` DISABLE KEYS */;
 
-INSERT INTO `field_templates` (`id`, `form_template_id`, `form_reference`, `field_id`, `field_name`, `form_field_order`, `html_type`, `def_label`, `html_options`, `css_class`, `data_table`, `data_query`, `data_sort`, `data_label`, `data_value`, `field_values`, `def_val`, `vertical`, `click`, `focus`, `blur`, `level`, `acl`, `onchange`, `prefix`, `suffix`, `fieldset_name`, `tooltip`, `condition`, `required`)
+INSERT INTO `field_templates` (`id`, `form_template_id`, `form_reference`, `field_id`, `field_name`, `form_field_order`, `html_type`, `def_label`, `html_options`, `css_class`, `data_table`, `data_query`, `data_sort`, `data_label`, `data_value`, `field_values`, `def_val`, `vertical`, `click`, `focus`, `blur`, `level`, `acl`, `onchange`, `prefix`, `suffix`, `fieldset_name`, `tooltip`, `field_condition`, `required`)
 VALUES
 	(2094,1201,'user_edit_form','id','id',0,'hidden','Id','','','','','','','','','id','','','','','','','','','','','','',0),
 	(2089,1201,'user_edit_form','first_name','first_name',1,'text','First Name','','','','','','','','','first_name','','','','','','','','','','','','',1),
-	(2088,1201,'user_edit_form','last_name','last_name',2,'text','Last Name','','','','','','','','','last_name','','','','','','','','','','','','',1),
+	(2088,1201,'user_edit_form','last_name','last_name',2,'text','Last Name','','','','','','','','','last_name','','','','','','','','','','','Tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test...','',1),
 	(2086,1201,'user_edit_form','username','username',8,'hidden','Username','','','','','','','','','username','','','','','','','','','','','','',1),
-	(2085,1201,'user_edit_form','password','password',9,'hidden','Password','','','','','','','','','password','','','','','71','','','','','','','',0),
-	(2084,1201,'user_edit_form','access_level','access_level[]',10,'list','Access Level ','multiple','chosen-select','','','','','','access_level_options','access_level','','','','','','','','','','','','',1),
+	(2084,1201,'user_edit_form','access_level','access_level[]',10,'list','Access Level ','','','','','','','','access_level_options','access_level','','','','','','','','','','','','',1),
 	(2082,1201,'user_edit_form','status','status',12,'list','Status','','','select_option','upstream_name=\'user_status\'','description','description','value','','status','','','','','1000','readonly','','','','','','',1),
 	(2745,2000,'form_delete_form','form_delete_submit','form_delete_submit',3,'submit','','','','','','','','','','Delete','','','','','','','','','','','','',0),
 	(2066,1201,'user_edit_form','email','email',3,'text','Email','','','','','','','','','email','','','','','','','','','','','','',1),
@@ -189,7 +188,7 @@ VALUES
 	(2502,1955,'form_create_form','form_legend','form_legend',8,'text','Legend','','','','','','','','','','','','','','','','','','','','','',0),
 	(2805,1955,'form_create_form','sub','sub',10,'submit','','','','','','','','','','','','','','','','','','','','','','',0),
 	(2510,1958,'field_create_form','id','id',0,'hidden','','','','','','','','','','','','','','','','','','','','','','',0),
-	(2511,1958,'field_create_form','form_reference','form_reference',1,'list','Form','','','form_templates','id!=\'\'','form_id','form_title','id','','form_reference','','','','','','','','','','','','',0),
+	(2511,1958,'field_create_form','form_reference','form_reference',1,'list','Form','','','form_templates','id>\'0\'','form_title','form_title','id','','','','','','','','','','','','','','',0),
 	(2512,1958,'field_create_form','field_id','field_id',2,'text','Field ID','','','','','','','','','','','','','','','','','','','','','',0),
 	(2513,1958,'field_create_form','field_name','field_name',3,'text','Field Name','','','','','','','','','','','','','','','','','','','','','',0),
 	(2514,1958,'field_create_form','form_field_order','form_field_order',4,'text','Field Order','','','','','','','','','','','','','','','','','','','','','',0),
@@ -225,7 +224,7 @@ VALUES
 	(2763,1990,'natural_example_form','hobbies','hobbies[]',10,'list','Hobbies','multiple','chosen-select','select_option','upstream_name=\'hobby\'','description','description','value','','access_level','','','','','','','','','','','','',1),
 	(2762,1201,'user_edit_form','user_edit_submit','user_edit_submit',200,'submit','','','','','','','','','','Save','','','','','','','','','','','','',0),
 	(2612,1965,'field_edit_form','id','id',0,'hidden','ID','','','','','','','','','id','','','','','','','','','','','','',0),
-	(2613,1965,'field_edit_form','form_reference','form_reference',1,'list','Form Reference','','','form_templates','id!=\'\'','form_id','form_title','id','','form_reference','','','','','','','','','','','','',0),
+	(2613,1965,'field_edit_form','form_reference','form_reference',1,'list','Form Reference','','','form_templates','id!=\'\'','form_title','form_title','id','','form_reference','','','','','','','','','','','','',0),
 	(2614,1965,'field_edit_form','field_id','field_id',2,'text','Field','','','','','','','','','field_id','','','','','','','','','','','','',0),
 	(2615,1965,'field_edit_form','field_name','field_name',3,'text','Field Name','','','','','','','','','field_name','','','','','','','','','','','','',0),
 	(2616,1965,'field_edit_form','form_field_order','form_field_order',4,'text','Form Field Order','','','','','','','','','form_field_order','','','','','','','','','','','','',0),
@@ -262,7 +261,7 @@ VALUES
 	(2751,1531,'user_create_form','access_level','access_level',6,'list','Access Level ','','','','','','','','access_level_options','','','','','','','','conditional_fields()','','','','Tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test...','',1),
 	(2754,1531,'user_create_form','username','username',4,'text','Username','','','','','','','','','','','','','','','','','','','','','',1),
 	(2755,1531,'user_create_form','sub','sub',7,'submit','','','','','','','','','','Save','','','','','','','','','','','','',0),
-	(2756,1201,'user_edit_form','user_race','user_race',47,'checkbox','Race','','','select_option','upstream_name=\'user_race\'','description','description','value','','user_race','','','','','','','','','','','Tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test, tooltip test...','',0),
+	(3089,1993,'book_edit_form','test','test',5,'','','','','','','','','','','','','','','','','','','','','','','',0),
 	(2757,1201,'user_edit_form','avatar','avatar',100,'uploader','Avatar','','','','','','','','limit=1|type=jpg,jpeg,png|size=2M|dir=files/images/avatar|preview=true|max_height=200|max_width=200','avatar','','','','','','','','','','','','',0),
 	(2769,1990,'natural_example_form','username','username',8,'readonly','Username','','','','','','','','','username','','','','','','','','','','','','',1),
 	(2770,1990,'natural_example_form','last_name','last_name',2,'text','Last Name','','','','','','','','','last_name','','','','','','','','','','','','',1),
@@ -272,18 +271,18 @@ VALUES
 	(2774,1991,'module_create_form','id','id',0,'hidden','','','','','','','','','','','','','','','','','','','','','','',0),
 	(2775,1991,'module_create_form','version','version',1,'hidden','Version','','','','','','','','','','','','','','','','','','','','','',0),
 	(2776,1991,'module_create_form','module','module',8,'hidden','Module Name','','','','','','','','','','','','','','','','','','','','','',0),
-	(2777,1991,'module_create_form','label','label',3,'text','Label','','','','','','','','','','','','','','','','','','','','','',0),
+	(2777,1991,'module_create_form','label','label',3,'text','Label','','','','','','','','','','','','','','','','','','','','Create the name of the module( i.e. if your table is called mobile_device you can create as Mobile Device)','',1),
 	(2778,1991,'module_create_form','description','description',4,'hidden','Description','','','','','','','','','','','','','','','','','','','','','',0),
 	(2779,1991,'module_create_form','license_quantity','license_quantity',5,'hidden','License Quantity','','','','','','','','','','','','','','','','','','','','','',0),
 	(2780,1991,'module_create_form','last_update','last_update',6,'hidden','Last Update','','','','','','','','','','','','','','','','','','','','','',0),
 	(2781,1991,'module_create_form','status','status',7,'hidden','Status','','','','','','','','','','','','','','','','','','','','','',0),
 	(2782,1991,'module_create_form','table_name','table_name',2,'list','Database Table','','','','','','','','table_list','','','','','','','','','','','','','',0),
 	(2783,1991,'module_create_form','structure','structure',9,'hidden','Create Structure','','','select_option','upstream_name=\'yes_no\'','value','description','value','','structure','','','','','','','','','','','','',0),
-	(2784,1991,'module_create_form','create_api','create_api',10,'list','Create API','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','','',0),
-	(2785,1991,'module_create_form','create_forms','create_forms',11,'list','Create Forms','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','','',0),
+	(2784,1991,'module_create_form','create_api','create_api',10,'list','Create API','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','This will make your module available to be used with the API, if you select no you can add this module later by editing the api/index.php','',0),
+	(2785,1991,'module_create_form','create_forms','create_forms',11,'list','Create Forms','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','This will create all the forms you will need to add, edit or delete when using the Natural UI','',0),
 	(2786,1991,'module_create_form','create_class','create_class',12,'hidden','Create Class','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','','',0),
 	(2787,1991,'module_create_form','sub','sub',14,'submit','','','','','','','','','','','','','','','','','','','','','','',0),
-	(2788,1991,'module_create_form','create_menu','create_menu',13,'list','Create Menu','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','','',0),
+	(2788,1991,'module_create_form','create_menu','create_menu',13,'list','Create Menu','','','select_option','upstream_name=\'yes_no\'','value','description','value','','','','','','','','','','','','','This will create a menu for your module, if you select now you can create it later by adding a new menu on Natural -> Menu','',0),
 	(2791,1992,'book_create_form','author','author',1,'text','Author','','','','','','','','','','','','','','','','','','','','','',0),
 	(2790,1531,'user_create_form','password','password',5,'password','Password','','','','','','','','','','','','','','','','','','','','','access_level=41',1),
 	(2789,1992,'book_create_form','name','name',0,'text','Name','','','','','','','','','','','','','','','','','','','','','',0),
@@ -300,7 +299,7 @@ VALUES
 	(2803,2000,'form_delete_form','message','message',1,'message','','','','','','','','','','Are you sure you want to delete this form?','','','','','','','','','','','','',0),
 	(2804,2000,'form_delete_form','form_title','form_title',2,'message','','','','','','','','','','form_title','','','','','','','','','','','','',0),
 	(2820,2004,'class_form_create_form','type','type',0,'checkbox','Create','','','select_option','upstream_name=\'class_form_option\'','description','description','value','type','type','','','','','','','','','','','','',0),
-	(2808,1958,'field_create_form','condition','condition',29,'text','Condition','','','','','','','','','','','','','','','','','','','','','',0),
+	(2808,1958,'field_create_form','field_condition','field_condition',29,'text','Condition','','','','','','','','','','','','','','','','','','','','','',0),
 	(3017,2045,'menu_create_form','label','label',5,'text','Label','','','','','','','','','','','','','','','','','','','','','',0),
 	(2821,2004,'class_form_create_form','table_name','table_name',1,'list','Select a table','','','','','','','','table_options','','','','','','','','','','','','','',0),
 	(2815,2003,'field_delete_form','id','id',0,'hidden','ID','','','','','','','','','id','','','','','','','','','','','','',0),
@@ -331,10 +330,10 @@ VALUES
 	(3022,2046,'menu_edit_form','func','func',7,'text','Func','','','','','','','','','func','','','','','','','','','','','','',0),
 	(3023,2045,'menu_create_form','module','module',8,'list','Module','','','module','id>\'0\'','label','label','module','','','','','','','','','','','','','','',0),
 	(3024,2046,'menu_edit_form','module','module',8,'list','Module','','','module','id>\'0\'','label','label','module','','module','','','','','','','','','','','','',0),
-	(3025,2045,'menu_create_form','allow','allow',9,'text','Allow','','','','','','','','','','','','','','','','','','','','','',0),
-	(3026,2046,'menu_edit_form','allow','allow',9,'text','Allow','','','','','','','','','allow','','','','','','','','','','','','',0),
-	(3027,2045,'menu_create_form','allow_value','allow_value',10,'text','Allow Value','','','','','','','','','','','','','','','','','','','','','',0),
-	(3028,2046,'menu_edit_form','allow_value','allow_value',10,'text','Allow Value','','','','','','','','','allow_value','','','','','','','','','','','','',0),
+	(3025,2045,'menu_create_form','allow','allow',9,'list','Allow','','','select_option','upstream_name=\'menu_conditions\'','description','description','value','','','','','','','','','','','','','','',0),
+	(3026,2046,'menu_edit_form','allow','allow',9,'list','Allow','','','select_option','upstream_name=\'menu_conditions\'','description','description','value','','allow','','','','','','','','','','','','',0),
+	(3027,2045,'menu_create_form','allow_value','allow_value',10,'list','Allow Level','','','acl_levels','id>\'0\'','level','description','level','','','','','','','','','','','','','','',0),
+	(3028,2046,'menu_edit_form','allow_value','allow_value',10,'list','Allow Level','','','acl_levels','id>\'0\'','level','description','level','','allow_value','','','','','','','','','','','','',0),
 	(3029,2045,'menu_create_form','status','status',11,'list','Status','','','select_option','upstream_name=\'enabled_disabled\'','description','description','value','','1','','','','','','','','','','','','',0),
 	(3030,2046,'menu_edit_form','status','status',11,'list','Status','','','select_option','upstream_name=\'enabled_disabled\'','description','description','value','','status','','','','','','','','','','','','',0),
 	(3031,2045,'menu_create_form','icon_class','icon_class',12,'text','Icon Class','','','','','','','','','','','','','','','','','','','','Refer to http://fortawesome.github.io/Font-Awesome/icons/ (i.e. fa fa-phone)','',0),
@@ -342,7 +341,7 @@ VALUES
 	(3033,2045,'menu_create_form','sub','sub',13,'submit','','','','','','','','','','','','','','','','','','','','','','',0),
 	(3034,2046,'menu_edit_form','sub','sub',13,'submit','','','','','','','','','','','','','','','','','','','','','','',0),
 	(3035,2047,'menu_delete_form','sub','sub',13,'submit','','','','','','','','','','','','','','','','','','','','','','',0),
-	(3036,1965,'field_edit_form','condition','condition',29,'text','Condition','','','','','','','','','condition','','','','','','','','','','','','',0),
+	(3036,1965,'field_edit_form','field_condition','field_condition',29,'text','Condition','','','','','','','','','field_condition','','','','','','','','','','','','',0),
 	(3056,2051,'dashboard_widgets_create_form','description','description',2,'text','Description','','','','','','','','','','','','','','','','','','','','','',0),
 	(3057,2052,'dashboard_widgets_edit_form','description','description',2,'text','Description','','','','','','','','','description','','','','','','','','','','','','',0),
 	(3053,2052,'dashboard_widgets_edit_form','title','title',1,'text','Title','','','','','','','','','title','','','','','','','','','','','','',0),
@@ -1041,10 +1040,10 @@ VALUES
 	(50,48,'main',0,'forms_list','List Forms','List Forms','form_list','natural','all','0',1,'fa fa-edit',1),
 	(24,0,'main',17,'support_menu','Support','Support','support_info','natural','all','0',1,'fa fa-phone',0),
 	(51,48,'main',3,'forms_example','Form Example','Form Example','natural_form_example','natural','all','0',1,'fa fa-edit',1),
-	(52,0,'main',9,'book','Books','Books','book_list','book','all','0',1,'fa fa-book',0),
+	(52,0,'main',9,'book','Books','Books','book_list','book','all','41',1,'fa fa-book',0),
 	(53,48,'main',1,'field_list','List Fields','List Fields','field_list','natural','all','0',1,'fa fa-edit',1),
-	(54,48,'main',2,'forms_creator','Create Class/Form','Create Class/Form','class_form_creator_form','natural','all','0',1,'fa fa-edit',1),
-	(68,4,'main',3,'dash_widgets','Dashboard Widgets','','dashboard_widgets_list','dashboard_widgets','','',1,'fa fa-puzzle-piece',0);
+	(54,48,'main',2,'forms_creator','Create Class/Form','Create Class/Form','class_form_creator_form','natural','all','0',0,'fa fa-edit',1),
+	(86,4,'main',3,'dash_widgets','Dashboard Widgets','','dashboard_widgets_list','dashboard_widgets','all','41',1,'fa fa-puzzle-piece',1);
 
 /*!40000 ALTER TABLE `menu` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -1229,7 +1228,7 @@ LOCK TABLES `user` WRITE;
 
 INSERT INTO `user` (`id`, `file_id`, `first_name`, `last_name`, `username`, `password`, `email`, `access_level`, `status`, `language`, `dashboard_1`, `dashboard_2`)
 VALUES
-	(1097,22,'System','Administrator','admin','k»JÓå¼pdî\rÞôò&k','admin@abc.com',81,1,'','a:2:{i:0;a:3:{i:0;s:1:\"1\";i:1;s:1:\"6\";i:2;s:1:\"5\";}i:1;a:3:{i:0;s:1:\"2\";i:1;s:1:\"4\";i:2;s:1:\"3\";}}','b:0;');
+	(1097,NULL,'System','Administrator','admin','$P$B0wWb0B/2pgX5hrd2SJ1cja53pSqFI0','admin@abc.com',81,1,'','a:2:{i:0;a:2:{i:0;s:1:\"1\";i:1;s:1:\"2\";}i:1;a:2:{i:0;s:1:\"3\";i:1;s:1:\"4\";}}','N;');
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

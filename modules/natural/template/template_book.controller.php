@@ -23,7 +23,7 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
   
   // Search
   if (!empty($search)) {
-    $search_fields = array('id', 'name', 'author');
+    $search_fields = array('id', '_name_', '_author_');
     $exceptions = array();
     $search_query = build_search_query($search, $search_fields, $exceptions);
     
@@ -44,8 +44,8 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
   if (count($books)) {
     // Building the header with sorter
     $headers[] = array('display' => 'Id', 'field' => 'id');
-    $headers[] = array('display' => 'Name', 'field' => 'name');
-    $headers[] = array('display' => 'Author', 'field' => 'author');
+    $headers[] = array('display' => '_Name_', 'field' => '_name_');
+    $headers[] = array('display' => '_Author_', 'field' => '_author_');
     $headers[] = array('display' => 'Edit', 'field' => NULL);
     $headers[] = array('display' => 'Delete', 'field' => NULL);
     $headers = build_sort_header('book_list', 'book', $headers, $sort);
@@ -53,11 +53,11 @@ function book_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     foreach( $books as $book ){
       $j = $i + 1;
       //This is important for the row update/delete
-      $rows[$j]['row_id'] = $book['id'];
+      $rows[$j]['row_id']   = $book['id'];
       /////////////////////////////////////////////
-      $rows[$j]['id']     = $book['id'];
-      $rows[$j]['name']   = $book['name'];
-      $rows[$j]['author'] = $book['author'];
+      $rows[$j]['id']       = $book['id'];
+      $rows[$j]['_name_']   = $book['_name_'];
+      $rows[$j]['_author_'] = $book['_author_'];
       $rows[$j]['edit']   = theme_link_process_information('',
           'book_edit_form',
           'book_edit_form',
@@ -117,13 +117,7 @@ function book_create_form_submit($data) {
     return FALSE;
   }
   $book = new Book();
-  foreach ($data as $field => $value) {
-    if ($field != 'fn') {
-      $book->$field = $value;
-      $submit[$field] = $value;
-    }
-  }
-  $response = $book->create($submit);
+  $response = $book->create($data);
   if ( $response['id'] > 0 ) {
     return book_list($response['id']);
   } else {

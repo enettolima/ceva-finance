@@ -101,13 +101,7 @@ class DashboardWidgets {
     $q = $db->dashboard_widgets();
     if(count($q) > 0) {
       foreach($q as $id => $q){
-        if(count($columns)<1){
-          $columns = $db->dashboard_widgets[$q['id']];
-        }
-        //setting response for api calls
-        foreach($columns as $k => $v){
-          $res[$id][$k] = $q[$k];
-        }
+        $res[$id] = $q;
       }
       return $res;
     }else{

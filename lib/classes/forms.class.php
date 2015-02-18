@@ -386,11 +386,11 @@ class DbForm {
     $db = DataConnection::readWrite();
     //$u = $db->user();
     $data = array();
+    unset($request_data['fn']);
+    unset($request_data['id']);
     foreach ($request_data as $key => $value) {
-      if ($key != "key") {
-        $book->$key = $value;
-        $data[$key] = $value;
-      }
+      $book->$key = $value;
+      $data[$key] = $value;
     }
     //$book->insert();
     $result = $db->form_templates()->insert($data);

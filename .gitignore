@@ -27,3 +27,4 @@ api/cache/*
 
 #temporary dev ignores
 test.php
+test_api.php

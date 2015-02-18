@@ -118,13 +118,7 @@ function book_create_form_submit($data) {
     return FALSE;
   }
   $book = new Book();
-  foreach ($data as $field => $value) {
-    if ($field != 'fn') {
-      $book->$field = $value;
-      $submit[$field] = $value;
-    }
-  }
-  $response = $book->create($submit);
+  $response = $book->create($data);
   if ( $response['id'] > 0 ) {
     return book_list($response['id']);
   } else {
