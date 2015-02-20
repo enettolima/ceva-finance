@@ -171,7 +171,7 @@ class DbForm {
   /**
    * Form builder
    */
-  function build($form_name, $val = NULL, $level = NULL, $modal = TRUE) {
+  function build($form_name, $val = NULL, $level = NULL, $modal = TRUE, $display = TRUE, $show_cancel_button = TRUE) {
 
     global $twig;
 
@@ -362,11 +362,17 @@ class DbForm {
       'form' => $form_param,
       'fieldsets' => $fieldsets, // This includes non fieldsets fields into the blank array
       'submit_text' => !empty($submit_text) ? $submit_text : 'Save',
+			'show_cancel_button' => $show_cancel_button,
       'modal' => $modal,
     );
-
-    $template = $twig->loadTemplate('form.html');
-    $template->display($render);
+    
+    if($display){
+      $template = $twig->loadTemplate('form.html');
+      $template->display($render);
+    }else{
+      $template = $twig->render('form.html',$render);
+      return $template;
+    }
   }
   
   /**
