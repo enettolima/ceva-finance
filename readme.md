@@ -15,12 +15,12 @@ Develop fast, develop Naturally !
 
 ## Install with composer
 To install the latest stable release:  
-`composer create-project opensourcemind/natural-php PROJECT_FOLDER`
+`composer create-project opensourcemind/natural-php PROJECT_FOLDER 2.0.2`
 
 To install the latest development release:  
 `composer create-project -s dev opensourcemind/natural-php PROJECT_FOLDER`
 
-To install the another specific version (i.e. 2.0.0 ):  
+To install the another specific version (i.e. 2.0.2 ):  
 `composer create-project opensourcemind/natural-php PROJECT_FOLDER 2.0.0`
 
 ##Configure your database
