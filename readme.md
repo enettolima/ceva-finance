@@ -32,6 +32,17 @@ when present.
 Natural also requires some specific tables available in your database and the easiest way to add them  
 to your database is to import the file `natural_framework.sql` available in your project folder.
 
+For your conveninece you can just run the initdb.php script located in the tools directory to wipe
+any instances of natural_framework database and deploy from the .sql file.
+
+```
+php -p tools/initdb.php
+```
+or
+```
+./tools/initdb.php
+```
+
 ## Enable Mod Rewrite
 
 #####You must edit your Apache configuration to make sure you allow overrides, this is required by mod_rewrite

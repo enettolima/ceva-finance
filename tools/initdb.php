@@ -5,6 +5,9 @@
       $pdo_dsn = 
       $pdo = new PDO("mysql:host=127.0.0.1", NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
 
+      echo "Delete current natural_framework database....\n";
+      $pdo->exec("DROP DATABASE `natural_framework`;"); 
+
       echo "Creating natural_framework database if it doesn't exist....\n";
       $pdo->exec("CREATE DATABASE IF NOT EXISTS `natural_framework`;"); 
 
