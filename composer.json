@@ -24,10 +24,6 @@
                 "modules\/"
                 ]
             },
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.0.2-dev"
-        }
+    "minimum-stability": "dev"
     }
 }
