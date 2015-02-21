@@ -161,10 +161,7 @@ function user_create_form_submit($data) {
 			$gen_pass = true;
 		}
 		
-		
 		$res = $user->create(false, $gen_pass, $data);
-		
-		//print_debug($res);
 		if ($res) {
 	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
 	  }
