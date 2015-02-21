@@ -15,8 +15,8 @@
     "require":{
         "twig\/twig":"1.*",
         "luracast\/restler":"3.*",
-				"xjtuwangke/passwordhash": "dev-master",
-				"vrana/notorm": "dev-master"
+        "xjtuwangke/passwordhash": "dev-master",
+        "vrana/notorm": "dev-master"
         },
     "autoload":{
         "classmap":[
