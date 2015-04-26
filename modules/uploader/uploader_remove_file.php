@@ -5,26 +5,35 @@
    */
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_LIB_PATH . 'util.php');
-  require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
-  require_once(NATURAL_CLASSES_PATH . 'field_templates.class.php');
-  require_once(NATURAL_CLASSES_PATH . 'files.class.php');
 
 
   // Load file infomartion
   $id = $_GET['id'];
-  $file = new Files();
-  $file->loadSingle('id = ' . $id);
-  $filename = $file->filename;
-  $uri = $file->uri;
-  if (!$file->affected > 0) {
+  //$file = new Files();
+//  $file->loadSingle('id = ' . $id);
+
+
+	// Get the file from the files table.
+	$db 						 = DataConnection::readWrite();
+	$file            = $db->files[$id];
+	$arr['uid']      = $_SESSION['log_id'];
+	$arr['filename'] = $_FILES['myfile']['name'];
+	$arr['uri']      = $field_dir . '/' . $_FILES['myfile']['name'];
+	$arr['filemime'] = $_FILES['myfile']['type'];
+
+
+  $filename = $file['filename'];
+  $uri = $file['uri'];
+  if ($file['id'] < 1) {
     natural_set_message('Error loading file information.', 'error');
     return FALSE;
   }
 
   // Remove file
-  $file->remove('id = ' . $id);
-  if ($file->affected > 0) {
+  //$file->remove('id = ' . $id);
+
+	if ($file && $file->delete()) {
+		//if ($file->affected > 0) {
     unlink(NATURAL_ROOT_PATH . '/' . $uri);
     natural_set_message('File "' . $filename . '" was removed successfully.', 'success');
     $data = array('removed' => TRUE);

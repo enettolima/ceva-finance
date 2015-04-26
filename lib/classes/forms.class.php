@@ -342,9 +342,10 @@ class DbForm {
       foreach ($fieldsets as $key => $fieldset) {
         $fieldset_clause[] = "'" . $key . "'";
       }
-      $fsets = $db->{FIELDSET_TABLE}()
-      ->where('name IN ( ? )', implode(', ', $fieldset_clause))
-      ->order('position');
+      $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+			$q = $pdo->prepare("SELECT * FROM ".FIELDSET_TABLE." WHERE name IN(".implode(', ', $fieldset_clause).")");
+			$q->execute();
+			$fsets = $q->fetchAll();
       
       foreach($fsets as $fs) {
         $fieldsets[$fs['name']]['id'] = $fs['id'];
