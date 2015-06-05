@@ -2,20 +2,21 @@
 <?php
   require_once('../bootstrap.php');
   try {
-      $pdo_dsn = 
-      $pdo = new PDO("mysql:host=127.0.0.1", NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
+      $pdo_dsn =
+      $pdo = new PDO(NATURAL_PDO_DSN_WRITE, NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
 
-      echo "Delete current natural_framework database....\n";
-      $pdo->exec("DROP DATABASE `natural_framework`;"); 
+      echo "Delete current ".NATURAL_DBNAME." database....\n";
+      $pdo->exec("DROP DATABASE `".NATURAL_DBNAME."`;");
 
-      echo "Creating natural_framework database if it doesn't exist....\n";
-      $pdo->exec("CREATE DATABASE IF NOT EXISTS `natural_framework`;"); 
+      echo "Creating ".NATURAL_DBNAME." database if it doesn't exist....\n";
+      $pdo->exec("CREATE DATABASE IF NOT EXISTS `".NATURAL_DBNAME."`;");
 
       echo "Importing default database stucture and sample data....\n";
-      $pdo->exec("USE natural_framework");
-      $sql = file_get_contents('../natural_framework.sql');
+      $pdo->exec("USE ".NATURAL_DBNAME);
+      $filename = "../".NATURAL_DBNAME.".sql";
+      $sql = file_get_contents($filename);
       $qr = $pdo->exec($sql);
   } catch (PDOException $e) {
         die("DB ERROR: ". $e->getMessage());
-  }	
+  }
 ?>
