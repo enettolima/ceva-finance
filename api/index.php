@@ -14,5 +14,6 @@ $r->setSupportedFormats('JsonFormat');
 $r->addAuthenticationClass('SimpleAuth');
 $r->addAPIClass('User');
 $r->addAPIClass('Book');
+$r->addAPIClass('Car');
 $r->handle();
 ?>

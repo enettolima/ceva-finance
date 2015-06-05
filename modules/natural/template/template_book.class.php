@@ -11,7 +11,7 @@ class TemplateBook {
   *
   * @url POST create
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   */
   function create($request_data) {
@@ -52,11 +52,11 @@ class TemplateBook {
   *
   * @url GET byID/{id}
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @throws 404 User not found for requested id  
+  * @throws 404 User not found for requested id
   * @param int $id Book to be fetched
-  * @return mixed 
+  * @return mixed
   */
   function byID($id) {
     //If id is null
@@ -92,17 +92,17 @@ class TemplateBook {
   *
   * @url GET fetchAll
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   * @throws 404 Book not found
-  * @return mixed 
+  * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
     $q = $db->book();
     if(count($q) > 0) {
       foreach($q as $id => $q){
-        $res[$id] = $q;
+        $res[] = $q;
       }
       return $res;
     }else{
@@ -118,9 +118,9 @@ class TemplateBook {
   *
   * @url PUT update
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @return mixed 
+  * @return mixed
   */
   function update($request_data) {
     $this->_validate($request_data, "edit");
@@ -132,7 +132,7 @@ class TemplateBook {
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
     }
-    
+
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
@@ -162,14 +162,14 @@ class TemplateBook {
   *
   * @access public
   * @throws 404 Book not found
-  * @return mixed 
+  * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
     $q = $db->book[$id];
-    
+
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
@@ -184,7 +184,7 @@ class TemplateBook {
       return $response;
     }
   }
-  
+
   /**
   * @smart-auto-routing false
   * @access private

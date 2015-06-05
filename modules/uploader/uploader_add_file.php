@@ -5,16 +5,12 @@
    */
   session_start();
   require_once('../../bootstrap.php');
-  require_once(NATURAL_LIB_PATH . 'util.php');
-  require_once(NATURAL_CLASSES_PATH . 'datamanager.class.php');
-  require_once(NATURAL_CLASSES_PATH . 'field_templates.class.php');
-  require_once(NATURAL_CLASSES_PATH . 'files.class.php');
 
   $field_id = $_GET['field_id'];
 
   // Based on the element id $_GET['field_id'] we can perform validations.
-  $field = new FieldTemplates();
-  $field->loadSingle('id = ' . $field_id);
+  $field = new DbField();
+  $field->byID($field_id);
   if (!$field->affected > 0) {
     // DataManager should output the error.
     return FALSE;
@@ -135,35 +131,35 @@
       }
     }
     // Add the file to the files table.
-    $file = new Files();
-    $file->uid = $_SESSION['log_id'];
-    $file->filename = $_FILES['myfile']['name'];
-    $file->uri = $field_dir . '/' . $_FILES['myfile']['name'];
-    $file->filemime = $_FILES['myfile']['type'];
-    $file->filesize = $_FILES['myfile']['size'];
-    // TODO: If filetype = music or video file... add duration
-    $file->timestamp = time();
-    $file->insert();
-    if ($file->affected > 0) {
+		$db 						 = DataConnection::readWrite();
+    $file            = $db->files();
+    $arr['uid']      = $_SESSION['log_id'];
+    $arr['filename'] = $_FILES['myfile']['name'];
+    $arr['uri']      = $field_dir . '/' . $_FILES['myfile']['name'];
+    $arr['filemime'] = $_FILES['myfile']['type'];
+    $arr['filesize'] = $_FILES['myfile']['size'];
+    $arr['timestamp']= time();
+    $res 						 = $file->insert($arr);
+    if ($res['id'] > 0) {
       chmod($upload_file, 0777);
       natural_set_message('File "' . $_FILES['myfile']['name'] . '" was uploaded successfully!', 'success');
       $render = array(
-        'filename'=> $file->filename,
-        'preview' => ($field_preview == 'true') ? TRUE : FALSE,
+        'filename'		=>  $arr['filename'],
+        'preview'     => ($field_preview == 'true') ? TRUE : FALSE,
         'preview_uri' => $field_dir . '/' . $_FILES['myfile']['name'],
-        'id' => $file->id,
-        'field_id' => $field_id,
-        'field_name' => $field->field_name,
+        'id'          => $res['id'],
+        'field_id'    => $field_id,
+        'field_name'  => $field->field_name,
       );
       // File item
-      $file_item = $twig->render('uploader-file-item.html', $render);
-      $breaks = array("\r\n", "\n", "\r");
-      $file_item = str_replace($breaks, "", $file_item);
-      $file_item = str_replace('"', "'", $file_item);
-      $response = array(
+      $file_item    = $twig->render('uploader-file-item.html', $render);
+      $breaks       = array("\r\n", "\n", "\r");
+      $file_item    = str_replace($breaks, "", $file_item);
+      $file_item    = str_replace('"', "'", $file_item);
+      $response     = array(
         'file_item' => htmlentities($file_item),
-        'limit' => $field_limit,
-        'id' => $file->id,
+        'limit'     => $field_limit,
+        'id'        => $res['id'],
       );
       print json_encode($response);
       return;
