@@ -20,4 +20,5 @@
  cd /var/www/tools
  ./initdb.php
  cd -
+ sleep 5
  service nginx restart
