@@ -80,7 +80,7 @@ server {
 
 ## Install with composer
 To install the latest stable release:  
-`composer create-project opensourcemind/natural-php PROJECT_FOLDER 2.0.4`
+`composer create-project opensourcemind/natural-php PROJECT_FOLDER 2.0.5`
 
 To install the latest development release from the master branch:  
 `composer create-project -s dev opensourcemind/natural-php PROJECT_FOLDER`
