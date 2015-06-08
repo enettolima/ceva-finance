@@ -17,13 +17,12 @@
  service php5-fpm restart
  mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
  cp /var/www/vagrant/default.site /etc/nginx/sites-available/default
- cd /var/www/tools
- ./initdb.php -force-delete
- cd -
  curl -sS https://getcomposer.org/installer | php
  mv composer.phar /usr/local/bin/composer
  cd /var/www/
  composer update -n -o
- composer dumpautoload -o
+ cd /var/www/tools
+ ./initdb.php -force-delete
+ cd -
  sleep 5
  service nginx restart
