@@ -2,11 +2,12 @@
 <?php
   require_once('../bootstrap.php');
   try {
-      $pdo_dsn =
-      $pdo = new PDO(NATURAL_PDO_DSN_WRITE, NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
+      $pdo = new PDO('mysql:host=127.0.0.1;port=3306', NATURAL_PDO_USER_WRITE, NATURAL_PDO_PASS_WRITE);
 
-      echo "Delete current ".NATURAL_DBNAME." database....\n";
-      $pdo->exec("DROP DATABASE `".NATURAL_DBNAME."`;");
+			if(isset($argv) && $argv[1] == '-force-delete'){
+      	echo "Delete current ".NATURAL_DBNAME." database....\n";
+      	$pdo->exec("DROP DATABASE IF EXESTS`".NATURAL_DBNAME."`;");
+			}
 
       echo "Creating ".NATURAL_DBNAME." database if it doesn't exist....\n";
       $pdo->exec("CREATE DATABASE IF NOT EXISTS `".NATURAL_DBNAME."`;");

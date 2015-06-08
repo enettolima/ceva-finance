@@ -12,13 +12,18 @@
  apt-get -y install mysql-server
  #mysql_install_db
  #mysql_secure_installation
- apt-get -y install php5-fpm php5-mysql php5-mcrypt php5-curl php5-cli curl
+ apt-get -y install php5-fpm php5-mysql php5-mcrypt php5-curl php5-cli curl git git-core
  sed -i s/\;cgi\.fix_pathinfo\s*\=\s*1/cgi.fix_pathinfo\=0/ /etc/php5/fpm/php.ini
  service php5-fpm restart
  mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
  cp /var/www/vagrant/default.site /etc/nginx/sites-available/default
  cd /var/www/tools
- ./initdb.php
+ ./initdb.php -force-delete
  cd -
+ curl -sS https://getcomposer.org/installer | php
+ mv composer.phar /usr/local/bin/composer
+ cd /var/www/
+ composer update -n -o
+ composer dumpautoload -o
  sleep 5
  service nginx restart
