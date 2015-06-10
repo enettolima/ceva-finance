@@ -22,7 +22,7 @@ a.disabled {
   opacity:.55
 }
 
-p > a {
+.vertical-align-middle > p > a {
   vertical-align: middle;
 }
 
