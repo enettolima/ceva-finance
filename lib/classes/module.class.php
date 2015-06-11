@@ -29,8 +29,8 @@ class Module {
         $response['code']    = 201;
         $response['message'] = 'Module has been created!';
         $response['id']      = $result['id'];
-        $this->_updateComposer();
         natural_set_message($response['message'], 'success');
+        $this->_updateComposer();
         return $response;
       } else {
         $error_message = 'Module could not be created!';
