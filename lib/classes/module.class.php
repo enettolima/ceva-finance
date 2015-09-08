@@ -30,6 +30,7 @@ class Module {
         $response['message'] = 'Module has been created!';
         $response['id']      = $result['id'];
         natural_set_message($response['message'], 'success');
+        $this->_updateComposer();
         return $response;
       } else {
         $error_message = 'Module could not be created!';
@@ -225,6 +226,7 @@ class Module {
       $response['code'] = 200;
       $response['message'] = 'Module has been removed!';
       natural_set_message($response['message'], 'success');
+      $this->_updateComposer();
       return $response;
     }else{
       $response['code'] = 404;
@@ -264,6 +266,15 @@ class Module {
       return $error;
       exit(0);
     }
+  }
+
+  /**
+  * @smart-auto-routing false
+  *@access private
+  */
+  function _updateComposer(){
+    $result = 'Composer Update: '. (exec("composer update -o &") || 'Finished');
+    natural_set_message($result, 'success');
   }
 }
 ?>
