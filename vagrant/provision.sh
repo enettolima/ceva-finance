@@ -25,4 +25,4 @@
  ./initdb.php -force-delete
  cd -
  sleep 5
- service nginx restart
+ sudo service nginx restart 
