@@ -18,7 +18,12 @@ if (!$islogged) {
 }
 
 //Getting function from the jquery call
-$fn = $_GET['fn'];
+if($_GET['fn'])  {
+  $fn = $_GET['fn'];
+}
+else {
+  $fn = $_POST['fn'];
+}
 
 /*
  * Sending calls to the view
@@ -69,6 +74,11 @@ switch ($fn) {
     /*
      *Calling functions at dashboard_widgets_blocks.php
      */
+
+     case 'render_widget_graph':
+         print render_widget_graph($_GET);
+         break;
+
     case 'donut_example':
         print donut_example($_GET);
         break;
@@ -86,6 +96,6 @@ switch ($fn) {
         break;
     case 'bar_chart_example':
         print bar_chart_example($_GET);
-        break;    
+        break;
 }
 ?>

@@ -18,7 +18,7 @@
     <!-- Notifications -->
     <link href="{{ path_to_theme }}css/natural-notifications.css" media="all" rel="stylesheet" type="text/css">
     <!-- Morris Charts -->
-    <link rel="stylesheet" href="http://cdn.oesmith.co.uk/morris-0.4.3.min.css" media="all" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <!-- Chosen -->
     <link rel="stylesheet" href="http://harvesthq.github.io/chosen/chosen.css" media="all" rel="stylesheet" type="text/css">
     <!-- Main CSS -->
@@ -27,11 +27,15 @@
     <link href="{{ path_to_theme }}css/natural-dashboard.css" media="all" rel="stylesheet" type="text/css">
     <!-- Colors/Skins CSS -->
     <link href="{{ path_to_theme }}css/natural-colors.css" media="all" rel="stylesheet" type="text/css">
-      <!-- JQuery UI CSS -->
+    <!-- JQuery UI CSS -->
     <link href="{{ path_to_theme }}css/jQueryUI/jquery-ui-1.10.3.custom.css" media="all" rel="stylesheet" type="text/css">
+    <!-- Gridstack CSS -->
+    <link href="/lib/js/gridstack/gridstack.min.css" media="all" rel="stylesheet" type="text/css">
+    <link href="/lib/js/gridstack/gridstack-extra.min.css" media="all" rel="stylesheet" type="text/css">
+
     {% endblock %}
-    
-    
+
+
   </head>
 
   <body class="skin-gray {{ page }}">
@@ -90,7 +94,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery 2.0.2 -->
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-    <!-- Rapha‘lÑJavaScript Library 2.1.0 -->
+    <!-- Raphaï¿½lï¿½JavaScript Library 2.1.0 -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <!-- Chosen -->
     <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
@@ -105,18 +109,24 @@
     <!-- Notifications -->
     <script type="text/javascript" src="{{ path_to_theme }}js/notifications.min.js"></script>
     <!-- Morris Charts -->
-    <script src="http://cdn.oesmith.co.uk/morris-0.4.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <!-- JQuery UI -->
-    <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script>
+    <!-- <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script> -->
+    <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
+
     <!-- Natural Controler -->
     <script type="text/javascript" src="lib/js/controller.js"></script>
     <!-- Natural Main -->
     <script type="text/javascript" src="{{ path_to_theme }}js/natural-main.js"></script>
     <!-- Natural Dashboard JS -->
     <script type="text/javascript" src="lib/js/dashboard.js"></script>
-    <!-- Natural Dashboard Widgets // Function at dashboard.js-->
+
+    <!-- Natural Dashboard JS -->
+    <script type="text/javascript" src="lib/js/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="lib/js/lodash.min.js"></script>
+    <script type="text/javascript" src="lib/js/gridstack/gridstack.min.js"></script>
     <script type="text/javascript">build_dashboard();</script>
-    
+
     <!-- PAGE RELATED PLUGIN(S) -->
     <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
     <script type="text/javascript" src="lib/js/flot/jquery.flot.cust.js"></script>
@@ -125,8 +135,8 @@
     <script type="text/javascript" src="lib/js/flot/jquery.flot.orderBar.js"></script>
     <script type="text/javascript" src="lib/js/flot/jquery.flot.pie.js"></script>
     <script type="text/javascript" src="lib/js/flot/jquery.flot.tooltip.js"></script>
-    
-    <!-- PAGE RELATED PLUGIN(S) -->    
+
+    <!-- PAGE RELATED PLUGIN(S) -->
     <!-- Morris Chart Dependencies -->
     <script type="text/javascript" src="lib/js/morris/raphael.2.1.0.min.js"></script>
     <script type="text/javascript" src="lib/js/morris/morris.min.js"></script>

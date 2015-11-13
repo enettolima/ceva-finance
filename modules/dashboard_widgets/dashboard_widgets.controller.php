@@ -22,7 +22,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
 
 		$db = DataConnection::readOnly();
 		$total_records = 0;
-	  
+
     // Search
     if (!empty($search)) {
         $search_fields = array('id', 'title', 'description');
@@ -58,9 +58,9 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
             $rows[$i]['id']     = $widget['id'];
             $rows[$i]['title']   = $widget['title'];
             if(strlen($widget['description'])>50){
-                $rows[$i]['description'] = substr($widget['description'], 0, 50).'...';    
+                $rows[$i]['description'] = substr($widget['description'], 0, 50).'...';
             }else{
-                $rows[$i]['description'] = $widget['description'];    
+                $rows[$i]['description'] = $widget['description'];
             }
             $rows[$i]['edit']   = theme_link_process_information('',
 							'dashboard_widgets_edit_form',
@@ -81,7 +81,7 @@ function dashboard_widgets_list($row_id = NULL, $search = NULL, $sort = NULL, $p
 					$i++;
 				}
     }
-    
+
     $options = array(
         'show_headers' => TRUE,
         'page_title' => translate('Users List'),
@@ -179,7 +179,7 @@ function dashboard_widgets_delete_form($data) {
  * Remove from table
  */
 function dashboard_widgets_delete_form_submit($data) {
-	
+
 	$dash = new DashboardWidgets();
   $delete = $dash->delete($data['id']);
   if ($delete['code']==200) {
@@ -187,7 +187,7 @@ function dashboard_widgets_delete_form_submit($data) {
   } else {
     return FALSE;
   }
-    
+
 		/*$dashboard_widgets = new DashboardWidgets();
     $dashboard_widgets->remove('id=' . $data['id']);
     if ($dashboard_widgets->affected > 0) {
@@ -218,6 +218,7 @@ function dashboard_widgets_validate($data) {
   return $dashboard_widgets->_validate($data, $type, false);
 }
 
+
 function dashboard_widgets_load_droplets_wrapper(){
 	global $twig;
 	// Twig Base
@@ -233,6 +234,21 @@ function dashboard_widgets_load_droplets_wrapper(){
 function dashboard_widgets_load_droplets(){
 	// Dashboard Configuration according logged user personal preferences
 	global $twig;
+
+	$camp_button = '';
+
+	$content = $twig->render('dashboard-content.html',
+		array(
+			'setup_form' => dashboard_setup_form(),
+			'camp_button' => $camp_button,
+			'widgets' => dashboard_widgets($_SESSION['dash_type'])
+		)
+	);
+	return $content;
+}
+
+function dashboard_content(){
+	global $twig;
 	$content = $twig->render('dashboard-content.html',
 		array(
 			'setup_form' => dashboard_setup_form(),
@@ -246,11 +262,10 @@ function dashboard_widgets($dashboard_type) {
 	  $dash = array();
     $user = new User();
     $user->byID($_SESSION['log_id']);
-    $dash_type = 'dashboard_' . $dashboard_type;
 		global $twig;
-    if ($user->$dash_type) {
+    if ($user->dashboard) {
         // Build the dashboard accordingly the dashboard type and if there is something recorded in his desktop
-        $user_widgets = $user->$dash_type;
+        $user_widgets = $user->dashboard;
 				if ($user_widgets) {
 						$db = DataConnection::readOnly();
 						$widgets = $db->dashboard_widgets();
@@ -258,7 +273,7 @@ function dashboard_widgets($dashboard_type) {
                 for ($x = 0; $x < count($user_widgets[$i]); $x++) {
 									  $widget =  $widgets[$user_widgets[$i][$x]];
                     if ($widget['enabled']) {
-                        $dash[$i] .= $twig->render('dashboard-widget.html',
+                        $dash[0] .= $twig->render('dashboard-widget.html',
 																										array(
 																												'icon' => $widget['icon'],
 																												'widget_id' => $widget['id'],
@@ -273,13 +288,7 @@ function dashboard_widgets($dashboard_type) {
         // Return the message to configure his/her dashboard
         //  $content = 'Maybe you are new here, don\'t forget to Setup your Dashboard<br/>Click on the link on the right link "Dashboard Setup" and choose which items you want to see on your dashboard.';
     }
-    $content = $twig->render('dashboard-droplets.html',
-															array(
-																	'dashboard_type' => $dashboard_type,
-																	'dash1' => $dash[0],
-																	'dash2' => $dash[1]
-															));
-    return $content;
+    return $dash[0];
 }
 
 /**
@@ -291,16 +300,14 @@ function dashboard_setup_form() {
 
 		$db = DataConnection::readOnly();
 		$widgets = $db->dashboard_widgets()
-									->where('enabled',1)
-									->and('dashboard_type', $dashboard_type);
+									->where('enabled',1);
 
     if (count($widgets) > 0) {
         // Retrieve the widgets already selected by the user
         $user = new User();
         $user->byID($_SESSION['log_id']);
-        $dash_type = 'dashboard_' . $dashboard_type;
-        if ($user->$dash_type) {
-            $user_widgets = $user->$dash_type;
+        if ($user->dashboard) {
+            $user_widgets = $user->dashboard;
         }
         $checked = '';
 		foreach ($widgets as $id => $widget) {
@@ -310,7 +317,7 @@ function dashboard_setup_form() {
                     } else {
                         $checked = '';
                     }
-                }		
+                }
             $inputs[$id]['id']   = $widget['id'];
             $inputs[$id]['title']= $widget['title'];
             $inputs[$id]['check']= $checked;
@@ -333,8 +340,7 @@ function dashboard_setup_form() {
 function dashboard_setup($data) {
     $user = new User();
     $user->byID($_SESSION['log_id']);
-    $dash_type = 'dashboard_' . $data['dashboard_type'];
-    $user_widgets = $user->$dash_type;
+    $user_widgets = $user->dashboard;
     $nlist = array();
     $new_list = array();
     if ($user_widgets && $data['widget']) {
@@ -391,7 +397,7 @@ function dashboard_setup($data) {
         }
     }
     //array_unshift($new_list, $widget);
-    $user->$dash_type = $new_list;
+    $user->dashboard = $new_list;
     $user->update($_SESSION['log_id']);
     return dashboard_widgets($data['dashboard_type']);
 }
