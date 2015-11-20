@@ -18,6 +18,18 @@
     margin-right: 2%;
 }
 
+.medium-number{
+    font-size: 70px;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: indianred;
+    padding-top: 30px;
+}
+
+.dash-click-list{
+    text-align: center;
+}
 .dashboard li.half {
     width: 48%;
     margin-right: 2%;

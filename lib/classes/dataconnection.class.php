@@ -23,6 +23,6 @@ class DataConnection {
 		//$db->debug - true;
 		return $db;
 	}
-	
+
 }
 ?>

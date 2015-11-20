@@ -11,7 +11,7 @@ class DashboardWidgets {
   *
   * @url POST create
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   */
   function create($request_data) {
@@ -22,11 +22,13 @@ class DashboardWidgets {
     $data = array();
     unset($request_data['fn']);
     unset($request_data['id']);
+
     foreach ($request_data as $key => $value) {
       if ($key != "key") {
         $data[$key] = $value;
       }
     }
+    $data['graph_options'] = serialize($data['graph_options']);
     $result = $db->dashboard_widgets()->insert($data);
     if ($result) {
       //Preparing response
@@ -37,7 +39,7 @@ class DashboardWidgets {
 			natural_set_message($response['message'], 'success');
       return $response;
     } else {
-      $error_message = 'Dashboard Widget could not be created!';
+      $error_message = 'Dashboard Widget could not be created.';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(500, $error_message);
     }
@@ -51,11 +53,11 @@ class DashboardWidgets {
   *
   * @url GET byID/{id}
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @throws 404 User not found for requested id  
+  * @throws 404 User not found for requested id
   * @param int $id Dashboard Widget to be fetched
-  * @return mixed 
+  * @return mixed
   */
   function byID($id) {
     //If id is null
@@ -91,10 +93,10 @@ class DashboardWidgets {
   *
   * @url GET fetchAll
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   * @throws 404 Dashboard Widget not found
-  * @return mixed 
+  * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
@@ -117,9 +119,9 @@ class DashboardWidgets {
   *
   * @url PUT update
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @return mixed 
+  * @return mixed
   */
   function update($request_data) {
     $this->_validate($request_data, "edit");
@@ -131,7 +133,7 @@ class DashboardWidgets {
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
     }
-    
+
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
@@ -161,14 +163,14 @@ class DashboardWidgets {
   *
   * @access public
   * @throws 404 Dashboard Widget not found
-  * @return mixed 
+  * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
     $q = $db->dashboard_widgets[$id];
-    
+
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
@@ -183,7 +185,7 @@ class DashboardWidgets {
       return $response;
     }
   }
-  
+
   /**
   * @smart-auto-routing false
   * @access private

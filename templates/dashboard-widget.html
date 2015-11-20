@@ -1,7 +1,7 @@
-<div id="widget__{{ widget_function | raw }}__{{ widget_id | raw }}" class="grid-stack-item ui-draggable ui-resizable" data-gs-auto-position="true" data-gs-x="0" data-gs-y="0" data-gs-width="4" data-gs-height="3">
+<div id="widget__{{ widget_function | raw }}__{{ widget_id | raw }}" class="grid-stack-item ui-draggable ui-resizable" data-gs-auto-position="true" data-gs-x="{{ x | raw }}" data-gs-y="{{ y | raw }}" data-gs-width="{{ width | raw }}" data-gs-height="{{ height | raw }}" data-custom-fn="{{ widget_function | raw }}" data-custom-id="{{ widget_id | raw }}">
     <div class="grid-stack-item-content element-wrapper ui-draggable-handle">
         <div class="naturalwidget-header">
-              <i class="{{ icon }} naturalwidget-icon"></i>
+              <i class="fa {{ icon }} naturalwidget-icon"></i>
               <span class="widget-title">{{ widget_title }}</span>
               <span class="naturalwidget-ctrls" role="menu">
                   <a class="button-icon button-min" data-placement="bottom" title="" rel="tooltip" href="#" data-original-title="Collapse">

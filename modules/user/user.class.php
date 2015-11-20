@@ -137,7 +137,7 @@ class User {
 				$this->access_level  = $u['access_level'];
 				$this->status        = $u['status'];
 				$this->language      = $u['preferred_language'];
-				$this->dashboard     = unserialize($u['dashboard']);
+				$this->dashboard     = json_decode(unserialize($u['dashboard']), true);
 				$this->affected 		 = 1;
 
 				//setting response for api calls
@@ -150,7 +150,7 @@ class User {
 											'access_level' => $u['access_level'],
 											'status'       => $u['status'],
 											'language'     => $u['preferred_language'],
-											'dashboard'    => unserialize($u['dashboard']));
+											'dashboard'    => json_decode(unserialize($u['dashboard']), true));
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');

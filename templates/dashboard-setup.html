@@ -8,8 +8,8 @@
         <section>
             {% for input in inputs %}
                 <label>
-                    <input class="checkbox style-0" type="checkbox" 
-                    onclick="dashboard_setup()" value="{{ input.id|raw }}" type="checkbox"
+                    <input class="checkbox style-0" type="checkbox"
+                    onclick="dashboard_setup({{ input.id|raw }},'{{ input.fn|raw }}')" value="{{ input.id|raw }}" type="checkbox"
                     name="widget[{{ input.id|raw }}]" id="input_widget_{{ input.id|raw }}" {{ input.check }}>
                     <span>{{ input.title }}</span>
                 </label>
