@@ -11,7 +11,7 @@ class Book {
   *
   * @url POST create
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   */
   function create($request_data) {
@@ -52,11 +52,11 @@ class Book {
   *
   * @url GET byID/{id}
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @throws 404 User not found for requested id  
+  * @throws 404 User not found for requested id
   * @param int $id Book to be fetched
-  * @return mixed 
+  * @return mixed
   */
   function byID($id) {
     //If id is null
@@ -92,10 +92,10 @@ class Book {
   *
   * @url GET fetchAll
   * @smart-auto-routing false
-  * 
+  *
   * @access public
   * @throws 404 Book not found
-  * @return mixed 
+  * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
@@ -118,9 +118,9 @@ class Book {
   *
   * @url PUT update
   * @smart-auto-routing false
-  * 
+  *
   * @access public
-  * @return mixed 
+  * @return mixed
   */
   function update($request_data) {
     $this->_validate($request_data, "edit");
@@ -132,7 +132,6 @@ class Book {
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
     }
-    
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
@@ -162,14 +161,14 @@ class Book {
   *
   * @access public
   * @throws 404 Book not found
-  * @return mixed 
+  * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
     $q = $db->book[$id];
-    
+
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
@@ -184,7 +183,7 @@ class Book {
       return $response;
     }
   }
-  
+
   /**
   * @smart-auto-routing false
   * @access private
@@ -208,12 +207,12 @@ class Book {
       ->where("name", $data['name'])
       ->and("id != ?", $data['id'])
       ->limit(1);
-    
+
       if(count($books)){
         $error[] = 'This book name already exists!';
       }
     }
-    
+
     if ($type == "create"){
       $books = $db->book()
       ->select("*")
@@ -224,7 +223,7 @@ class Book {
         $error[] = 'This book name already exists!';
       }
     }
-    
+
     if ($type != "delete") {
       if (!$data['name']) {
         $error[] = 'Field name is required!';

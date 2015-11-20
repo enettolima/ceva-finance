@@ -10,12 +10,12 @@ class User {
 	 * @url GET authenticate/{username}/{password}
 	 * @url POST authenticate
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @throws 403 User cannot be authenticated 
+	 * @throws 403 User cannot be authenticated
 	 * @param string $username User to be fetched
 	 * @param string $password Authentication Password
-	 * @return mixed 
+	 * @return mixed
 	 */
 
 	public function authenticate($username,$password, $api_call=false) {
@@ -29,7 +29,7 @@ class User {
 		if(count($user)>0){
 			//Authenticating password
 			$pwHasher = new Phpass\PasswordHash(8,false);
-			$passed = $pwHasher->CheckPassword($password, $user['password']);	
+			$passed = $pwHasher->CheckPassword($password, $user['password']);
 
 			if($passed){
 				$res = array();
@@ -46,7 +46,7 @@ class User {
 			}else{
 				$this->granted = false;
 				if($api_call){
-					throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');	
+					throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');
 				}
 			}
 	  }else{
@@ -56,7 +56,7 @@ class User {
 			}
 	  }
 	}
-	
+
 	/**
 	 * Method to fecth all User Records
 	 *
@@ -64,20 +64,20 @@ class User {
 	 *
 	 * @url GET fetchAll
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @throws 404 User not found for requested user id  
-	 * @return mixed 
+	 * @throws 404 User not found for requested user id
+	 * @return mixed
 	 */
 
-	public function fetchAll() {		
+	public function fetchAll() {
 		$db = DataConnection::readOnly();
 		$q = $db->user();
 
 		if(count($q) > 0) {
 			/*foreach($users as $id => $u){
 				//setting response for api calls
-				$res[$id]= array( 'id'			 => $u['id'], 
+				$res[$id]= array( 'id'			 => $u['id'],
 											'file_id'      => $u['file_id'],
 										  'first_name'   => $u['first_name'],
 											'last_name'    => $u['last_name'],
@@ -86,8 +86,7 @@ class User {
 											'access_level' => $u['access_level'],
 											'status'       => $u['status'],
 											'language'     => $u['preferred_language'],
-											'dashboard_1'  => unserialize($u['dashboard_1']),
-											'dashboard_2'  => unserialize($u['dashboard_2']));
+											'dashboard'    => unserialize($u['dashboard']));
 			}
 			return $res;
 			*/
@@ -105,8 +104,8 @@ class User {
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
 		}
-	}	
-	
+	}
+
 
 	/**
 	 * Method to fecth User Record by database Id
@@ -116,20 +115,20 @@ class User {
 	 *
 	 * @url GET byID/{id}
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @throws 404 User not found for requested user id  
+	 * @throws 404 User not found for requested user id
 	 * @param string $userid User to be fetched
-	 * @return mixed 
+	 * @return mixed
 	 */
 
-	public function byID($id) {		
+	public function byID($id) {
 		$db = DataConnection::readOnly();
 		$u = $db->user[$id];
-	
+
 		if(count($u) > 0) {
 				//setting object properties for in app use
-				$this->id 					 = $u['id']; 
+				$this->id 					 = $u['id'];
 				$this->file_id       = $u['file_id'];
 				$this->first_name    = $u['first_name'];
 				$this->last_name     = $u['last_name'];
@@ -138,12 +137,11 @@ class User {
 				$this->access_level  = $u['access_level'];
 				$this->status        = $u['status'];
 				$this->language      = $u['preferred_language'];
-				$this->dashboard_1   = unserialize($u['dashboard_1']);
-				$this->dashboard_2   = unserialize($u['dashboard_2']);
+				$this->dashboard     = json_decode(unserialize($u['dashboard']), true);
 				$this->affected 		 = 1;
 
 				//setting response for api calls
-				$res = array( 'id'					 => $u['id'], 
+				$res = array( 'id'					 => $u['id'],
 											'file_id'      => $u['file_id'],
 										  'first_name'   => $u['first_name'],
 											'last_name'    => $u['last_name'],
@@ -152,14 +150,13 @@ class User {
 											'access_level' => $u['access_level'],
 											'status'       => $u['status'],
 											'language'     => $u['preferred_language'],
-											'dashboard_1'  => unserialize($u['dashboard_1']),
-											'dashboard_2'  => unserialize($u['dashboard_2']));
+											'dashboard'    => json_decode(unserialize($u['dashboard']), true));
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
 		}
-	}	
-	
+	}
+
 	/**
 	 * Method to fecth User Record by Username
 	 *
@@ -168,14 +165,14 @@ class User {
 	 *
 	 * @url GET byUsername/{username}
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @throws 404 User not found for requested username  
+	 * @throws 404 User not found for requested username
 	 * @param string $username User to be fetched
-	 * @return mixed 
+	 * @return mixed
 	 */
 
-	public function byUsername($username) {		
+	public function byUsername($username) {
 		$db = DataConnection::readOnly();
 		$u = $db->user()
 			->where("username", $username)
@@ -184,7 +181,7 @@ class User {
 
 		if(count($u) > 0) {
 				//setting object properties for in app use
-				$this->id 					 = $u['id']; 
+				$this->id 					 = $u['id'];
 				$this->file_id       = $u['file_id'];
 				$this->first_name    = $u['first_name'];
 				$this->last_name     = $u['last_name'];
@@ -193,11 +190,10 @@ class User {
 				$this->access_level  = $u['access_level'];
 				$this->status        = $u['status'];
 				$this->language      = $u['preferred_language'];
-				$this->dashboard_1   = unserialize($u['dashboard_1']);
-				$this->dashboard_2   = unserialize($u['dashboard_2']);
+				$this->dashboard     = unserialize($u['dashboard']);
 
 				//setting response for api calls
-				$res = array( 'id'					 => $u['id'], 
+				$res = array( 'id'					 => $u['id'],
 											'file_id'      => $u['file_id'],
 										  'first_name'   => $u['first_name'],
 											'last_name'    => $u['last_name'],
@@ -206,14 +202,13 @@ class User {
 											'access_level' => $u['access_level'],
 											'status'       => $u['status'],
 											'language'     => $u['preferred_language'],
-											'dashboard_1'  => unserialize($u['dashboard_1']),
-											'dashboard_2'  => unserialize($u['dashboard_2']));
+											'dashboard'    => unserialize($u['dashboard']));
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
 		}
-	}	
-	
+	}
+
 	/**
 	 * Method to create a  User Record
 	 *
@@ -221,9 +216,9 @@ class User {
 	 *
 	 * @url POST create
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public function create($show_password=false, $auto_gen_pass=true, $data = null){
 			if($auto_gen_pass){
@@ -235,7 +230,7 @@ class User {
 			$hasher = new Phpass\PasswordHash(8,false);
 			$hashed_pass = $hasher->HashPassword($temp_password);
 
-			
+
 			$db = DataConnection::readWrite();
 			$u = $db->user();
 
@@ -248,11 +243,9 @@ class User {
 												'access_level' => $this->access_level,
 												'status'       => $this->status,
 												'language'     => $this->preferred_language,
-												'dashboard_1'  => serialize($this->dashboard_1),
-												'dashboard_2'  => serialize($this->dashboard_2));
+												'dashboard'    => serialize($this->dashboard));
 			}else{
-				$data['dashboard_1']  = serialize($data['dashboard_1']);
-				$data['dashboard_2']  = serialize($data['dashboard_2']);
+				$data['dashboard']  = serialize($data['dashboard']);
 			}
 
 			if(!isset($data['status'])){
@@ -278,7 +271,7 @@ class User {
 			}
 			return $this;
     }
-	
+
 	/**
 	 * Method to update a User Record
 	 *
@@ -286,9 +279,9 @@ class User {
 	 *
 	 * @url PUT update
 	 * @smart-auto-routing false
-	 * 
+	 *
 	 * @access public
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public function update($id){
 			$response = array();
@@ -303,8 +296,7 @@ class User {
 				'access_level' => $this->access_level,
 				'status'       => $this->status,
 				'language'     => $this->preferred_language,
-				'dashboard_1'  => serialize($this->dashboard_1),
-				'dashboard_2'  => serialize($this->dashboard_2));
+				'dashboard'    => serialize($this->dashboard));
 				if($u->update($data)){
 					$response['code'] = 200;
 					$response['message'] = 'User has been updated!';
@@ -317,7 +309,7 @@ class User {
 				throw new Luracast\Restler\RestException(404, 'User not found');
 			}
     }
-	
+
 	/**
     * Method to delete a user
     *
@@ -328,7 +320,7 @@ class User {
     *
     * @access public
     * @throws 404 User not found
-    * @return mixed 
+    * @return mixed
     */
 	public function delete($id){
 		$this->affected 		 = 0;
@@ -345,7 +337,7 @@ class User {
 			throw new Luracast\Restler\RestException(404, 'User not found');
 		}
 	}
-	
+
 	/**
 	* @smart-auto-routing false
 	* @access private

@@ -49,7 +49,7 @@ if ($_SESSION['log_username']) {
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
-		'content' => dashboard_widgets_load_droplets() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.php
+		'content' => dashboard_content() //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.php
 	));
 }
 else {

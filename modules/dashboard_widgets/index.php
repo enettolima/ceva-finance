@@ -18,7 +18,12 @@ if (!$islogged) {
 }
 
 //Getting function from the jquery call
-$fn = $_GET['fn'];
+if($_GET['fn'])  {
+  $fn = $_GET['fn'];
+}
+else {
+  $fn = $_POST['fn'];
+}
 
 /*
  * Sending calls to the view
@@ -36,11 +41,20 @@ switch ($fn) {
     case 'dashboard_widgets_list_search':
         print dashboard_widgets_list(NULL, $_GET['search']);
         break;
-    case 'dashboard_widgets_create_form':
-        print dashboard_widgets_create_form();
+    case 'dashboard_widgets_graph_line_template':
+        print dashboard_widgets_graph_line_template();
+        break;
+    case 'dashboard_widgets_graph_area_template':
+        print dashboard_widgets_graph_area_template();
+        break;
+    case 'dashboard_widgets_graph_bar_template':
+        print dashboard_widgets_graph_bar_template();
+        break;
+    case 'dashboard_widgets_graph_donut_template':
+        print dashboard_widgets_graph_donut_template();
         break;
     case 'dashboard_widgets_create_form_submit':
-        print dashboard_widgets_create_form_submit($_GET);
+        print dashboard_widgets_create_form_submit($_POST);
         break;
     case 'dashboard_widgets_edit_form':
         print dashboard_widgets_edit_form($_GET);
@@ -66,26 +80,21 @@ switch ($fn) {
     case 'dashboard_setup':
         print dashboard_setup($_GET);
         break;
+    case 'dashboard_user_update':
+        print dashboard_user_update($_POST);
+        break;
+    case 'dashboard_user_widget_add':
+        print dashboard_user_widget_add($_GET);
+        break;
+
     /*
      *Calling functions at dashboard_widgets_blocks.php
      */
-    case 'donut_example':
-        print donut_example($_GET);
-        break;
-    case 'area_graph_example':
-        print area_graph_example($_GET);
-        break;
-    case 'bar_graph_example':
-        print bar_graph_example($_GET);
-        break;
-    case 'line_chart_example':
-        print line_chart_example($_GET);
-        break;
-    case 'period_chart_example':
-        print period_chart_example($_GET);
-        break;
-    case 'bar_chart_example':
-        print bar_chart_example($_GET);
-        break;    
+     case 'render_widget_graph':
+         print render_widget_graph($_GET);
+         break;
+     case 'custom_graph_example':
+         print custom_graph_example($_GET);
+         break;
 }
 ?>
