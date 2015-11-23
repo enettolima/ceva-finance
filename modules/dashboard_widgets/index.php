@@ -53,6 +53,9 @@ switch ($fn) {
     case 'dashboard_widgets_graph_donut_template':
         print dashboard_widgets_graph_donut_template();
         break;
+    case 'dashboard_widgets_graph_temp_template':
+        print dashboard_widgets_graph_temp_template();
+        break;
     case 'dashboard_widgets_create_form_submit':
         print dashboard_widgets_create_form_submit($_POST);
         break;

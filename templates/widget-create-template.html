@@ -22,15 +22,25 @@
           <button type="button" class="btn btn-primary" onclick="javascript:process_information('', 'dashboard_widgets_graph_line_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Line</button>
           <button type="button" class="btn btn-primary" onclick="javascript:process_information('', 'dashboard_widgets_graph_area_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Area</button>
           <button type="button" class="btn btn-primary" onclick="javascript:process_information('', 'dashboard_widgets_graph_bar_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Bar</button>
-          <button type="button" class="btn btn-selected" onclick="javascript:process_information('', 'dashboard_widgets_graph_donut_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Donut</button>
-          <button type="button" class="btn btn-primary" onclick="javascript:process_information('', 'dashboard_widgets_graph_temp_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Template</button>
+          <button type="button" class="btn btn-primary" onclick="javascript:process_information('', 'dashboard_widgets_graph_donut_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Donut</button>
+          <button type="button" class="btn btn-selected" onclick="javascript:process_information('', 'dashboard_widgets_graph_temp_template', 'dashboard_widgets', null, null, null, null, null, 'POST')">Template</button>
        </div>
      </legend>
        <form id="form_chart" data-disable="false" data-toggle="validator" data-id="customer_signup_form" name="form_chart" method="POST" class="">
-               <input name="graph_type" type="hidden" value="Donut">
+               <input name="graph_type" type="hidden" value="Template">
                <input name="widget_function" type="hidden" value="render_widget_graph">
                <input name="enabled" type="hidden" value="1">
-               <legend>Donut Graphic</legend>
+               <legend>Create Widget from Template</legend>
+
+               <div class="form-group col-lg-4">
+                 <label for="sel1">Select your Template</label>
+                 <select class="form-control" id="axes" name="widget_template_file"  data-toggle="tooltip" data-placement="top" title="Select the template we will use to create the widget.">
+                   {% for widget in widget_templates %}
+                      <option value='{{ widget }}'>{{ widget }}</option>
+                   {% endfor %}
+                 </select>
+               </div>
+
                <div class="form-group col-lg-4">
                  <label>Title</label>
                  <input type="text" data-minlength="3" name="title" class="form-control" id="title" value="Customers / Month" data-error="The field company is required." data-toggle="tooltip" data-placement="top" title="This is the widget title." required>
@@ -94,10 +104,10 @@
                  <span class="help-block with-errors"></span>
                </div>
 
-               <legend>Query ( <a target="_new" href='http://morrisjs.github.io/morris.js/donut.html'>Morris Donut Chart Documentation</a>)</legend>
+               <legend>Query</legend>
                <div class="form-group col-lg-13">
                  <label>Construct your query</label>
-                 <input type="text" data-minlength="3" name="query" class="form-control" id="query" value="select a as value, name as label from natural_dummy_data group by month(date)" data-error="The field is required." data-toggle="tooltip" data-placement="top" title="The data to plot. This is an array of objects, containing label and value attributes corresponding to the labels and sizes of the segments of the donut chart." required>
+                 <input type="text" data-minlength="3" name="query" class="form-control" id="query" value="select name from natural_dummy_data limit 5" data-error="The field is required." data-toggle="tooltip" data-placement="top" title="The data to plot. This is the information that we will replace inside the template. If the template have one array, than you should return more than one row. If does not contain array, than you should return only one row using LIMIT 1 at the end of your query." required>
                  <span class="help-block with-errors"></span>
                </div>
                 <section id="morris_data">
@@ -114,8 +124,7 @@
   </div>
 </div>
 <script type="text/javascript" src="lib/js/iconpicker/js/fontawesome-iconpicker.min.js"></script>
-<script> $("input[id*='_input_']").prop('disabled', false);
-
+<script>
   $('#form_chart').validator().on('submit', function (e) {
     $(":submit").attr("disabled", true);
     if (e.isDefaultPrevented()) {
