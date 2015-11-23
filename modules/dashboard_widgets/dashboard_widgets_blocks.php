@@ -16,15 +16,23 @@ function render_widget_graph($data) {
   $command->execute();
   $d = $command->fetchAll();
   if (count($d) <= 0){
-    $d = null;
+    $return['data'] = null;
     $return['response_nodata']  = $query['response_nodata'];
   }else{
     //we only return response_nodata if data is null so we save the json size a littow.
     $return['response_nodata']  = null;
+    if($query['graph_type'] == 'Template'){
+      global $twigwidgets;
+      $return['data'] = $twigwidgets->render($query['widget_template_file'],
+                          array(
+                              'rows' => $d
+                          ));
+    }else {
+      $return['data'] = $d;
+    }
   }
   //$errors = $command->errorInfo();
   //print_debug($errors);
-
   $return['id']               = $query['id'];
   $return['fn']               = $query['widget_function'];
   $return['update_seconds']   = $query['update_seconds'];
@@ -34,7 +42,6 @@ function render_widget_graph($data) {
   $return['data_gs_y']        = $query['data_gs_y'];
   $return['data_gs_width']    = $query['data_gs_width'];
   $return['data_gs_height']   = $query['data_gs_height'];
-  $return['data']             = $d;
   $return['html'] = $twig->render('dashboard-widget.html',
                       array(
                           'icon' => $query['icon'],

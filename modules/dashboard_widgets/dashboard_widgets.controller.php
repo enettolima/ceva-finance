@@ -154,6 +154,18 @@ function dashboard_widgets_graph_donut_template() {
 	));
 }
 
+function dashboard_widgets_graph_temp_template() {
+  global $twig;
+	// Twig Base
+	$template = $twig->loadTemplate('widget-create-template.html');
+	$template->display(array(
+		// Dashboard - Passing default variables to content.html
+		'page_title' => 'Dashboard',
+		'page_subtitle' => 'Widgets',
+    'widget_templates' => array_diff(scandir(NATURAL_WIDGET_TEMPLATE_PATH, 1), array('.', '..'))
+	));
+}
+
 /*
  * Insert on table
  */

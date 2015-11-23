@@ -20,6 +20,7 @@ error_reporting(E_ALL ^ E_NOTICE);
   define('NATURAL_CLASSES_PATH'   , NATURAL_ROOT_PATH . '/lib/classes/');
   define('NATURAL_IMAGE_PATH'     , NATURAL_ROOT_PATH . '/media/images/');
   define('NATURAL_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/themes/natural/');
+  define('NATURAL_WIDGET_TEMPLATE_PATH'  , NATURAL_ROOT_PATH . '/templates/widgets/');
   define('THEME_PATH'             , 'themes/natural/');
   define('PAGER_LIMIT'            , 25);
 
@@ -27,10 +28,10 @@ error_reporting(E_ALL ^ E_NOTICE);
   define('FORM_TABLE', 'form_templates');
   define('FIELD_TABLE', 'field_templates');
   define('FIELDSET_TABLE','fieldsets');
-  
+
   //SET UTIL
   require_once(NATURAL_LIB_PATH.'util.php');
-  
+
   //Autoloaders
   require_once( NATURAL_ROOT_PATH . '/vendor/autoload.php');
 
@@ -48,7 +49,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 	//DEFINE PROJECT DATABASE NAME
 	define('NATURAL_DBNAME', 'natural_framework');
-	
+
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
   define('NATURAL_PDO_DSN_READ', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_READ', 'root');
@@ -68,15 +69,15 @@ error_reporting(E_ALL ^ E_NOTICE);
   define('NATURAL_MAGIC_KEY', '68eKAgHqaS2mY5VCfE1jdPATwEfU5DD7R0nzCJ2cdnhgA32Ym21U');
 
   //SET API KEY FOR RESTLER
-  define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');    
-    
+  define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');
+
   //SET NATURAL CURRENT VERSION
   define('NATURAL_VERSION', 'Natural 2.0b');
 
   //SET DEFAULT ICONS
   define("NATURAL_EDIT_ICON", "fa fa-pencil");
   define('NATURAL_REMOVE_ICON', 'fa fa-trash-o');
-  
+
 
   // Twig Template Engine.
   $loader = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates');
@@ -86,5 +87,14 @@ error_reporting(E_ALL ^ E_NOTICE);
     'auto_reload' => TRUE,
   ));
   $twig->addExtension(new Twig_Extension_Debug());
+
+  // Twig Template Engine.
+  $loaderwidget = new Twig_Loader_Filesystem(NATURAL_ROOT_PATH . '/templates/widgets');
+  $twigwidgets = new Twig_Environment($loaderwidget, array(
+    'debug' => TRUE,
+    'cache' => NATURAL_ROOT_PATH . '/compilation_cache',
+    'auto_reload' => TRUE,
+  ));
+  $twigwidgets->addExtension(new Twig_Extension_Debug());
   }
 ?>
