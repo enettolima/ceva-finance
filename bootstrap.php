@@ -14,7 +14,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 
   //SET APPLICATION PATHS
   define('NATURAL_WEB_ROOT'       , './');
-  define('TITLE'                  , 'NATURAL');
+  define('TITLE'                  , 'CHURCH FINANCES');
   //define('NATURAL_ROOT_PATH'    , dirname(__FILE__));
   define('NATURAL_LIB_PATH'       , NATURAL_ROOT_PATH . '/lib/');
   define('NATURAL_CLASSES_PATH'   , NATURAL_ROOT_PATH . '/lib/classes/');
@@ -42,13 +42,13 @@ error_reporting(E_ALL ^ E_NOTICE);
   define('NATURAL_DOMAIN', 'http://localhost:8888');
 
   //COMPANY NAME
-  define('NATURAL_COMPANY', 'Open Source Mind LLC');
+  define('NATURAL_COMPANY', 'CEVA');
 
   //PLATFORM NAME
-  define('NATURAL_PLATFORM', 'Natural');
+  define('NATURAL_PLATFORM', 'Church Finances');
 
 	//DEFINE PROJECT DATABASE NAME
-	define('NATURAL_DBNAME', 'natural_framework');
+	define('NATURAL_DBNAME', 'church_finance');
 
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
   define('NATURAL_PDO_DSN_READ', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
@@ -72,7 +72,7 @@ error_reporting(E_ALL ^ E_NOTICE);
   define('NATURAL_API_KEY', '8f4ef05b543fb6157b374099100574b3');
 
   //SET NATURAL CURRENT VERSION
-  define('NATURAL_VERSION', 'Natural 2.0b');
+  define('NATURAL_VERSION', 'Church Finances 2.0b');
 
   //SET DEFAULT ICONS
   define("NATURAL_EDIT_ICON", "fa fa-pencil");

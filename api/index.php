@@ -15,5 +15,8 @@ $r->addAuthenticationClass('SimpleAuth');
 $r->addAPIClass('User');
 $r->addAPIClass('Book');
 $r->addAPIClass('Car');
+$r->addAPIClass('Church');
+$r->addAPIClass('Contribution');
+$r->addAPIClass('Member');
 $r->handle();
 ?>
