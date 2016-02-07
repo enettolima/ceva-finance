@@ -18,5 +18,8 @@ $r->addAPIClass('Car');
 $r->addAPIClass('Church');
 $r->addAPIClass('Contribution');
 $r->addAPIClass('Member');
+$r->addAPIClass('Deposit');
+$r->addAPIClass('Withdraw');
+$r->addAPIClass('WithdrawType');
 $r->handle();
 ?>

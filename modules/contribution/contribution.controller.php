@@ -10,23 +10,33 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
   } else {
     $row_id = 'id != 0';
   }
-  
+
   // Sort
   if (empty($sort)) {
     $sort = 'id ASC';
   }
-  
+
   $limit = PAGER_LIMIT;
   $offset = ($page * $limit) - $limit;
   $db = DataConnection::readOnly();
   $total_records = 0;
-  
+
+  $payment_types = $db->select_option->where("upstream_name = ?", "payment_type");
+  foreach ($payment_types as $payment_type) {
+  	$ptype[$payment_type['value']] = $payment_type['description'];
+  }
+
+  $contribution_types = $db->select_option->where("upstream_name = ?", "contribution_type");
+  foreach ($contribution_types as $contribution_type) {
+  	$ctype[$contribution_type['value']] = $contribution_type['description'];
+  }
+
   // Search
   if (!empty($search)) {
     $search_fields = array('id', 'church_id', 'member_id');
     $exceptions = array();
     $search_query = build_search_query($search, $search_fields, $exceptions);
-    
+
     $contributions = $db->contribution()
     ->where($row_id)
     ->and($search_query)
@@ -39,13 +49,18 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
     ->limit($limit, $offset);
   }
   $total_records = $db->contribution()->count("*");
-  
+
   $i = 0;
   if (count($contributions)) {
     // Building the header with sorter
-    $headers[] = array('display' => 'Id', 'field' => 'id');
-    $headers[] = array('display' => 'Church Id', 'field' => 'church_id');
-    $headers[] = array('display' => 'Member Id', 'field' => 'member_id');
+    //$headers[] = array('display' => 'Id', 'field' => 'id');
+    //$headers[] = array('display' => 'Church', 'field' => 'church_id');
+    $headers[] = array('display' => 'Church', 'field' => 'church_name');
+    $headers[] = array('display' => 'Member', 'field' => 'member_name');
+    $headers[] = array('display' => 'Payment Type', 'field' => 'payment_type');
+    $headers[] = array('display' => 'Contribution Type', 'field' => 'contribution_type');
+    $headers[] = array('display' => 'Amount', 'field' => 'amount');
+    $headers[] = array('display' => 'Date', 'field' => 'date');
     $headers[] = array('display' => 'Edit', 'field' => NULL);
     $headers[] = array('display' => 'Delete', 'field' => NULL);
     $headers = build_sort_header('contribution_list', 'contribution', $headers, $sort);
@@ -55,9 +70,20 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
       //This is important for the row update/delete
       $rows[$j]['row_id']   = $contribution['id'];
       /////////////////////////////////////////////
-      $rows[$j]['id']       = $contribution['id'];
-      $rows[$j]['church_id']   = $contribution['church_id'];
-      $rows[$j]['member_id'] = $contribution['member_id'];
+      //$rows[$j]['id']       = $contribution['id'];
+
+      //$rows[$j]['id']       = $contribution['id'];
+      $church = new Church();
+      $church = $church->byID($contribution['church_id']);
+
+      $member = new Member();
+      $member->byID($contribution['member_id']);
+      $rows[$j]['church_name']   = $church['name'];
+      $rows[$j]['member_name'] = $member->name;
+      $rows[$j]['payment_type'] = $ptype[$contribution['payment_type_id']];
+      $rows[$j]['contribution_type'] = $ctype[$contribution['contribution_type_id']];
+      $rows[$j]['amount'] = $contribution['amount'];
+      $rows[$j]['date'] = date("m/d/Y", strtotime($contribution['timestamp'])) ;
       $rows[$j]['edit']   = theme_link_process_information('',
           'contribution_edit_form',
           'contribution_edit_form',
@@ -74,7 +100,7 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
       $i++;
     }
   }
-  
+
   $options = array(
     'show_headers' => TRUE,
     'page_title' => translate('Contributions List'),
@@ -105,7 +131,9 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
  */
 function contribution_create_form() {
     $frm = new DbForm();
-    return $frm->build("contribution_create_form");
+    //$frm->timestamp = "02/06/2016";
+    $frm->timestamp = date("m/d/Y");
+    return $frm->build("contribution_create_form", $frm, $_SESSION['log_access_level']);
 }
 
 /*
@@ -117,6 +145,8 @@ function contribution_create_form_submit($data) {
     return FALSE;
   }
   $contribution = new Contribution();
+
+  $data['timestamp'] = date("Y-m-d", strtotime($data['timestamp']));
   $response = $contribution->create($data);
   if ( $response['id'] > 0 ) {
     return contribution_list($response['id']);
@@ -132,6 +162,7 @@ function contribution_edit_form($data) {
   $contribution = new Contribution();
   $contribution->byID($data['id']);
   $frm = new DbForm();
+  $contribution->timestamp = date("m/d/Y", strtotime($contribution->timestamp));
   $frm->build('contribution_edit_form', $contribution, $_SESSION['log_access_level']);
 }
 
@@ -143,7 +174,9 @@ function contribution_edit_form_submit($data) {
   if (!empty($error)) {
     return FALSE;
   } else {
+
     $contribution = new Contribution();
+    $data['timestamp'] = date("Y-m-d", strtotime($data['timestamp']));
     $update = $contribution->update($data);
     if ($update['code']==200) {
       return contribution_list($data['id']);
@@ -162,7 +195,7 @@ function contribution_delete_form($data) {
     $frm = new DbForm();
     $frm->build('contribution_delete_form', $contribution, $_SESSION['log_access_level']);
   }else{
-    return FALSE;   
+    return FALSE;
   }
 }
 
