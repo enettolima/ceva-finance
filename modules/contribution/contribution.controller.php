@@ -13,7 +13,7 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
 
   // Sort
   if (empty($sort)) {
-    $sort = 'id ASC';
+    $sort = 'timestamp DESC';
   }
 
   $limit = PAGER_LIMIT;
@@ -60,6 +60,7 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
     $headers[] = array('display' => 'Payment Type', 'field' => 'payment_type');
     $headers[] = array('display' => 'Contribution Type', 'field' => 'contribution_type');
     $headers[] = array('display' => 'Amount', 'field' => 'amount');
+    $headers[] = array('display' => 'Comment', 'field' => 'comment');
     $headers[] = array('display' => 'Date', 'field' => 'date');
     $headers[] = array('display' => 'Edit', 'field' => NULL);
     $headers[] = array('display' => 'Delete', 'field' => NULL);
@@ -83,6 +84,12 @@ function contribution_list($row_id = NULL, $search = NULL, $sort = NULL, $page =
       $rows[$j]['payment_type'] = $ptype[$contribution['payment_type_id']];
       $rows[$j]['contribution_type'] = $ctype[$contribution['contribution_type_id']];
       $rows[$j]['amount'] = $contribution['amount'];
+      if(strlen($contribution['comment'])>30){
+        $rows[$j]['comment'] = substr($contribution['comment'], 0, 30).'...';
+      }else{
+        $rows[$j]['comment'] = $contribution['comment'];
+      }
+
       $rows[$j]['date'] = date("m/d/Y", strtotime($contribution['timestamp'])) ;
       $rows[$j]['edit']   = theme_link_process_information('',
           'contribution_edit_form',
