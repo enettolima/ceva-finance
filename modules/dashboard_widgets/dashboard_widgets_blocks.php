@@ -106,4 +106,54 @@ function custom_graph_example($data) {
     header('Content-Type: application/json');
     echo json_encode($return);
 }
+
+function contributions_cash_check($data) {
+  global $twig;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+  $getquery = $pdo->prepare("select * from dashboard_widgets where id = ".$data['id']);
+  $getquery->execute();
+  $query = $getquery->fetch();
+  //$errors = $command->errorInfo();
+  //print_debug($errors);
+  $resp_data[0]['x'] = '2011 Q1';
+  $resp_data[0]['y'] = 3;
+  $resp_data[0]['z'] = 2;
+  $resp_data[0]['a'] = 3;
+
+  $resp_data[1]['x'] = '2011 Q2';
+  $resp_data[1]['y'] = 2;
+  $resp_data[1]['z'] = null;
+  $resp_data[1]['a'] = 1;
+
+  $resp_data[2]['x'] = '2011 Q3';
+  $resp_data[2]['y'] = 0;
+  $resp_data[2]['z'] = 2;
+  $resp_data[2]['a'] = 4;
+
+  $resp_data[3]['x'] = '2011 Q4';
+  $resp_data[3]['y'] = 2;
+  $resp_data[3]['z'] = 4;
+  $resp_data[3]['a'] = 3;
+
+
+  $return['data-gs-x']        = 0; //this value is render after the html is placed, so if is different than template x value, it will resize to it.
+  $return['data-gs-y']        = 0; //this value is render after the html is placed, so if is different than template y value, it will resize to it.
+  $return['data-gs-width']    = 3; //this value is render after the html is placed, so if is different than template width value, it will resize to it.
+  $return['data-gs-height']   = 3; //this value is render after the html is placed, so if is different than template height value, it will resize to it.
+  $return['data']             = $resp_data; //this will arrive at the custom_graph_example function inside the dashboard.js as chart_data['data']
+  $return['html']             = $twig->render('dashboard-widget.html',
+    array(
+        'icon' => $query['icon'],
+        'widget_id' => $query['id'],
+        'widget_title' => $query['title'],
+        'widget_function' => $query['widget_function'],
+        'x'       => 0, //this is the defaul row
+        'y'       => 0, //this is the defaul column
+        'width'   => 3, //this is the defaul width in column size
+        'height'  => 3  //this is the defaul height in column size
+    ));
+
+  header('Content-Type: application/json');
+  echo json_encode($return);
+}
 ?>

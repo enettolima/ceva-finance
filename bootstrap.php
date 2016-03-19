@@ -53,11 +53,11 @@ error_reporting(E_ALL ^ E_NOTICE);
 	//DATABASE INFORMATION USED ACCROSS APP FOR READ/WRITE
   define('NATURAL_PDO_DSN_READ', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_READ', 'root');
-  define('NATURAL_PDO_PASS_READ', '123456');
+  define('NATURAL_PDO_PASS_READ', 'ZXFxO67NPA');
 
   define('NATURAL_PDO_DSN_WRITE', 'mysql:dbname='.NATURAL_DBNAME.';host=127.0.0.1;port=3306');
   define('NATURAL_PDO_USER_WRITE', 'root');
-  define('NATURAL_PDO_PASS_WRITE', '123456');
+  define('NATURAL_PDO_PASS_WRITE', 'ZXFxO67NPA');
 
   //Temporary DB info to support datamanager
   define('NATURAL_DBNAME', 'natural_framework');

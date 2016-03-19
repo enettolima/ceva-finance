@@ -20,18 +20,31 @@ function build_filter_form($data){
 			break;
 
 		case 'totals_per_month_menu':
-			$menu_html = $twig->render(
-				'report_monthly_menu.html',
-				array(
-					'links' => $menu->byLevel('main', $_SESSION['log_access_level']),
-					'first' => TRUE,
-				)
-			);
+			$menu_html = $twig->render('report_monthly_menu.html');
 			break;
 	}
 
 
 
+	// Twig Base
+	/*$template = $twig->loadTemplate('content.html');
+	$template->display(array(
+		// Dashboard - Passing default variables to content.html
+		'page_title' => 'Report',
+		'page_subtitle' => 'Menu',
+    'content' => $menu_html //Loading dashboard widgets
+	));
+*/
+	//print $template;*/
+
+	global $twig;
+	$content = $twig->render('report_monthly_menu.html',
+		array(
+			'setup_form' => "",
+			'widgets' => ""
+		)
+
+	);
 
 	// Twig Base
 	$template = $twig->loadTemplate('content.html');
@@ -39,10 +52,9 @@ function build_filter_form($data){
 		// Dashboard - Passing default variables to content.html
 		'page_title' => 'Dashboard',
 		'page_subtitle' => 'Widgets',
-    'content' => $menu_html //Loading dashboard widgets
+		'content' => $content //Loading dashboard widgets from modules/dashboard_widgets/dashboard_widgets.controller.php
 	));
-
-	//print $template;
+	return $template;
 }
 
 /*

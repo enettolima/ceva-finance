@@ -21,7 +21,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 	$offset = ($page * $limit) - $limit;
 	$db = DataConnection::readOnly();
 	$total_records = 0;
-	
+
 	// Search
 	if (!empty($search)) {
 		$search_fields = array('id', 'first_name', 'last_name', 'username');
@@ -78,7 +78,7 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 					'response_type' => 'modal',
 					'icon' => constant("NATURAL_REMOVE_ICON"),
 					'class' => $class));
-			$i++;	
+			$i++;
 		}
 	}
 
@@ -156,11 +156,11 @@ function user_create_form_submit($data) {
 		// Adding values
 		if($data['password']){
 			$user->password 	= $data['password'];
-			$gen_pass = fasle;;
+			$gen_pass = false;
 		}else{
 			$gen_pass = true;
 		}
-		
+
 		$res = $user->create(false, $gen_pass, $data);
 		if ($res) {
 	    natural_set_message('User ' . $data['first_name'] . ' ' . $data['last_name'] . ' was created successfully!', 'success');
@@ -188,7 +188,7 @@ function user_edit_form($user_id) {
 			foreach ($access_levels as $access_level) {
 				$items[] = ucwords($access_level['description']) . '=' . $access_level['level'];
 			}
-			
+
 			$user->access_level_options = implode(';', $items);
     }
 		// Testing chekboxes

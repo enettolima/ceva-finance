@@ -99,5 +99,8 @@ switch ($fn) {
      case 'custom_graph_example':
          print custom_graph_example($_GET);
          break;
+     case 'contributions_cash_check':
+         print contributions_cash_check($_GET);
+         break;
 }
 ?>
