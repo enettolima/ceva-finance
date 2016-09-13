@@ -1,11 +1,11 @@
 <li class="dropdown user user-menu">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+  <a href="#" class="dropdown-toggle {{ hide_button }}" data-toggle="dropdown">
     <i class="glyphicon glyphicon-user"></i>
     <span>{{ user_full_name }}<i class="caret"></i></span>
   </a>
   <ul class="dropdown-menu">
     <!-- User image -->
-    <li class="user-header bg-blue">
+    <li  style="padding:10px;" class="{{ user_header }} {{ skin_profile }}">
       <p>
         {% if avatar %}
           <img width="60" height="60" src="{{ avatar }}" class="img-circle" /><br/>
@@ -14,6 +14,11 @@
         <small>{{ project_title }} - {{ version }}</small>
         <small>{{ actual_date }}</small>
       </p>
+      {% if admin %}
+        <div>
+          <a href="dashboard_user.php" class="btn bg-dark-gray btn-block"><i class="fa fa-level-up"></i> Back to my Profile</a>
+        </div>
+      {% endif %}
     </li>
     <!-- Menu Body -->
     <!--<li class="user-body">
@@ -29,11 +34,17 @@
     </li>-->
     <!-- Menu Footer-->
     <li class="user-footer">
+      {% if show_profile_button %}
       <div class="pull-left">
-        <a href="javascript:menu_navigation('c_dashboard_main', 'view_customer_info', 'customer')" class="btn btn-default btn-flat">My Account</a>
+        {% if admin_profile_button %}
+          <a href="javascript:menu_navigation('c_dashboard_main', 'user_profile_edit_form', 'user')" class="btn btn-default btn-flat">My Account</a>
+        {% else %}
+          <a href="javascript:menu_navigation('c_dashboard_main', 'customer_profile_edit_form', 'customer')" class="btn btn-default btn-flat">Edit Profile</a>
+        {% endif %}
       </div>
+      {% endif %}
       <div class="pull-right">
-        <a href="logout.php" class="btn btn-default btn-flat">Sign out</a>
+        <a href="logout.php?reason=signout" class="btn btn-default btn-flat">Sign out</a>
       </div>
     </li>
   </ul>

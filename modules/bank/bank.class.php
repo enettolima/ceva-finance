@@ -3,11 +3,11 @@
  * All methods in this class are protected
  * @access protected
  */
-class Member {
+class Bank {
   /**
-  * Method to create a new member
+  * Method to create a new bank
   *
-  * Add a new member
+  * Add a new bank
   *
   * @url POST create
   * @smart-auto-routing false
@@ -17,37 +17,37 @@ class Member {
   function create($request_data) {
     //Validating data from the API call
     $this->_validate($request_data, "create");
-    $member = new Member();
+    $bank = new Bank();
     $db = DataConnection::readWrite();
     //$u = $db->user();
     $data = array();
     unset($request_data['fn']);
     unset($request_data['id']);
     foreach ($request_data as $key => $value) {
-      $member->$key = $value;
+      $bank->$key = $value;
       $data[$key] = $value;
     }
-    //$member->insert();
-    $result = $db->member()->insert($data);
+    //$bank->insert();
+    $result = $db->bank()->insert($data);
     if ($result) {
       //Preparing response
       $response = array();
       $response['code'] = 201;
-      $response['message'] = 'Member has been created!';
+      $response['message'] = 'Bank has been created!';
       $response['id'] = $result['id'];
       natural_set_message($response['message'], 'success');
       return $response;
     } else {
-      $error_message = 'Member could not be created!';
+      $error_message = 'Bank could not be created!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(500, $error_message);
     }
   }
 
   /**
-  * Method to fecth Member Record by ID
+  * Method to fecth Bank Record by ID
   *
-  * Fech a record for a specific member
+  * Fech a record for a specific bank
   * by ID
   *
   * @url GET byID/{id}
@@ -55,7 +55,7 @@ class Member {
   *
   * @access public
   * @throws 404 User not found for requested id
-  * @param int $id Member to be fetched
+  * @param int $id Bank to be fetched
   * @return mixed
   */
   function byID($id) {
@@ -68,7 +68,7 @@ class Member {
     //Get object by id
     //$this->loadSingle("id='{$id}'");
     $db = DataConnection::readOnly();
-    $q = $db->member[$id];
+    $q = $db->bank[$id];
     //If object not found throw an error
     if(count($q) > 0) {
       $result['code'] = 200;
@@ -79,14 +79,14 @@ class Member {
       $this->affected 		 = 1;
       return $result;
     }else{
-      $error_message = 'Member not found!';
+      $error_message = 'Bank not found!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(404, $error_message);
     }
   }
 
   /**
-  * Method to fecth All Members
+  * Method to fecth All Banks
   *
   * Fech all records from the database
   *
@@ -94,27 +94,27 @@ class Member {
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 Member not found
+  * @throws 404 Bank not found
   * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
-    $q = $db->member();
+    $q = $db->bank();
     if(count($q) > 0) {
       foreach($q as $id => $q){
         $res[] = $q;
       }
       return $res;
     }else{
-      natural_set_message('Member not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'Member not found');
+      natural_set_message('Bank not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Bank not found');
     }
   }
 
   /**
-  * Method to Update member information
+  * Method to Update bank information
   *
-  * Update member on database
+  * Update bank on database
   *
   * @url PUT update
   * @smart-auto-routing false
@@ -127,7 +127,7 @@ class Member {
     $response = array();
     $db = DataConnection::readWrite();
     $id = $request_data['id'];
-    $q  = $db->member[$id];
+    $q  = $db->bank[$id];
     unset($request_data['fn']);
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
@@ -136,49 +136,49 @@ class Member {
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
-        $response['message'] = 'Member has been updated!';
+        $response['message'] = 'Bank has been updated!';
         natural_set_message($response['message'], 'success');
       }else{
         //Could not update record! maybe the data is the same.
         $response['code'] = 500;
-        $response['message'] = 'Could not update Member at this time!';
+        $response['message'] = 'Could not update Bank at this time!';
         natural_set_message($response['message'], 'error');
         throw new Luracast\Restler\RestException($response['code'], $response['message']);
       }
       return $response;
     }else{
-      natural_set_message('Member not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'Member not found');
+      natural_set_message('Bank not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Bank not found');
     }
   }
 
   /**
-  * Method to delete a member
+  * Method to delete a bank
   *
-  * Delete member from database
+  * Delete bank from database
   *
   * @url DELETE delete
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 Member not found
+  * @throws 404 Bank not found
   * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
-    $q = $db->member[$id];
+    $q = $db->bank[$id];
 
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
-      $response['message'] = 'Member has been removed!';
+      $response['message'] = 'Bank has been removed!';
       natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
-      $response['message'] = 'Member not found!';
+      $response['message'] = 'Bank not found!';
       natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;

@@ -11,7 +11,7 @@
             "homepage": "http://www.opensourcemind.net",
             "role": "Developer"
         }
-    ],   
+    ],
     "require":{
         "twig\/twig":"1.*",
         "luracast\/restler":"3.*",

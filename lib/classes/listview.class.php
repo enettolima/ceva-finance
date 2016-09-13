@@ -52,10 +52,10 @@ function build_pager($function, $module, $pager_total, $limit, $page = 1, $pager
   for ($i = 1; $i <= $quantity; $i++) {
     // theme_link_process_information($text, $formname, $func, $module, $options = array())
     // <a href="javascript:proccess_information('user_list_pager', 'user_list_pager', 'user', null, 'pager_current|1', null, null);">2</a>
-    $items[$i]['link'] = theme_link_process_information($i, $function . '_table_info', $function . '_pager', $module, array('extra_value' => 'page|' . $i));
-    $items[$i]['class'] = 'pager-item';
+    $items[$i]['link'] = theme_link_process_information($i, $function . '_table_info', $function . '_pager', $module, array('extra_value' => 'page|' . $i,'class' => 'page-link'));
+    $items[$i]['class'] = 'page-item';
     if ($i == $page) {
-      $items[$i]['class'] = 'active';
+      $items[$i]['class'] = 'page-item active';
     }
   }
 

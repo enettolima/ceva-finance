@@ -310,8 +310,6 @@ function dashboard_content(){
 }
 
 function dashboard_setup($data) {
-  print_debug($data);
-  exit;
     $user = new User();
     $user->byID($_SESSION['log_id']);
     $dash_type = 'dashboard_' . $data['dashboard_type'];
@@ -379,35 +377,40 @@ function dashboard_setup($data) {
 
 
 function dashboard_widgets($data) {
+  // Get the Dashboard Type
+    $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+    if($_SESSION['dash_type'] == 2){
+      $sql = "select dashboard from church_link
+                    where church_id = ".$_SESSION['log_church_id']." and user_id = ".$_SESSION['log_id'];
+    }else{
+      $sql = "select dashboard from user
+                   where user_id = ".$_SESSION['log_id'];
+    }
+    $conn = $pdo->prepare($sql);
+    $conn->execute();
+    $u = $conn->fetchAll(PDO::FETCH_ASSOC);
+    $currentset = json_decode(unserialize($u[0]['dashboard']), true);
 	  $dash = array();
-    $user = new User();
-    $user->byID($_SESSION['log_id']);
 		global $twig;
-    if ($user->dashboard) {
-        // Build the dashboard accordingly the dashboard type and if there is something recorded in his desktop
-        $user_widgets = $user->dashboard;
-        //print_debug($user->dashboard);
-        //exit;
-				if ($user_widgets) {
-						$db = DataConnection::readOnly();
-						$widgets = $db->dashboard_widgets();
-            foreach ($user_widgets as $user){
-              foreach($widgets as $widget){
-                   if($user['id'] == $widget['id'] && $widget['enabled'] == 1){
-                     $dash[0] .= $twig->render('dashboard-widget.html',
-                                                 array(
-                                                     'icon' => $widget['icon'],
-                                                     'widget_id' => $widget['id'],
-                                                     'widget_title' => $widget['title'],
-                                                     'widget_function' => $widget['widget_function'],
-                                                     'x'       => $user['x'],
-                                                     'y'       => $user['y'],
-                                                     'width'   => $user['width'],
-                                                     'height'  => $user['height']
-                                                 ));
-                   }
-              }
-            }
+    if ($currentset) {
+				$db = DataConnection::readOnly();
+				$widgets = $db->dashboard_widgets();
+        foreach ($currentset as $current){
+          foreach($widgets as $widget){
+               if($current['id'] == $widget['id'] && $widget['enabled'] == 1){
+                 $dash[0] .= $twig->render('dashboard-widget.html',
+                                             array(
+                                                 'icon' => $widget['icon'],
+                                                 'widget_id' => $widget['id'],
+                                                 'widget_title' => $widget['title'],
+                                                 'widget_function' => $widget['widget_function'],
+                                                 'x'       => $current['x'],
+                                                 'y'       => $current['y'],
+                                                 'width'   => $current['width'],
+                                                 'height'  => $current['height']
+                                             ));
+               }
+          }
         }
     } else {
         // Return the message to configure his/her dashboard
@@ -422,22 +425,27 @@ function dashboard_widgets($data) {
 function dashboard_setup_form() {
     // Get the Dashboard Type
     $dashboard_type = $_SESSION['dash_type'];
-
 		$db = DataConnection::readOnly();
 		$widgets = $db->dashboard_widgets()
-									->where('enabled',1);
-
+									->where('enabled',1)
+                  ->and('dash_type',$_SESSION['dash_type']);
     if (count($widgets) > 0) {
-        // Retrieve the widgets already selected by the user
-        $user = new User();
-        $user->byID($_SESSION['log_id']);
-        if ($user->dashboard) {
-            $user_widgets = $user->dashboard;
+        $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+        if($_SESSION['log_church_id']){
+          $sql = "select dashboard from church_link
+                        where church_id = ".$_SESSION['log_church_id']." and user_id = ".$_SESSION['log_id'];
+        }else{
+          $sql = "select dashboard from user
+      								 where user_id = ".$_SESSION['log_id'];
         }
+        $conn = $pdo->prepare($sql);
+        $conn->execute();
+    		$u = $conn->fetchAll(PDO::FETCH_ASSOC);
+        $currentset = json_decode(unserialize($u[0]['dashboard']), true);
         $checked = '';
         foreach ($widgets as $widget){
-          foreach($user_widgets as $user){
-              if($user['id'] == $widget['id']){
+          foreach($currentset as $current){
+              if($current['id'] == $widget['id']){
                  $checked = 'checked="checked"';
                  break;
               }else{
@@ -460,6 +468,9 @@ function dashboard_setup_form() {
             )
         );
     }
+    unset($pdo);
+    unset($conn);
+    unset($sql);
     return $form;
 }
 
@@ -484,10 +495,19 @@ function dashboard_update_list($data) {
 
 function dashboard_user_update($data) {
     //print_debug(json_decode(file_get_contents("php://input")));
-    $user = new User();
-    $user->byID($_SESSION['log_id']);
-    $user->dashboard = file_get_contents("php://input");
-    $user->update($_SESSION['log_id']);
+    $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+    if($_SESSION['dash_type'] == 2){
+      $sql = "update church_link set dashboard = '".serialize(file_get_contents("php://input"))."'
+  								 where church_id = ".$_SESSION['log_church_id']." and user_id = ".$_SESSION['log_id'];
+    }else{
+      $sql = "update user set dashboard = '".serialize(file_get_contents("php://input"))."'
+  								 where user_id = ".$_SESSION['log_id'];
+    }
+    $conn = $pdo->prepare($sql);
+    $conn->execute();
+    unset($pdo);
+    unset($conn);
+    unset($sql);
 }
 
 ?>

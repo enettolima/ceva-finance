@@ -19,21 +19,22 @@ class User {
 	 */
 
 	public function authenticate($username,$password, $api_call=false) {
-	  $db = DataConnection::readOnly();
-	  $user = $db->user()
-    		->where("username", $username)
-				->and("status > ?", 0)
-				->limit(1)
-				->fetch();
-
+		$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+		$sql = "select u.*, al.access_level
+								 from church_link cl
+								 left outer join user u on u.id = cl.user_id
+								 left outer join acl_levels al on al.id = cl.acl_levels_id
+								 where u.username = '".$username."'";
+		$conn = $pdo->prepare($sql);
+		$conn->execute();
+		$user = $conn->fetchAll(PDO::FETCH_ASSOC);
 		if(count($user)>0){
 			//Authenticating password
 			$pwHasher = new Phpass\PasswordHash(8,false);
-			$passed = $pwHasher->CheckPassword($password, $user['password']);
-
+			$passed = $pwHasher->CheckPassword($password, $user[0]['password']);
 			if($passed){
 				$res = array();
-				foreach ($user as $field => $value){
+				foreach ($user[0] as $field => $value){
 					if($field != "password"){
 						$res[$field] = $value;
 					}
@@ -41,7 +42,6 @@ class User {
 				}
 				$res['granted'] = true;
 				$this->granted  = true;
-
 				return $res;
 			}else{
 				$this->granted = false;
@@ -123,34 +123,41 @@ class User {
 	 */
 
 	public function byID($id) {
-		$db = DataConnection::readOnly();
-		$u = $db->user[$id];
+		$pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
 
+		$sql = 'select u.*, al.access_level
+								 from church_link cl
+								 left outer join user u on u.id = cl.user_id
+								 left outer join acl_levels al on al.id = cl.acl_levels_id
+								 where cl.user_id = '.$id;
+		$conn = $pdo->prepare($sql);
+		$conn->execute();
+		$u = $conn->fetchAll(PDO::FETCH_ASSOC);
 		if(count($u) > 0) {
 				//setting object properties for in app use
-				$this->id 					 = $u['id'];
-				$this->file_id       = $u['file_id'];
-				$this->first_name    = $u['first_name'];
-				$this->last_name     = $u['last_name'];
-				$this->username      = $u['username'];
-				$this->email         = $u['email'];
-				$this->access_level  = $u['access_level'];
-				$this->status        = $u['status'];
-				$this->language      = $u['preferred_language'];
-				$this->dashboard     = json_decode(unserialize($u['dashboard']), true);
+				$this->id 					 = $u[0]['id'];
+				$this->file_id       = $u[0]['file_id'];
+				$this->first_name    = $u[0]['first_name'];
+				$this->last_name     = $u[0]['last_name'];
+				$this->username      = $u[0]['username'];
+				$this->email         = $u[0]['email'];
+				$this->access_level  = $u[0]['access_level'];
+				$this->status        = $u[0]['status'];
+				$this->language      = $u[0]['preferred_language'];
+				$this->dashboard     = json_decode(unserialize($u[0]['dashboard']), true);
 				$this->affected 		 = 1;
 
 				//setting response for api calls
-				$res = array( 'id'					 => $u['id'],
-											'file_id'      => $u['file_id'],
-										  'first_name'   => $u['first_name'],
-											'last_name'    => $u['last_name'],
-											'username'     => $u['username'],
-											'email'        => $u['email'],
-											'access_level' => $u['access_level'],
-											'status'       => $u['status'],
-											'language'     => $u['preferred_language'],
-											'dashboard'    => json_decode(unserialize($u['dashboard']), true));
+				$res = array( 'id'					 => $u[0]['id'],
+											'file_id'      => $u[0]['file_id'],
+										  'first_name'   => $u[0]['first_name'],
+											'last_name'    => $u[0]['last_name'],
+											'username'     => $u[0]['username'],
+											'email'        => $u[0]['email'],
+											'access_level' => $u[0]['access_level'],
+											'status'       => $u[0]['status'],
+											'language'     => $u[0]['preferred_language'],
+											'dashboard'    => json_decode(unserialize($u[0]['dashboard']), true));
 			return $res;
 		}else{
 		   throw new Luracast\Restler\RestException(404, 'User not found');
@@ -293,7 +300,6 @@ class User {
 				'last_name'    => $this->last_name,
 				'username'     => $this->username,
 				'email'        => $this->email,
-				'access_level' => $this->access_level,
 				'status'       => $this->status,
 				'language'     => $this->preferred_language,
 				'dashboard'    => serialize($this->dashboard));

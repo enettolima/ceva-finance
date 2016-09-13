@@ -27,8 +27,11 @@ a.disabled {
 }
 
 li {
-  
+
 }
+
+i.fa.fa-circle.red {color: red;}
+i.fa.fa-circle.dgreen {color: #009E41;}
 /**
  * Layouts
  */
