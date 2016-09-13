@@ -4,84 +4,88 @@
  */
 function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 	$view = new ListView();
+  // Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'u.id = ' . $row_id;
+  } else {
+    $row_id = 'u.id != 0';
+  }
 
-	// Row Id for update only row
-	if (!empty($row_id)) {
-		$row_id = 'id = ' . $row_id;
-	} else {
-		$row_id = 'id != 0';
-	}
+  // Sort
+  if (empty($sort)) {
+    $sort = 'u.first_name, u.last_name asc';
+  }
 
-	// Sort
-	if (empty($sort)) {
-		$sort = 'first_name ASC';
-	}
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
 
-	$limit = PAGER_LIMIT; // PAGER_LIMIT
-	$offset = ($page * $limit) - $limit;
-	$db = DataConnection::readOnly();
-	$total_records = 0;
-
-	// Search
-	if (!empty($search)) {
-		$search_fields = array('id', 'first_name', 'last_name', 'username');
-		$exceptions = array();
-		$search_query = build_search_query($search, $search_fields, $exceptions);
-
-		$users = $db->user()
-		->where($row_id)
-		->and($search_query)
-		->order($sort)
-		->limit($limit, $offset);
-	} else {
-		$users = $db->user()
-		->where($row_id)
-		->order($sort)
-		->limit($limit, $offset);
-	}
-
-	$total_records = $db->user()->count("*");
-	if (count($users) > 0) {
+  // Search
+  if (!empty($search)) {
+      $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.phone_number', 'u.email');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join users u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 1 and '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  } else {
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join users u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 1 order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  }
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
+	if (count($records)) {
 		// Building the header with sorter
 		$headers[] = array('display' => 'Id', 'field' => 'id');
 		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
 		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
-		$headers[] = array('display' => 'Username', 'field' => 'username');
+		$headers[] = array('display' => 'User Name', 'field' => 'username');
+		$headers[] = array('display' => 'Email', 'field' => 'email');
+		$headers[] = array('display' => 'Rule', 'field' => 'description');
+		$headers[] = array('display' => 'Level', 'field' => 'access_level');
 		$headers[] = array('display' => 'Edit', 'field' => NULL);
 		$headers[] = array('display' => 'Delete', 'field' => NULL);
-		$headers = build_sort_header('user_list', 'user', $headers, $sort);
+		$headers = build_sort_header('church_list', 'church', $headers, $sort);
 
-		$i = 0;
-		foreach( $users as $user ){
-			$class = "";
-			if($user['username'] == "admin"){
-				$class = "disabled";
-			}
-			//This is important for the row update
-			$rows[$i]['row_id'] 		= $user['id'];
-			$rows[$i]['id'] 				= $user['id'];
-			$rows[$i]['first_name']	= $user['first_name'];
-			$rows[$i]['last_name'] 	= $user['last_name'];
-			$rows[$i]['username'] 	= $user['username'];
-			$rows[$i]['edit'] 			= theme_link_process_information('',
+		foreach( $records as $record ){
+			$j = $i + 1;
+			//This is important for the row update/delete
+			$rows[$j]['row_id']   = $record['id'];
+			/////////////////////////////////////////////
+			$rows[$j]['id']       = $record['id'];
+			$rows[$j]['first_name']     = $record['first_name'];
+			$rows[$j]['last_name'] = $record['last_name'];
+			$rows[$j]['username']  = $record['username'];
+			$rows[$j]['email']  = $record['email'];
+			$rows[$j]['description'] = $record['description'];
+			$rows[$j]['level'] = $record['access_level'];
+			$rows[$j]['edit'] 			= theme_link_process_information('',
 				'user_edit_form',
 				'user_edit_form',
 				'user',
-				array('extra_value' => 'user_id|' . $user['id'],
+				array('extra_value' => 'user_id|' . $record['id'],
 					'response_type' => 'modal',
 					'icon' => constant("NATURAL_EDIT_ICON")));
-			$rows[$i]['delete'] 		= theme_link_process_information('',
+			$rows[$j]['delete'] 		= theme_link_process_information('',
 				'user_delete_form',
 				'user_delete_form',
 				'user',
-				array('extra_value' => 'user_id|' . $user['id'],
+				array('extra_value' => 'user_id|' . $record['id'],
 					'response_type' => 'modal',
 					'icon' => constant("NATURAL_REMOVE_ICON"),
 					'class' => $class));
-			$i++;
+	    $i++;
 		}
 	}
-
 	//count($users)
 	$options = array(
 		'show_headers' => TRUE,
@@ -109,6 +113,478 @@ function user_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
   return $listview;
 }
+
+/**
+ * User List.
+ */
+function user_list_visitors($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+	$view = new ListView();
+  // Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'u.id = ' . $row_id;
+  } else {
+    $row_id = 'u.id != 0';
+  }
+
+  // Sort
+  if (empty($sort)) {
+    $sort = 'u.first_name, u.last_name asc';
+  }
+
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+
+  // Search
+  if (!empty($search)) {
+      $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.phone_number', 'u.email');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 1 and '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  } else {
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 1 order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  }
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
+	if (count($records)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
+		$headers[] = array('display' => 'User Name', 'field' => 'username');
+		$headers[] = array('display' => 'Email', 'field' => 'email');
+		$headers[] = array('display' => 'Phone', 'field' => 'phone_number');
+		$headers[] = array('display' => 'Rule', 'field' => 'description');
+		$headers[] = array('display' => 'Level', 'field' => 'access_level');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('user_list_visitors', 'user', $headers, $sort);
+
+		foreach( $records as $record ){
+			$j = $i + 1;
+			//This is important for the row update/delete
+			$rows[$j]['row_id']   = $record['id'];
+			/////////////////////////////////////////////
+			$rows[$j]['id']       = $record['id'];
+			$rows[$j]['first_name']     = $record['first_name'];
+			$rows[$j]['last_name'] = $record['last_name'];
+			$rows[$j]['username']  = $record['username'];
+			$rows[$j]['email']  = $record['email'];
+			$rows[$j]['phone_number']  = $record['phone_number'];
+			$rows[$j]['description'] = $record['description'];
+			$rows[$j]['level'] = $record['access_level'];
+			$rows[$j]['edit'] 			= theme_link_process_information('',
+				'user_edit_form',
+				'user_edit_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_EDIT_ICON")));
+			$rows[$j]['delete'] 		= theme_link_process_information('',
+				'user_delete_form',
+				'user_delete_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_REMOVE_ICON"),
+					'class' => $class));
+	    $i++;
+		}
+	}
+	//count($users)
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Visitors List'),
+		'page_subtitle' => translate('Manage Visitors'),
+		'empty_message' => translate('No user found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Visitor'),
+			'user_create_form',
+			'user_create_form',
+			'user',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('user_list_visitors', 'user', $total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'user_list_visitors',
+		'module' => 'user',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+	$listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+/**
+ * User List.
+ */
+function user_list_members($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+	$view = new ListView();
+  // Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'u.id = ' . $row_id;
+  } else {
+    $row_id = 'u.id != 0';
+  }
+
+  // Sort
+  if (empty($sort)) {
+    $sort = 'u.first_name, u.last_name asc';
+  }
+
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+
+  // Search
+  if (!empty($search)) {
+      $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.phone_number', 'u.email');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 2 and '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  } else {
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id = 2 order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  }
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
+	if (count($records)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
+		$headers[] = array('display' => 'User Name', 'field' => 'username');
+		$headers[] = array('display' => 'Email', 'field' => 'email');
+		$headers[] = array('display' => 'Phone', 'field' => 'phone_number');
+		$headers[] = array('display' => 'Rule', 'field' => 'description');
+		$headers[] = array('display' => 'Level', 'field' => 'access_level');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('user_list_members', 'user', $headers, $sort);
+
+		foreach( $records as $record ){
+			$j = $i + 1;
+			//This is important for the row update/delete
+			$rows[$j]['row_id']   = $record['id'];
+			/////////////////////////////////////////////
+			$rows[$j]['id']       = $record['id'];
+			$rows[$j]['first_name']     = $record['first_name'];
+			$rows[$j]['last_name'] = $record['last_name'];
+			$rows[$j]['username']  = $record['username'];
+			$rows[$j]['email']  = $record['email'];
+			$rows[$j]['phone_number']  = $record['phone_number'];
+			$rows[$j]['description'] = $record['description'];
+			$rows[$j]['level'] = $record['access_level'];
+			$rows[$j]['edit'] 			= theme_link_process_information('',
+				'user_edit_form',
+				'user_edit_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_EDIT_ICON")));
+			$rows[$j]['delete'] 		= theme_link_process_information('',
+				'user_delete_form',
+				'user_delete_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_REMOVE_ICON"),
+					'class' => $class));
+	    $i++;
+		}
+	}
+	//count($users)
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Members List'),
+		'page_subtitle' => translate('Manage Members'),
+		'empty_message' => translate('No member found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Member'),
+			'user_create_form',
+			'user_create_form',
+			'user',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('user_list_members', 'user', $total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'user_list_members',
+		'module' => 'user',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+	$listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+
+/**
+ * User List.
+ */
+function user_list_leaders($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+	$view = new ListView();
+  // Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'u.id = ' . $row_id;
+  } else {
+    $row_id = 'u.id != 0';
+  }
+
+  // Sort
+  if (empty($sort)) {
+    $sort = 'u.first_name, u.last_name asc';
+  }
+
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+
+  // Search
+  if (!empty($search)) {
+      $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.phone_number', 'u.email');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id > 2 and '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  } else {
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and cl.acl_levels_id > 2 order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  }
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
+	if (count($records)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
+		$headers[] = array('display' => 'User Name', 'field' => 'username');
+		$headers[] = array('display' => 'Email', 'field' => 'email');
+		$headers[] = array('display' => 'Phone', 'field' => 'phone_number');
+		$headers[] = array('display' => 'Rule', 'field' => 'description');
+		$headers[] = array('display' => 'Level', 'field' => 'access_level');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('user_list_leaders', 'user', $headers, $sort);
+
+		foreach( $records as $record ){
+			$j = $i + 1;
+			//This is important for the row update/delete
+			$rows[$j]['row_id']   = $record['id'];
+			/////////////////////////////////////////////
+			$rows[$j]['id']       = $record['id'];
+			$rows[$j]['first_name']     = $record['first_name'];
+			$rows[$j]['last_name'] = $record['last_name'];
+			$rows[$j]['username']  = $record['username'];
+			$rows[$j]['email']  = $record['email'];
+			$rows[$j]['phone_number']  = $record['phone_number'];
+			$rows[$j]['description'] = $record['description'];
+			$rows[$j]['level'] = $record['access_level'];
+			$rows[$j]['edit'] 			= theme_link_process_information('',
+				'user_edit_form',
+				'user_edit_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_EDIT_ICON")));
+			$rows[$j]['delete'] 		= theme_link_process_information('',
+				'user_delete_form',
+				'user_delete_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_REMOVE_ICON"),
+					'class' => $class));
+	    $i++;
+		}
+	}
+	//count($users)
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Leaders List'),
+		'page_subtitle' => translate('Manage Leaders'),
+		'empty_message' => translate('No leader found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Leader'),
+			'user_create_form',
+			'user_create_form',
+			'user',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('user_list_leaders', 'user', $total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'user_list_leaders',
+		'module' => 'user',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+	$listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+
+/**
+ * User List.
+ */
+function user_list_vendors($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
+	$view = new ListView();
+  // Row Id for update only row
+  if (!empty($row_id)) {
+    $row_id = 'u.id = ' . $row_id;
+  } else {
+    $row_id = 'u.id != 0';
+  }
+
+  // Sort
+  if (empty($sort)) {
+    $sort = 'u.first_name, u.last_name asc';
+  }
+
+  $limit = PAGER_LIMIT;
+  $offset = ($page * $limit) - $limit;
+  $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
+
+  // Search
+  if (!empty($search)) {
+      $search_fields = array('u.id', 'u.first_name', 'u.last_name', 'u.phone_number', 'u.email');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and u.vendor = 1 and '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  } else {
+      $sql = 'select SQL_CALC_FOUND_ROWS  u.`id`, u.`first_name`, u.`last_name`, u.`username`, u.`email`, u.`phone_number`, al.description, al.access_level
+						       from church_link cl
+									 left outer join user u on u.id = cl.user_id
+									 left outer join acl_levels al on al.id = cl.acl_levels_id
+						       where cl.church_id = '.$_SESSION['log_church_id'].' and u.vendor = 1 order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
+  }
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
+	if (count($records)) {
+		// Building the header with sorter
+		$headers[] = array('display' => 'Id', 'field' => 'id');
+		$headers[] = array('display' => 'First Name', 'field' => 'first_name');
+		$headers[] = array('display' => 'Last Name', 'field' => 'last_name');
+		$headers[] = array('display' => 'User Name', 'field' => 'username');
+		$headers[] = array('display' => 'Email', 'field' => 'email');
+		$headers[] = array('display' => 'Phone', 'field' => 'phone_number');
+		$headers[] = array('display' => 'Rule', 'field' => 'description');
+		$headers[] = array('display' => 'Level', 'field' => 'access_level');
+		$headers[] = array('display' => 'Edit', 'field' => NULL);
+		$headers[] = array('display' => 'Delete', 'field' => NULL);
+		$headers = build_sort_header('user_list_vendors', 'user', $headers, $sort);
+
+		foreach( $records as $record ){
+			$j = $i + 1;
+			//This is important for the row update/delete
+			$rows[$j]['row_id']   = $record['id'];
+			/////////////////////////////////////////////
+			$rows[$j]['id']       = $record['id'];
+			$rows[$j]['first_name']     = $record['first_name'];
+			$rows[$j]['last_name'] = $record['last_name'];
+			$rows[$j]['username']  = $record['username'];
+			$rows[$j]['email']  = $record['email'];
+			$rows[$j]['phone_number']  = $record['phone_number'];
+			$rows[$j]['description'] = $record['description'];
+			$rows[$j]['level'] = $record['access_level'];
+			$rows[$j]['edit'] 			= theme_link_process_information('',
+				'user_edit_form',
+				'user_edit_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_EDIT_ICON")));
+			$rows[$j]['delete'] 		= theme_link_process_information('',
+				'user_delete_form',
+				'user_delete_form',
+				'user',
+				array('extra_value' => 'user_id|' . $record['id'],
+					'response_type' => 'modal',
+					'icon' => constant("NATURAL_REMOVE_ICON"),
+					'class' => $class));
+	    $i++;
+		}
+	}
+	//count($users)
+	$options = array(
+		'show_headers' => TRUE,
+		'page_title' => translate('Vendors List'),
+		'page_subtitle' => translate('Manage Vendors'),
+		'empty_message' => translate('No vendor found!'),
+		'table_prefix' => theme_link_process_information(translate('Create New Vendor'),
+			'user_create_form',
+			'user_create_form',
+			'user',
+			array('response_type' => 'modal')),
+		'pager_items' => build_pager('user_list_vendors', 'user', $total_records, $limit, $page),
+		'page' => $page,
+		'sort' => $sort,
+		'search' => $search,
+		'show_search' => TRUE,
+		'function' => 'user_list_vendors',
+		'module' => 'user',
+		'update_row_id' => '',
+	  'table_form_id' => '',
+		'table_form_process' => '',
+	);
+
+	$listview = $view->build($rows, $headers, $options);
+
+  return $listview;
+}
+
+
 
 /**
  * User Create Form.

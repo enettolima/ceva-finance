@@ -3,11 +3,11 @@
  * All methods in this class are protected
  * @access protected
  */
-class WithdrawType {
+class Transaction {
   /**
-  * Method to create a new withdraw_type
+  * Method to create a new transaction
   *
-  * Add a new withdraw_type
+  * Add a new transaction
   *
   * @url POST create
   * @smart-auto-routing false
@@ -17,37 +17,37 @@ class WithdrawType {
   function create($request_data) {
     //Validating data from the API call
     $this->_validate($request_data, "create");
-    $withdraw_type = new WithdrawType();
+    $transaction = new Transaction();
     $db = DataConnection::readWrite();
     //$u = $db->user();
     $data = array();
     unset($request_data['fn']);
     unset($request_data['id']);
     foreach ($request_data as $key => $value) {
-      $withdraw_type->$key = $value;
+      $transaction->$key = $value;
       $data[$key] = $value;
     }
-    //$withdraw_type->insert();
-    $result = $db->withdraw_type()->insert($data);
+    //$transaction->insert();
+    $result = $db->transaction()->insert($data);
     if ($result) {
       //Preparing response
       $response = array();
       $response['code'] = 201;
-      $response['message'] = 'WithdrawType has been created!';
+      $response['message'] = 'Transaction has been created!';
       $response['id'] = $result['id'];
       natural_set_message($response['message'], 'success');
       return $response;
     } else {
-      $error_message = 'WithdrawType could not be created!';
+      $error_message = 'Transaction could not be created!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(500, $error_message);
     }
   }
 
   /**
-  * Method to fecth WithdrawType Record by ID
+  * Method to fecth Transaction Record by ID
   *
-  * Fech a record for a specific withdraw_type
+  * Fech a record for a specific transaction
   * by ID
   *
   * @url GET byID/{id}
@@ -55,7 +55,7 @@ class WithdrawType {
   *
   * @access public
   * @throws 404 User not found for requested id
-  * @param int $id WithdrawType to be fetched
+  * @param int $id Transaction to be fetched
   * @return mixed
   */
   function byID($id) {
@@ -68,7 +68,7 @@ class WithdrawType {
     //Get object by id
     //$this->loadSingle("id='{$id}'");
     $db = DataConnection::readOnly();
-    $q = $db->withdraw_type[$id];
+    $q = $db->transaction[$id];
     //If object not found throw an error
     if(count($q) > 0) {
       $result['code'] = 200;
@@ -79,14 +79,14 @@ class WithdrawType {
       $this->affected 		 = 1;
       return $result;
     }else{
-      $error_message = 'WithdrawType not found!';
+      $error_message = 'Transaction not found!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(404, $error_message);
     }
   }
 
   /**
-  * Method to fecth All WithdrawTypes
+  * Method to fecth All Transactions
   *
   * Fech all records from the database
   *
@@ -94,27 +94,27 @@ class WithdrawType {
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 WithdrawType not found
+  * @throws 404 Transaction not found
   * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
-    $q = $db->withdraw_type();
+    $q = $db->transaction();
     if(count($q) > 0) {
       foreach($q as $id => $q){
         $res[] = $q;
       }
       return $res;
     }else{
-      natural_set_message('WithdrawType not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'WithdrawType not found');
+      natural_set_message('Transaction not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Transaction not found');
     }
   }
 
   /**
-  * Method to Update withdraw_type information
+  * Method to Update transaction information
   *
-  * Update withdraw_type on database
+  * Update transaction on database
   *
   * @url PUT update
   * @smart-auto-routing false
@@ -127,7 +127,7 @@ class WithdrawType {
     $response = array();
     $db = DataConnection::readWrite();
     $id = $request_data['id'];
-    $q  = $db->withdraw_type[$id];
+    $q  = $db->transaction[$id];
     unset($request_data['fn']);
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
@@ -136,49 +136,49 @@ class WithdrawType {
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
-        $response['message'] = 'WithdrawType has been updated!';
+        $response['message'] = 'Transaction has been updated!';
         natural_set_message($response['message'], 'success');
       }else{
         //Could not update record! maybe the data is the same.
         $response['code'] = 500;
-        $response['message'] = 'Could not update WithdrawType at this time!';
+        $response['message'] = 'Could not update Transaction at this time!';
         natural_set_message($response['message'], 'error');
         throw new Luracast\Restler\RestException($response['code'], $response['message']);
       }
       return $response;
     }else{
-      natural_set_message('WithdrawType not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'WithdrawType not found');
+      natural_set_message('Transaction not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Transaction not found');
     }
   }
 
   /**
-  * Method to delete a withdraw_type
+  * Method to delete a transaction
   *
-  * Delete withdraw_type from database
+  * Delete transaction from database
   *
   * @url DELETE delete
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 WithdrawType not found
+  * @throws 404 Transaction not found
   * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
-    $q = $db->withdraw_type[$id];
+    $q = $db->transaction[$id];
 
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
-      $response['message'] = 'WithdrawType has been removed!';
+      $response['message'] = 'Transaction has been removed!';
       natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
-      $response['message'] = 'WithdrawType not found!';
+      $response['message'] = 'Transaction not found!';
       natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;
@@ -202,8 +202,8 @@ class WithdrawType {
      * Add more fields as needed
      */
     if ($type != "delete") {
-      if (!$data['name']) {
-        $error[] = 'Field name is required!';
+      if (!$data['church_id']) {
+        $error[] = 'Field church_id is required!';
       }
     }
 

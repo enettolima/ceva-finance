@@ -23,7 +23,16 @@
     text-align: center;
     font-family: sans-serif;
     font-weight: bold;
-    color: indianred;
+    color: white;
+    padding-top: 30px;
+}
+
+.big-number{
+    font-size: 120px;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: white;
     padding-top: 30px;
 }
 

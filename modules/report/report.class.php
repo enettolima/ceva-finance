@@ -1,354 +1,221 @@
 <?php
-
+/**
+ * All methods in this class are protected
+ * @access protected
+ */
 class Report {
-	/**
-	 * Method to fetch Authenticated user
-	 *
-	 * Fech a record for a specific authenticated user
-	 * by Username and password
-	 *
-	 * @url GET authenticate/{username}/{password}
-	 * @url POST authenticate
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @throws 403 User cannot be authenticated
-	 * @param string $username User to be fetched
-	 * @param string $password Authentication Password
-	 * @return mixed
-	 */
+  /**
+  * Method to create a new report
+  *
+  * Add a new report
+  *
+  * @url POST create
+  * @smart-auto-routing false
+  *
+  * @access public
+  */
+  function create($request_data) {
+    //Validating data from the API call
+    $this->_validate($request_data, "create");
+    $report = new Report();
+    $db = DataConnection::readWrite();
+    //$u = $db->user();
+    $data = array();
+    unset($request_data['fn']);
+    unset($request_data['id']);
+    foreach ($request_data as $key => $value) {
+      $report->$key = $value;
+      $data[$key] = $value;
+    }
+    //$report->insert();
+    $result = $db->report()->insert($data);
+    if ($result) {
+      //Preparing response
+      $response = array();
+      $response['code'] = 201;
+      $response['message'] = 'Report has been created!';
+      $response['id'] = $result['id'];
+      natural_set_message($response['message'], 'success');
+      return $response;
+    } else {
+      $error_message = 'Report could not be created!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(500, $error_message);
+    }
+  }
 
-	public function authenticate($username,$password, $api_call=false) {
-	  $db = DataConnection::readOnly();
-	  $user = $db->user()
-    		->where("username", $username)
-				->and("status > ?", 0)
-				->limit(1)
-				->fetch();
+  /**
+  * Method to fecth Report Record by ID
+  *
+  * Fech a record for a specific report
+  * by ID
+  *
+  * @url GET byID/{id}
+  * @smart-auto-routing false
+  *
+  * @access public
+  * @throws 404 User not found for requested id
+  * @param int $id Report to be fetched
+  * @return mixed
+  */
+  function byID($id) {
+    //If id is null
+    if (is_null($id)) {
+      $error_message = 'Parameter id is missing or invalid!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(400, $error_message);
+    }
+    //Get object by id
+    //$this->loadSingle("id='{$id}'");
+    $db = DataConnection::readOnly();
+    $q = $db->report[$id];
+    //If object not found throw an error
+    if(count($q) > 0) {
+      $result['code'] = 200;
+      foreach($q as $key => $value){
+        $result[$key] = $value;
+        $this->$key = $value;
+      }
+      $this->affected 		 = 1;
+      return $result;
+    }else{
+      $error_message = 'Report not found!';
+      natural_set_message($error_message, 'error');
+      throw new Luracast\Restler\RestException(404, $error_message);
+    }
+  }
 
-		if(count($user)>0){
-			//Authenticating password
-			$pwHasher = new Phpass\PasswordHash(8,false);
-			$passed = $pwHasher->CheckPassword($password, $user['password']);
-
-			if($passed){
-				$res = array();
-				foreach ($user as $field => $value){
-					if($field != "password"){
-						$res[$field] = $value;
-					}
-					$this->{$field} = $value ;
-				}
-				$res['granted'] = true;
-				$this->granted  = true;
-
-				return $res;
-			}else{
-				$this->granted = false;
-				if($api_call){
-					throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');
-				}
-			}
-	  }else{
-			$this->granted = false;
-			if($api_call){
-				throw new Luracast\Restler\RestException(403, 'Unable to authenticate user');
-			}
-	  }
-	}
-
-	/**
-	 * Method to fecth all User Records
-	 *
-	 * Fech a record for all  Natural users
-	 *
-	 * @url GET fetchAll
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @throws 404 User not found for requested user id
-	 * @return mixed
-	 */
-
-	public function fetchAll() {
-		$db = DataConnection::readOnly();
-		$q = $db->user();
-
-		if(count($q) > 0) {
-			/*foreach($users as $id => $u){
-				//setting response for api calls
-				$res[$id]= array( 'id'			 => $u['id'],
-											'file_id'      => $u['file_id'],
-										  'first_name'   => $u['first_name'],
-											'last_name'    => $u['last_name'],
-											'username'     => $u['username'],
-											'email'        => $u['email'],
-											'access_level' => $u['access_level'],
-											'status'       => $u['status'],
-											'language'     => $u['preferred_language'],
-											'dashboard'    => unserialize($u['dashboard']));
-			}
-			return $res;
-			*/
-			foreach($q as $id => $val){
-				//Doing this loop to make sure we unserialize the dashboard widget fields
-				foreach($val as $k => $v){
-					if($k=="dashboard_1" || $k=="dashboard_2"){
-						$v = unserialize($v);
-					}
-					$arr[$k] = $v;
-				}
-				$res[$id] = $arr;
-			}
+  /**
+  * Method to fecth All Reports
+  *
+  * Fech all records from the database
+  *
+  * @url GET fetchAll
+  * @smart-auto-routing false
+  *
+  * @access public
+  * @throws 404 Report not found
+  * @return mixed
+  */
+  function fetchAll() {
+    $db = DataConnection::readOnly();
+    $q = $db->report();
+    if(count($q) > 0) {
+      foreach($q as $id => $q){
+        $res[] = $q;
+      }
       return $res;
-		}else{
-		   throw new Luracast\Restler\RestException(404, 'User not found');
-		}
-	}
+    }else{
+      natural_set_message('Report not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Report not found');
+    }
+  }
 
-
-	/**
-	 * Method to fecth User Record by database Id
-	 *
-	 * Fech a record for a specific Natural user
-	 * by database Id
-	 *
-	 * @url GET byID/{id}
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @throws 404 User not found for requested user id
-	 * @param string $userid User to be fetched
-	 * @return mixed
-	 */
-
-	public function byID($id) {
-		$db = DataConnection::readOnly();
-		$u = $db->user[$id];
-
-		if(count($u) > 0) {
-				//setting object properties for in app use
-				$this->id 					 = $u['id'];
-				$this->file_id       = $u['file_id'];
-				$this->first_name    = $u['first_name'];
-				$this->last_name     = $u['last_name'];
-				$this->username      = $u['username'];
-				$this->email         = $u['email'];
-				$this->access_level  = $u['access_level'];
-				$this->status        = $u['status'];
-				$this->language      = $u['preferred_language'];
-				$this->dashboard     = json_decode(unserialize($u['dashboard']), true);
-				$this->affected 		 = 1;
-
-				//setting response for api calls
-				$res = array( 'id'					 => $u['id'],
-											'file_id'      => $u['file_id'],
-										  'first_name'   => $u['first_name'],
-											'last_name'    => $u['last_name'],
-											'username'     => $u['username'],
-											'email'        => $u['email'],
-											'access_level' => $u['access_level'],
-											'status'       => $u['status'],
-											'language'     => $u['preferred_language'],
-											'dashboard'    => json_decode(unserialize($u['dashboard']), true));
-			return $res;
-		}else{
-		   throw new Luracast\Restler\RestException(404, 'User not found');
-		}
-	}
-
-	/**
-	 * Method to fecth User Record by Username
-	 *
-	 * Fech a record for a specific Natural user
-	 * by Username
-	 *
-	 * @url GET byUsername/{username}
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @throws 404 User not found for requested username
-	 * @param string $username User to be fetched
-	 * @return mixed
-	 */
-
-	public function byUsername($username) {
-		$db = DataConnection::readOnly();
-		$u = $db->user()
-			->where("username", $username)
-			->limit(1)
-			->fetch();
-
-		if(count($u) > 0) {
-				//setting object properties for in app use
-				$this->id 					 = $u['id'];
-				$this->file_id       = $u['file_id'];
-				$this->first_name    = $u['first_name'];
-				$this->last_name     = $u['last_name'];
-				$this->username      = $u['username'];
-				$this->email         = $u['email'];
-				$this->access_level  = $u['access_level'];
-				$this->status        = $u['status'];
-				$this->language      = $u['preferred_language'];
-				$this->dashboard     = unserialize($u['dashboard']);
-
-				//setting response for api calls
-				$res = array( 'id'					 => $u['id'],
-											'file_id'      => $u['file_id'],
-										  'first_name'   => $u['first_name'],
-											'last_name'    => $u['last_name'],
-											'username'     => $u['username'],
-											'email'        => $u['email'],
-											'access_level' => $u['access_level'],
-											'status'       => $u['status'],
-											'language'     => $u['preferred_language'],
-											'dashboard'    => unserialize($u['dashboard']));
-			return $res;
-		}else{
-		   throw new Luracast\Restler\RestException(404, 'User not found');
-		}
-	}
-
-	/**
-	 * Method to create a  User Record
-	 *
-	 * Create a new User
-	 *
-	 * @url POST create
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @return mixed
-	 */
-	public function create($show_password=false, $auto_gen_pass=true, $data = null){
-			if($auto_gen_pass){
-				$temp_password = generate_random_str(6, 'abcdefghijklmnopqrstuvwxyz1234567890');
-			}else{
-				$temp_password = $this->password;
-			}
-
-			$hasher = new Phpass\PasswordHash(8,false);
-			$hashed_pass = $hasher->HashPassword($temp_password);
-
-
-			$db = DataConnection::readWrite();
-			$u = $db->user();
-
-			if($data == null) {
-				$data = array(  'file_id'      => $this->file_id,
-											  'first_name'   => $this->first_name,
-												'last_name'    => $this->last_name,
-												'username'     => $this->username,
-												'email'        => $this->email,
-												'access_level' => $this->access_level,
-												'status'       => $this->status,
-												'language'     => $this->preferred_language,
-												'dashboard'    => serialize($this->dashboard));
-			}else{
-				$data['dashboard']  = serialize($data['dashboard']);
-			}
-
-			if(!isset($data['status'])){
-					$data['status'] = 1;
-			}
-
-			if(!isset($data['language'])){
-					$data['language'] = 'en';
-			}
-
-			$data['password'] = $hashed_pass;
-
-			unset($data['fn']);
-			//print_debug($data);
-			$result = $u->insert($data);
-			foreach($data as $key => $value){
-				$this->{$key} = $value;
-			}
-
-			$this->id = $result['id'];
-			if($show_password){
-				$this->temp_password = $hashed_password;
-			}
-			return $this;
+  /**
+  * Method to Update report information
+  *
+  * Update report on database
+  *
+  * @url PUT update
+  * @smart-auto-routing false
+  *
+  * @access public
+  * @return mixed
+  */
+  function update($request_data) {
+    $this->_validate($request_data, "edit");
+    $response = array();
+    $db = DataConnection::readWrite();
+    $id = $request_data['id'];
+    $q  = $db->report[$id];
+    unset($request_data['fn']);
+    foreach ($request_data as $key => $value) {
+      $this->$key = $value;
     }
 
-	/**
-	 * Method to update a User Record
-	 *
-	 * Update an User record
-	 *
-	 * @url PUT update
-	 * @smart-auto-routing false
-	 *
-	 * @access public
-	 * @return mixed
-	 */
-	public function update($id){
-			$response = array();
-			$db = DataConnection::readWrite();
-			$u = $db->user[$id];
-			if($u){
-				$data = array('file_id'      => $this->file_id,
-				'first_name'   => $this->first_name,
-				'last_name'    => $this->last_name,
-				'username'     => $this->username,
-				'email'        => $this->email,
-				'access_level' => $this->access_level,
-				'status'       => $this->status,
-				'language'     => $this->preferred_language,
-				'dashboard'    => serialize($this->dashboard));
-				if($u->update($data)){
-					$response['code'] = 200;
-					$response['message'] = 'User has been updated!';
-				}else{
-					$response['code'] = 500;
-					$response['message'] = 'Could not update User at this time!';
-				}
-				return $response;
-			}else{
-				throw new Luracast\Restler\RestException(404, 'User not found');
-			}
+    if($q){
+      if($q->update($request_data)){
+        $response['code'] = 200;
+        $response['message'] = 'Report has been updated!';
+        natural_set_message($response['message'], 'success');
+      }else{
+        //Could not update record! maybe the data is the same.
+        $response['code'] = 500;
+        $response['message'] = 'Could not update Report at this time!';
+        natural_set_message($response['message'], 'error');
+        throw new Luracast\Restler\RestException($response['code'], $response['message']);
+      }
+      return $response;
+    }else{
+      natural_set_message('Report not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Report not found');
+    }
+  }
+
+  /**
+  * Method to delete a report
+  *
+  * Delete report from database
+  *
+  * @url DELETE delete
+  * @smart-auto-routing false
+  *
+  * @access public
+  * @throws 404 Report not found
+  * @return mixed
+  */
+  function delete($id) {
+    $data['id'] = $id;
+    $this->_validate($data, "delete");
+    $db = DataConnection::readWrite();
+    $q = $db->report[$id];
+
+    $response = array();
+    if($q && $q->delete()){
+      $response['code'] = 200;
+      $response['message'] = 'Report has been removed!';
+      natural_set_message($response['message'], 'success');
+      return $response;
+    }else{
+      $response['code'] = 404;
+      $response['message'] = 'Report not found!';
+      natural_set_message($response['message'], 'error');
+      throw new Luracast\Restler\RestException($response['code'], $response['message']);
+      return $response;
+    }
+  }
+
+  /**
+  * @smart-auto-routing false
+  * @access private
+  */
+  function _validate($data, $type, $from_api = true) {
+    //If the method called is an update, check if the id exists, otherwise return error
+    $error_code = 400;
+    if ($type == "update" || $type == "delete") {
+      if (!$data['id']) {
+        $error[] = 'Parameter ID is required!';
+      }
+    }
+    /*
+     * check if field is empty
+     * Add more fields as needed
+     */
+    if ($type != "delete") {
+      if (!$data['report_name']) {
+        $error[] = 'Field report_name is required!';
+      }
     }
 
-	/**
-    * Method to delete a user
-    *
-    * Delete user from database
-    *
-    * @url DELETE delete
-    * @smart-auto-routing false
-    *
-    * @access public
-    * @throws 404 User not found
-    * @return mixed
-    */
-	public function delete($id){
-		$this->affected 		 = 0;
-		$db = DataConnection::readWrite();
-		$u = $db->user[$id];
-		if($u && $u->delete()){
-			//print_debug('User deleted succesfuly');
-			$this->affected 		 = 1;
-			$response = array();
-			$response['code'] = 200;
-			$response['message'] = 'User has been removed!';
-			return $response;
-		}else{
-			throw new Luracast\Restler\RestException(404, 'User not found');
-		}
-	}
-
-	/**
-	* @smart-auto-routing false
-	* @access private
-	*/
-	public function updateUserStatus($status,$user_id){
-		$db = DataConnection::readWrite();
-		$u = $db->user[$user_id];
-		if($u){
-			$data = array ('status' => $status);
-			$affected = $u->update($data);
-		}
-	}
+    //If error exists return or throw exception if the call has been made from the API
+    if (!empty($error)) {
+      natural_set_message($error[0], 'error');
+      if ($from_api) {
+        throw new Luracast\Restler\RestException($error_code, $error[0]);
+      }
+      return $error;
+      exit(0);
+    }
+  }
 }
 ?>

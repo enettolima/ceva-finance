@@ -202,8 +202,8 @@ class Deposit {
      * Add more fields as needed
      */
     if ($type != "delete") {
-      if (!$data['bank_name']) {
-        $error[] = 'Field bank_name is required!';
+      if (!$data['church_id']) {
+        $error[] = 'Field church_id is required!';
       }
     }
 

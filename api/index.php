@@ -21,5 +21,9 @@ $r->addAPIClass('Member');
 $r->addAPIClass('Deposit');
 $r->addAPIClass('Withdraw');
 $r->addAPIClass('WithdrawType');
+$r->addAPIClass('Bank');
+$r->addAPIClass('Transaction');
+$r->addAPIClass('TransactionType');
+$r->addAPIClass('Report');
 $r->handle();
 ?>

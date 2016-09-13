@@ -13,64 +13,72 @@ function church_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
 
   // Sort
   if (empty($sort)) {
-    $sort = 'id ASC';
+    $sort = 'c.name asc';
   }
 
   $limit = PAGER_LIMIT;
   $offset = ($page * $limit) - $limit;
-  $db = DataConnection::readOnly();
   $total_records = 0;
+  $pdo = new PDO(NATURAL_PDO_DSN_READ, NATURAL_PDO_USER_READ, NATURAL_PDO_PASS_READ);
 
   // Search
   if (!empty($search)) {
-    $search_fields = array('id', 'user_id', 'name');
-    $exceptions = array();
-    $search_query = build_search_query($search, $search_fields, $exceptions);
-
-    $churchs = $db->church()
-    ->where($row_id)
-    ->and($search_query)
-    ->order($sort)
-    ->limit($limit, $offset);
+      $search_fields = array('id', 'name', 'rowcount');
+      $exceptions = array();
+      $search_query = build_search_query($search, $search_fields, $exceptions);
+      $sql = 'select SQL_CALC_FOUND_ROWS c.id, c.name,
+                 (select count(id) from church_link where church_id = c.id and acl_levels_id = 1) visitors,
+                 (select count(id) from church_link where church_id = c.id and acl_levels_id = 2) members,
+                 (select count(id) from church_link where church_id = c.id and acl_levels_id = 3) pastors,
+                 (select count(id) from church_link where church_id = c.id and acl_levels_id = 4) treasurers,
+                 (select count(id) from church_link where church_id = c.id and acl_levels_id = 5) administrators
+       from church_link cl
+       left outer join church c on c.id = cl.church_id
+       where cl.user_id = '.$_SESSION['log_id'].' '.$search_query.' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
   } else {
-    $churchs = $db->church()
-    ->where($row_id)
-    ->order($sort)
-    ->limit($limit, $offset);
+      $sql = 'select SQL_CALC_FOUND_ROWS c.id, c.name,
+                   (select count(id) from church_link where church_id = c.id and acl_levels_id = 1) visitors,
+                   (select count(id) from church_link where church_id = c.id and acl_levels_id = 2) members,
+                   (select count(id) from church_link where church_id = c.id and acl_levels_id = 3) pastors,
+                   (select count(id) from church_link where church_id = c.id and acl_levels_id = 4) treasurers,
+                   (select count(id) from church_link where church_id = c.id and acl_levels_id = 5) administrators
+              from church_link cl
+              left outer join church c on c.id = cl.church_id
+              where cl.user_id = '.$_SESSION['log_id'].' order by '.$sort.' limit '.$limit.' offset '.$offset;
+      $records = $pdo->prepare($sql);
+      $records->execute();
   }
-  $total_records = $db->church()->count("*");
-
+  $total_records = $pdo->query('SELECT FOUND_ROWS();')->fetch(PDO::FETCH_COLUMN);
   $i = 0;
-  if (count($churchs)) {
+  if (count($records)) {
     // Building the header with sorter
     $headers[] = array('display' => 'Id', 'field' => 'id');
-    $headers[] = array('display' => 'User Id', 'field' => 'user_id');
-    $headers[] = array('display' => 'Name', 'field' => 'name');
-    $headers[] = array('display' => 'Edit', 'field' => NULL);
-    $headers[] = array('display' => 'Delete', 'field' => NULL);
+    $headers[] = array('display' => 'Church', 'field' => 'name');
+    $headers[] = array('display' => 'Visitors', 'field' => 'visitors');
+    $headers[] = array('display' => 'Members', 'field' => 'members');
+    $headers[] = array('display' => 'Pastors', 'field' => 'pastors');
+    $headers[] = array('display' => 'Treasurers', 'field' => 'treasurers');
+    $headers[] = array('display' => 'Administrators', 'field' => 'administrators');
+    $headers[] = array('display' => 'Access', 'field' => NULL);
     $headers = build_sort_header('church_list', 'church', $headers, $sort);
 
-    foreach( $churchs as $church ){
+    foreach( $records as $record ){
       $j = $i + 1;
       //This is important for the row update/delete
-      $rows[$j]['row_id']   = $church['id'];
+      $rows[$j]['row_id']   = $record['id'];
       /////////////////////////////////////////////
-      $rows[$j]['id']       = $church['id'];
-      $rows[$j]['user_id']   = $church['user_id'];
-      $rows[$j]['name'] = $church['name'];
-      $rows[$j]['edit']   = theme_link_process_information('',
-          'church_edit_form',
-          'church_edit_form',
-          'church',
-          array('extra_value' => 'id|' . $church['id'],
-              'response_type' => 'modal',
-              'icon' => NATURAL_EDIT_ICON));
-      $rows[$j]['delete'] = theme_link_process_information('',
-          'church_delete_form',
-          'church_delete_form',
-          'church', array('extra_value' => 'id|' . $church['id'],
-              'response_type' => 'modal',
-              'icon' => NATURAL_REMOVE_ICON));
+      $rows[$j]['id']       = $record['id'];
+      $rows[$j]['name']     = $record['name'];
+      $rows[$j]['visitors'] = $record['visitors'];
+      $rows[$j]['members']  = $record['members'];
+      $rows[$j]['pastors']  = $record['pastors'];
+      $rows[$j]['treasurers'] = $record['treasurers'];
+      $rows[$j]['administrators'] = $record['administrators'];
+      $rows[$j]['account_management'] = theme_link_process_information('Manage', '', '', 'church', array('response_type' => null,
+                'href' => 'jump.php?url=dashboard_church.php&church_id='.$record['id']));
+
       $i++;
     }
   }

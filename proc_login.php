@@ -9,7 +9,7 @@ $ACL->password = $_POST['password'];
 $ACL->login();
 
 if ($_SESSION['logged']) {
-  header('Location: ' . NATURAL_WEB_ROOT . 'dashboard.php');
+  header('Location: ' . NATURAL_WEB_ROOT . 'dashboard_user.php');
 }
 else {
   header('Location: ' . NATURAL_WEB_ROOT . 'index.php?login=error');

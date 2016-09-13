@@ -6,7 +6,7 @@
 
 			if(isset($argv) && $argv[1] == '-force-delete'){
       	echo "Delete current ".NATURAL_DBNAME." database....\n";
-      	$pdo->exec("DROP DATABASE IF EXESTS`".NATURAL_DBNAME."`;");
+      	$pdo->exec("DROP DATABASE IF EXISTS`".NATURAL_DBNAME."`;");
 			}
 
       echo "Creating ".NATURAL_DBNAME." database if it doesn't exist....\n";

@@ -48,5 +48,53 @@ switch ($_GET['fn']) {
   case 'user_create_form_submit':
     print user_create_form_submit($_GET);
     break;
+  case 'user_list_visitors':
+    print user_list_visitors($_GET['row_id']);
+    break;
+  case 'user_list_visitors_pager':
+    print user_list_visitors(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+    break;
+  case 'user_list_visitors_sort':
+    print user_list_visitors(NULL, $_GET['search'], $_GET['sort'], 1);
+    break;
+  case 'user_list_visitors_search':
+    print user_list_visitors(NULL, $_GET['search']);
+    break;
+  case 'user_list_leaders':
+    print user_list_leaders($_GET['row_id']);
+    break;
+  case 'user_list_leaders_pager':
+    print user_list_leaders(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+    break;
+  case 'user_list_leaders_sort':
+    print user_list_leaders(NULL, $_GET['search'], $_GET['sort'], 1);
+    break;
+  case 'user_list_leaders_search':
+    print user_list_leaders(NULL, $_GET['search']);
+    break;
+  case 'user_list_members':
+    print user_list_members($_GET['row_id']);
+    break;
+  case 'user_list_members_pager':
+    print user_list_members(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+    break;
+  case 'user_list_members_sort':
+    print user_list_members(NULL, $_GET['search'], $_GET['sort'], 1);
+    break;
+  case 'user_list_members_search':
+    print user_list_members(NULL, $_GET['search']);
+    break;
+  case 'user_list_vendors':
+    print user_list_vendors($_GET['row_id']);
+    break;
+  case 'user_list_vendors_pager':
+    print user_list_vendors(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+    break;
+  case 'user_list_vendors_sort':
+    print user_list_vendors(NULL, $_GET['search'], $_GET['sort'], 1);
+    break;
+  case 'user_list_vendors_search':
+    print user_list_vendors(NULL, $_GET['search']);
+    break;
 }
 ?>
