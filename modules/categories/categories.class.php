@@ -3,11 +3,11 @@
  * All methods in this class are protected
  * @access protected
  */
-class TransactionType {
+class Categories {
   /**
-  * Method to create a new transaction_type
+  * Method to create a new categories
   *
-  * Add a new transaction_type
+  * Add a new categories
   *
   * @url POST create
   * @smart-auto-routing false
@@ -17,37 +17,37 @@ class TransactionType {
   function create($request_data) {
     //Validating data from the API call
     $this->_validate($request_data, "create");
-    $transaction_type = new TransactionType();
+    $categories = new Categories();
     $db = DataConnection::readWrite();
     //$u = $db->user();
     $data = array();
     unset($request_data['fn']);
     unset($request_data['id']);
     foreach ($request_data as $key => $value) {
-      $transaction_type->$key = $value;
+      $categories->$key = $value;
       $data[$key] = $value;
     }
-    //$transaction_type->insert();
-    $result = $db->transaction_type()->insert($data);
+    //$categories->insert();
+    $result = $db->categories()->insert($data);
     if ($result) {
       //Preparing response
       $response = array();
       $response['code'] = 201;
-      $response['message'] = 'TransactionType has been created!';
+      $response['message'] = 'Categories has been created!';
       $response['id'] = $result['id'];
       natural_set_message($response['message'], 'success');
       return $response;
     } else {
-      $error_message = 'TransactionType could not be created!';
+      $error_message = 'Categories could not be created!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(500, $error_message);
     }
   }
 
   /**
-  * Method to fecth TransactionType Record by ID
+  * Method to fecth Categories Record by ID
   *
-  * Fech a record for a specific transaction_type
+  * Fech a record for a specific categories
   * by ID
   *
   * @url GET byID/{id}
@@ -55,7 +55,7 @@ class TransactionType {
   *
   * @access public
   * @throws 404 User not found for requested id
-  * @param int $id TransactionType to be fetched
+  * @param int $id Categories to be fetched
   * @return mixed
   */
   function byID($id) {
@@ -68,7 +68,7 @@ class TransactionType {
     //Get object by id
     //$this->loadSingle("id='{$id}'");
     $db = DataConnection::readOnly();
-    $q = $db->transaction_type[$id];
+    $q = $db->categories[$id];
     //If object not found throw an error
     if(count($q) > 0) {
       $result['code'] = 200;
@@ -79,14 +79,14 @@ class TransactionType {
       $this->affected 		 = 1;
       return $result;
     }else{
-      $error_message = 'TransactionType not found!';
+      $error_message = 'Categories not found!';
       natural_set_message($error_message, 'error');
       throw new Luracast\Restler\RestException(404, $error_message);
     }
   }
 
   /**
-  * Method to fecth All TransactionTypes
+  * Method to fecth All Categoriess
   *
   * Fech all records from the database
   *
@@ -94,27 +94,27 @@ class TransactionType {
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 TransactionType not found
+  * @throws 404 Categories not found
   * @return mixed
   */
   function fetchAll() {
     $db = DataConnection::readOnly();
-    $q = $db->transaction_type();
+    $q = $db->categories();
     if(count($q) > 0) {
       foreach($q as $id => $q){
         $res[] = $q;
       }
       return $res;
     }else{
-      natural_set_message('TransactionType not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'TransactionType not found');
+      natural_set_message('Categories not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Categories not found');
     }
   }
 
   /**
-  * Method to Update transaction_type information
+  * Method to Update categories information
   *
-  * Update transaction_type on database
+  * Update categories on database
   *
   * @url PUT update
   * @smart-auto-routing false
@@ -127,7 +127,7 @@ class TransactionType {
     $response = array();
     $db = DataConnection::readWrite();
     $id = $request_data['id'];
-    $q  = $db->transaction_type[$id];
+    $q  = $db->categories[$id];
     unset($request_data['fn']);
     foreach ($request_data as $key => $value) {
       $this->$key = $value;
@@ -136,49 +136,49 @@ class TransactionType {
     if($q){
       if($q->update($request_data)){
         $response['code'] = 200;
-        $response['message'] = 'TransactionType has been updated!';
+        $response['message'] = 'Categories has been updated!';
         natural_set_message($response['message'], 'success');
       }else{
         //Could not update record! maybe the data is the same.
         $response['code'] = 500;
-        $response['message'] = 'Could not update TransactionType at this time!';
+        $response['message'] = 'Could not update Categories at this time!';
         natural_set_message($response['message'], 'error');
         throw new Luracast\Restler\RestException($response['code'], $response['message']);
       }
       return $response;
     }else{
-      natural_set_message('TransactionType not found', 'error');
-      throw new Luracast\Restler\RestException(404, 'TransactionType not found');
+      natural_set_message('Categories not found', 'error');
+      throw new Luracast\Restler\RestException(404, 'Categories not found');
     }
   }
 
   /**
-  * Method to delete a transaction_type
+  * Method to delete a categories
   *
-  * Delete transaction_type from database
+  * Delete categories from database
   *
   * @url DELETE delete
   * @smart-auto-routing false
   *
   * @access public
-  * @throws 404 TransactionType not found
+  * @throws 404 Categories not found
   * @return mixed
   */
   function delete($id) {
     $data['id'] = $id;
     $this->_validate($data, "delete");
     $db = DataConnection::readWrite();
-    $q = $db->transaction_type[$id];
+    $q = $db->categories[$id];
 
     $response = array();
     if($q && $q->delete()){
       $response['code'] = 200;
-      $response['message'] = 'TransactionType has been removed!';
+      $response['message'] = 'Categories has been removed!';
       natural_set_message($response['message'], 'success');
       return $response;
     }else{
       $response['code'] = 404;
-      $response['message'] = 'TransactionType not found!';
+      $response['message'] = 'Categories not found!';
       natural_set_message($response['message'], 'error');
       throw new Luracast\Restler\RestException($response['code'], $response['message']);
       return $response;
@@ -202,8 +202,8 @@ class TransactionType {
      * Add more fields as needed
      */
     if ($type != "delete") {
-      if (!$data['type_id']) {
-        $error[] = 'Field type_id is required!';
+      if (!$data['church_id']) {
+        $error[] = 'Field church_id is required!';
       }
     }
 
