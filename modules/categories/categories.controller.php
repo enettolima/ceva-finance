@@ -110,6 +110,7 @@ function categories_create_form() {
  * Insert on table
  */
 function categories_create_form_submit($data) {
+  $data['church_id'] = $_SESSION['log_church_id'];
   $error    = categories_validate($data);
   if (!empty($error)) {
     return FALSE;
@@ -137,6 +138,7 @@ function categories_edit_form($data) {
  * Update table
  */
 function categories_edit_form_submit($data) {
+  $data['church_id'] = $_SESSION['log_church_id'];
   $error = categories_validate($data);
   if (!empty($error)) {
     return FALSE;
@@ -168,6 +170,7 @@ function categories_delete_form($data) {
  * Remove from table
  */
 function categories_delete_form_submit($data) {
+  $data['church_id'] = $_SESSION['log_church_id'];
   $categories = new Categories();
   $delete = $categories->delete($data['id']);
   if ($delete['code']==200) {

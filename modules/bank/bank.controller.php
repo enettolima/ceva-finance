@@ -40,7 +40,7 @@ function bank_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
     // Building the header with sorter
     $headers[] = array('display' => 'Id', 'field' => 'id');
     $headers[] = array('display' => 'Bank Name', 'field' => 'bank_name');
-    $headers[] = array('display' => 'Account Number', 'field' => 'account_number');
+    $headers[] = array('display' => 'Account Number', 'field' => 'bank_account_number');
     $headers[] = array('display' => 'Comment', 'field' => 'comment');
     $headers[] = array('display' => 'Edit', 'field' => NULL);
     $headers[] = array('display' => 'Delete', 'field' => NULL);
@@ -53,7 +53,7 @@ function bank_list($row_id = NULL, $search = NULL, $sort = NULL, $page = 1) {
       /////////////////////////////////////////////
       $rows[$j]['id']       = $bank['id'];
       $rows[$j]['bank_name'] = $bank['bank_name'];
-      $rows[$j]['account_number'] = $bank['account_number'];
+      $rows[$j]['account_number'] = $bank['bank_account_number'];
       $rows[$j]['comment'] = $bank['comment'];
       $rows[$j]['edit']   = theme_link_process_information('',
           'bank_edit_form',
@@ -110,6 +110,8 @@ function bank_create_form() {
  */
 function bank_create_form_submit($data) {
   $data['church_id'] = $_SESSION['log_church_id'];
+  $data['date_created'] = date("Y-m-d");
+  $data['date_lastchange'] = date("Y-m-d");
   $error    = bank_validate($data);
   if (!empty($error)) {
     return FALSE;
@@ -137,6 +139,8 @@ function bank_edit_form($data) {
  * Update table
  */
 function bank_edit_form_submit($data) {
+  $data['church_id'] = $_SESSION['log_church_id'];
+  $data['date_lastchange'] = date("Y-m-d");
   $error = bank_validate($data);
   if (!empty($error)) {
     return FALSE;
@@ -168,6 +172,7 @@ function bank_delete_form($data) {
  * Remove from table
  */
 function bank_delete_form_submit($data) {
+  $data['church_id'] = $_SESSION['log_church_id'];
   $bank = new Bank();
   $delete = $bank->delete($data['id']);
   if ($delete['code']==200) {
