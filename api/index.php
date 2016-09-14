@@ -25,5 +25,6 @@ $r->addAPIClass('Bank');
 $r->addAPIClass('Transaction');
 $r->addAPIClass('TransactionType');
 $r->addAPIClass('Report');
+$r->addAPIClass('Categories');
 $r->handle();
 ?>

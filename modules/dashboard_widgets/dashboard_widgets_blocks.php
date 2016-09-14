@@ -12,6 +12,7 @@ function render_widget_graph($data) {
   $query = $getquery->fetch();
 
   $query['query'] = str_replace("{{log_church_id}}", $_SESSION['log_church_id'], $query['query']);
+  $query['query'] = str_replace("{{log_id}}", $_SESSION['log_id'], $query['query']);
 
   $command = $pdo->prepare($query['query']);
   $command->execute();

@@ -43,31 +43,18 @@ switch ($_GET['fn']) {
     case 'transaction_withdraws_search':
         print transaction_withdraws(NULL, $_GET['search']);
         break;
-    case 'transaction_thithes':
-        echo transaction_thithes($_GET['row_id']);
+    case 'transaction_income':
+        echo transaction_income($_GET['row_id']);
         break;
-    case 'transaction_thithes_pager':
-        print transaction_thithes(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
+    case 'transaction_income_pager':
+        print transaction_income(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
         break;
-    case 'transaction_thithes_sort':
-        print transaction_thithes(NULL, $_GET['search'], $_GET['sort'], 1);
+    case 'transaction_income_sort':
+        print transaction_income(NULL, $_GET['search'], $_GET['sort'], 1);
         break;
-    case 'transaction_thithes_search':
-        print transaction_thithes(NULL, $_GET['search']);
+    case 'transaction_income_search':
+        print transaction_income(NULL, $_GET['search']);
         break;
-    case 'transaction_offers':
-        echo transaction_offers($_GET['row_id']);
-        break;
-    case 'transaction_offers_pager':
-        print transaction_offers(NULL, $_GET['search'], $_GET['sort'], $_GET['page']);
-        break;
-    case 'transaction_offers_sort':
-        print transaction_offers(NULL, $_GET['search'], $_GET['sort'], 1);
-        break;
-    case 'transaction_offers_search':
-        print transaction_offers(NULL, $_GET['search']);
-        break;
-
     case 'transaction_create_form':
         print transaction_create_form();
         break;
