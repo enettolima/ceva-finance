@@ -20,7 +20,7 @@
     <!-- Morris Charts -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
     <!-- Chosen -->
-    <link rel="stylesheet" href="http://harvesthq.github.io/chosen/chosen.css" media="all" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/lib/js/chosen.css" media="all" rel="stylesheet" type="text/css">
     <!-- Main CSS -->
     <link href="{{ path_to_theme }}css/natural-main.css" media="all" rel="stylesheet" type="text/css">
     <!-- Dashboard Widgets CSS -->
@@ -96,11 +96,11 @@
     {% block footer %}
     <!-- Placed at the end of the document so the pages load faster -->
     <!-- jQuery 2.0.2 -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/lib/js/jquery.min.js"></script>
     <!-- Rapha�l�JavaScript Library 2.1.0 -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <!-- Chosen -->
-    <script src="http://harvesthq.github.io/chosen/chosen.jquery.js"></script>
+    <script src="/lib/js/chosen.jquery.js"></script>
     <!-- jQuery.history.js -->
     <script type="text/javascript" src="lib/js/jquery.history.js"></script>
     <!-- ajaxupload.js -->
@@ -111,8 +111,6 @@
     <script type="text/javascript" src="{{ path_to_theme }}js/bootstrap.min.js"></script>
     <!-- Notifications -->
     <script type="text/javascript" src="{{ path_to_theme }}js/notifications.min.js"></script>
-    <!-- Morris Charts -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
     <!-- JQuery UI -->
     <!-- <script type="text/javascript" src="{{ path_to_theme }}js/jquery-ui-1.10.3.min.js"></script> -->
     <script type="text/javascript" src="lib/js/jquery-ui.min.js"></script>
@@ -133,14 +131,9 @@
     <script type="text/javascript" src="lib/js/gridstack/gridstack.min.js"></script>
     <script type="text/javascript">build_dashboard();</script>
 
-    <!-- PAGE RELATED PLUGIN(S) -->
-    <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.cust.js"></script>
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.resize.js"></script>
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.fillbetween.min.js"></script>
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.orderBar.js"></script>
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.pie.js"></script>
-    <script type="text/javascript" src="lib/js/flot/jquery.flot.tooltip.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.flot.js"></script>
+    <script type="text/javascript" src="lib/js/flot/jquery.colorhelpers.js"></script>
+    <script type="text/javascript" src="lib/js/flot/plugins/jquery.flot.pie.js"></script>
 
     <!-- PAGE RELATED PLUGIN(S) -->
     <!-- Morris Chart Dependencies -->

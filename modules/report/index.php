@@ -14,6 +14,13 @@ if (!$_SESSION['logged']) {
     exit(0);
 }
 
+//Getting function from the jquery call
+if($_GET['fn'])  {
+  $fn = $_GET['fn'];
+}
+else {
+  $fn = $_POST['fn'];
+}
 /*
  * Sending calls to the view
  * Call functions on {yourmodule}.controller.php
@@ -48,6 +55,15 @@ switch ($_GET['fn']) {
         break;
     case 'report_delete_form_submit':
         print report_delete_form_submit($_GET);
+        break;
+    case 'report_contribution':
+        print report_contribution($_GET);
+        break;
+    case 'report_withdraw':
+        print report_withdraw($_GET);
+        break;
+    case 'report_pdf':
+        print report_pdf($_POST);
         break;
 }
 ?>

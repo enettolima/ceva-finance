@@ -27,7 +27,7 @@ function transaction_overview($row_id = NULL, $search = NULL, $sort = NULL, $pag
       $exceptions = array();
       $search_query = build_search_query($search, $search_fields, $exceptions);
       $sql = "select SQL_CALC_FOUND_ROWS  t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
@@ -36,7 +36,7 @@ function transaction_overview($row_id = NULL, $search = NULL, $sort = NULL, $pag
       $records->execute();
   } else {
       $sql = "select SQL_CALC_FOUND_ROWS t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
@@ -138,7 +138,7 @@ function transaction_withdraws($row_id = NULL, $search = NULL, $sort = NULL, $pa
       $exceptions = array();
       $search_query = build_search_query($search, $search_fields, $exceptions);
       $sql = "select SQL_CALC_FOUND_ROWS  t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
@@ -147,7 +147,7 @@ function transaction_withdraws($row_id = NULL, $search = NULL, $sort = NULL, $pa
       $records->execute();
   } else {
       $sql = "select SQL_CALC_FOUND_ROWS t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
@@ -255,7 +255,7 @@ function transaction_income($row_id = NULL, $search = NULL, $sort = NULL, $page 
       $exceptions = array();
       $search_query = build_search_query($search, $search_fields, $exceptions);
       $sql = "select SQL_CALC_FOUND_ROWS  t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
@@ -264,7 +264,7 @@ function transaction_income($row_id = NULL, $search = NULL, $sort = NULL, $page 
       $records->execute();
   } else {
       $sql = "select SQL_CALC_FOUND_ROWS t.id, t.type_id, tt.name as `Category`, u.first_name, u.last_name, t.amount_value, so.description as amount_type, t.amount_identification, t.date_created, t.date_lastchange, b.bank_name, b.bank_account_number, t.comment  FROM church_finance.transaction t
-                   left outer join categories tt on tt.id = t.subtype_id
+                   left outer join categories tt on tt.id = t.category_id
                    left outer join bank b on b.id = t.bank_id
                    left outer join user u on u.id = t.user_id
                    left outer join select_option so on so.upstream_name = 'payment_type' and so.value = t.amount_type
