@@ -9,7 +9,7 @@ select concat('100', `value`), 0, description from select_option where upstream_
 union all
 select id, 1, name from withdraw_type;
 
-INSERT INTO `transaction`(`church_id`,`admin_id`,`user_id`,`type_id`,`subtype_id`,`amount_value`,`amount_type`, `amount_identification`,`date_created`,`comment`)
+INSERT INTO `transaction`(`church_id`,`admin_id`,`user_id`,`type_id`,`category_id`,`amount_value`,`amount_type`, `amount_identification`,`date_created`,`comment`)
 select                    1, 1100, member_id, 0, concat('100', contribution_type_id), amount, payment_type_id, '', `timestamp`, `comment` from contribution
 union all
 select                    1, 1100, 0, 1, withdraw_type_id, amount * -1, 0, invoice_number, `timestamp`, description from withdraw
